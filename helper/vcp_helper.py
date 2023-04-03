@@ -18,7 +18,7 @@ from telethon.errors import ChatAdminRequiredError
 from moviepy.editor import VideoFileClip
 from yt_dlp import YoutubeDL
 
-from ..helpers.functions import yt_search
+from userbot.helpers.functions import yt_search
 from .stream_helper import Stream, check_url, video_dl, yt_regex
 
 try:
