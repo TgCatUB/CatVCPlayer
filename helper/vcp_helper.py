@@ -148,6 +148,7 @@ class CatVC:
         if yt_url:
             m_data = YouTube(yt_url)
             playable = m_data.streams.get_by_itag(self.TAG).download()
+            print(playable)
             title = "".join(list(playable.split('/')[-1].split(".")[:-1]))
             img = m_data.thumbnail_url
             duration = await self.duration(playable)
