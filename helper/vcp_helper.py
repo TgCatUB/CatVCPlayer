@@ -101,7 +101,7 @@ class CatVC:
         self.PLAYING = False
         self.PLAYLIST = []
 
-    async def duration(filename):
+    async def duration(self, filename):
         file_ = VideoFileClip(filename)
         str_ = str(file_.duration)
         split, b = str_.split(".", 2)
