@@ -182,23 +182,56 @@ async def play_video(event):
     "To Play a media as video on VC."
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
-    if input_str == "" and event.reply_to_msg_id:
-        input_str = await tg_dl(event)
-    if not input_str:
+
+    reply = await event.get_reply_message()
+    
+    if reply and reply.media and not reply.photo:
+        inputstr = await tg_dl(event)
+    elif reply and reply.message and not input_str:
+        inputstr = reply.text
+    elif input_str:
+        inputstr = input_str
+    else:
         return await edit_delete(
             event, "Please Provide a media file to stream on VC", time=20
         )
     if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, "Join a VC and use play command")
-    if not input_str:
-        return await edit_or_reply(event, "No Input to play in vc")
-    await edit_or_reply(event, "Playing in VC ......")
+        chat = event.chat_id
+        try:
+            vc_chat = await catub.get_entity(chat)
+        except Exception as e:
+            return await edit_delete(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
+        if isinstance(vc_chat, User):
+            return await edit_delete(
+                event, "Voice Chats are not available in Private Chats"
+            )
+        out = await vc_player.join_vc(vc_chat, False)
+    
     if flag:
-        resp = await vc_player.play_song(input_str, Stream.video, force=True)
+        resp = await vc_player.play_song(event, inputstr, Stream.audio, force=True)
     else:
-        resp = await vc_player.play_song(input_str, Stream.video, force=False)
-    if resp:
-        await edit_delete(event, resp, time=30)
+        resp = await vc_player.play_song(event, inputstr, Stream.audio, force=False)
+    await event.delete()
+    if resp: await event.client.send_file(file=resp[0], caption=resp[1])#, time=30)
+    
+
+    # if input_str == "" and event.reply_to_msg_id:
+    #     input_str = await tg_dl(event)
+    # if not input_str:
+    #     return await edit_delete(
+    #         event, "Please Provide a media file to stream on VC", time=20
+    #     )
+    # if not vc_player.CHAT_ID:
+    #     return await edit_or_reply(event, "Join a VC and use play command")
+    # if not input_str:
+    #     return await edit_or_reply(event, "No Input to play in vc")
+    # await edit_or_reply(event, "Playing in VC ......")
+    # if flag:
+    #     resp = await vc_player.play_song(input_str, Stream.video, force=True)
+    # else:
+    #     resp = await vc_player.play_song(input_str, Stream.video, force=False)
+    # if resp:
+    #     await edit_delete(event, resp, time=30)
 
 
 @catub.cat_cmd(
@@ -226,23 +259,55 @@ async def play_audio(event):
     "To Play a media as audio on VC."
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
-    if input_str == "" and event.reply_to_msg_id:
-        input_str = await tg_dl(event)
-    if not input_str:
+    reply = await event.get_reply_message()
+    
+    if reply and reply.media and not reply.photo:
+        inputstr = await tg_dl(event)
+    elif reply and reply.message and not input_str:
+        inputstr = reply.text
+    elif input_str:
+        inputstr = input_str
+    else:
         return await edit_delete(
             event, "Please Provide a media file to stream on VC", time=20
         )
     if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, "Join a VC and use play command")
-    if not input_str:
-        return await edit_or_reply(event, "No Input to play in vc")
-    await edit_or_reply(event, "Playing in VC ......")
+        chat = event.chat_id
+        try:
+            vc_chat = await catub.get_entity(chat)
+        except Exception as e:
+            return await edit_delete(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
+        if isinstance(vc_chat, User):
+            return await edit_delete(
+                event, "Voice Chats are not available in Private Chats"
+            )
+        out = await vc_player.join_vc(vc_chat, False)
+    
     if flag:
-        resp = await vc_player.play_song(input_str, Stream.audio, force=True)
+        resp = await vc_player.play_song(event, inputstr, Stream.audio, force=True)
     else:
-        resp = await vc_player.play_song(input_str, Stream.audio, force=False)
-    if resp:
-        await edit_delete(event, resp, time=30)
+        resp = await vc_player.play_song(event, inputstr, Stream.audio, force=False)
+    await event.delete()
+    if resp: await event.client.send_file(file=resp[0], caption=resp[1])#, time=30)
+
+
+    # if input_str == "" and event.reply_to_msg_id:
+    #     input_str = await tg_dl(event)
+    # if not input_str:
+    #     return await edit_delete(
+    #         event, "Please Provide a media file to stream on VC", time=20
+    #     )
+    # if not vc_player.CHAT_ID:
+    #     return await edit_or_reply(event, "Join a VC and use play command")
+    # if not input_str:
+    #     return await edit_or_reply(event, "No Input to play in vc")
+    # await edit_or_reply(event, "Playing in VC ......")
+    # if flag:
+    #     resp = await vc_player.play_song(input_str, Stream.audio, force=True)
+    # else:
+    #     resp = await vc_player.play_song(input_str, Stream.audio, force=False)
+    # if resp:
+    #     await edit_delete(event, resp, time=30)
 
 
 @catub.cat_cmd(

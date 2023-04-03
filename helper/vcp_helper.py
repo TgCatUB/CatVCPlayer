@@ -1,3 +1,4 @@
+import os
 import asyncio
 from pathlib import Path
 
@@ -14,9 +15,17 @@ from pytgcalls.types import AudioPiped, AudioVideoPiped
 from pytgcalls.types.stream import StreamAudioEnded
 from telethon import functions
 from telethon.errors import ChatAdminRequiredError
+from moviepy.editor import VideoFileClip
 from yt_dlp import YoutubeDL
 
+from ..helpers.functions import yt_search
 from .stream_helper import Stream, check_url, video_dl, yt_regex
+
+try:
+    from pytube import YouTube
+except ModuleNotFoundError:
+    os.system("pip3 install pytube")
+    from pytube import YouTube
 
 
 class CatVC:
@@ -29,6 +38,7 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
+        self.TAG = 22#18
 
     async def start(self):
         await self.app.start()
@@ -91,15 +101,32 @@ class CatVC:
         self.PLAYING = False
         self.PLAYLIST = []
 
-    async def play_song(self, input, stream=Stream.audio, force=False):
+    async def duration(filename):
+        file_ = VideoFileClip(filename)
+        str_ = str(file_.duration)
+        split, b = str_.split(".", 2)
+        int_ = int(split)
+        ute = int_//60
+        ond_ = int_%60
+        if int(ond_) in list(range(0, 10)):
+            ond = f"0{ond_}"
+        else:
+            ond = ond_
+        duration = f"{ute}:{ond}"
+        return duration
+
+    async def play_song(self, event, input, stream=Stream.audio, force=False):
+        yt_url = False
         if yt_regex.match(input):
-            with YoutubeDL({}) as ytdl:
-                ytdl_data = ytdl.extract_info(input, download=False)
-                title = ytdl_data.get("title", None)
-            if title:
-                playable = await video_dl(input, title)
-            else:
-                return "Error Fetching URL"
+            yt_url = input
+        # if yt_regex.match(input):
+        #     with YoutubeDL({}) as ytdl:
+        #         ytdl_data = ytdl.extract_info(input, download=False)
+        #         title = ytdl_data.get("title", None)
+        #     if title:
+        #         playable = await video_dl(input, title)
+        #     else:
+        #         return "Error Fetching URL"
         elif check_url(input):
             try:
                 res = requests.get(input, allow_redirects=True, stream=True)
@@ -114,31 +141,44 @@ class CatVC:
                 playable = input
             except Exception as e:
                 return f"**INVALID URL**\n\n{e}"
+            
         else:
-            path = Path(input)
-            if path.exists():
-                if not path.name.endswith(
-                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
-                ):
-                    return "`File is invalid for Streaming`"
-                playable = str(path.absolute())
-                title = path.name
-            else:
-                return "`File Path is invalid`"
+            yt_url = await yt_search(input)
+
+        if yt_url:
+            m_data = YouTube(yt_url)
+            playable = m_data.streams.get_by_itag(self.TAG).download()
+            title = "".join(list(playable.split('/')[-1].split(".")[:-1]))
+            img = m_data.thumbnail_url
+            duration = await self.duration(playable)
+
+        # else:
+        #     path = Path(input)
+        #     if path.exists():
+        #         if not path.name.endswith(
+        #             (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
+        #         ):
+        #             return "`File is invalid for Streaming`"
+        #         playable = str(path.absolute())
+        #         title = path.name
+        #     else:
+        #         return "`File Path is invalid`"
+
+        msg = f"**🎧 Playing:** `{title}`\n**⏳ Duration:** `{duration}`\n**💭 Chat:** `{self.CHAT_NAME}`"
         print(playable)
         if self.PLAYING and not force:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
-            return f"Added to playlist.\n Position: {len(self.PLAYLIST)+1}"
+            return [img, f"{title}\nAdded to playlist.\n Position: {len(self.PLAYLIST)+1}"]
         if not self.PLAYING:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
             await self.skip()
-            return f"Playing {title}"
+            return [img, msg]
         if force and self.PLAYING:
             self.PLAYLIST.insert(
                 0, {"title": title, "path": playable, "stream": stream}
             )
             await self.skip()
-            return f"Playing {title}"
+            return [img, msg]
 
     async def handle_next(self, update):
         if isinstance(update, StreamAudioEnded):
