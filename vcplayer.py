@@ -180,6 +180,7 @@ async def get_playlist(event):
 )
 async def play_video(event):
     "To Play a media as video on VC."
+    chat = event.chat_id
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
 
@@ -196,7 +197,6 @@ async def play_video(event):
             event, "Please Provide a media file to stream on VC", time=20
         )
     if not vc_player.CHAT_ID:
-        chat = event.chat_id
         try:
             vc_chat = await catub.get_entity(chat)
         except Exception as e:
@@ -212,7 +212,7 @@ async def play_video(event):
     else:
         resp = await vc_player.play_song(event, inputstr, Stream.audio, force=False)
     await event.delete()
-    if resp: await event.client.send_file(file=resp[0], caption=resp[1])#, time=30)
+    if resp: await event.client.send_file(chat, file=resp[0], caption=resp[1])#, time=30)
     
 
     # if input_str == "" and event.reply_to_msg_id:
@@ -257,6 +257,7 @@ async def play_video(event):
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
+    chat = event.chat_id
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
     reply = await event.get_reply_message()
@@ -272,7 +273,7 @@ async def play_audio(event):
             event, "Please Provide a media file to stream on VC", time=20
         )
     if not vc_player.CHAT_ID:
-        chat = event.chat_id
+        
         try:
             vc_chat = await catub.get_entity(chat)
         except Exception as e:
@@ -288,7 +289,7 @@ async def play_audio(event):
     else:
         resp = await vc_player.play_song(event, inputstr, Stream.audio, force=False)
     await event.delete()
-    if resp: await event.client.send_file(file=resp[0], caption=resp[1])#, time=30)
+    if resp: await event.client.send_file(chat, file=resp[0], caption=resp[1])#, time=30)
 
 
     # if input_str == "" and event.reply_to_msg_id:
