@@ -108,7 +108,20 @@ class CatVC:
 
     async def play_song(self, event, input, stream=Stream.audio, force=False, reply=False):
         yt_url = False
-        if yt_regex.match(input):
+        if reply:
+            path = Path(input[0])
+            if path.exists():
+                if not path.name.endswith(
+                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
+                ):
+                    return "`File is invalid for Streaming`"
+                playable = str(path.absolute())
+                title = path.name
+                duration = await self.duration(reply.file.duration)
+                img = input[1]
+            else:
+                return "`File Path is invalid`"
+        elif yt_regex.match(input):
             yt_url = input
         # if yt_regex.match(input):
         #     with YoutubeDL({}) as ytdl:
@@ -132,19 +145,7 @@ class CatVC:
                 playable = input
             except Exception as e:
                 return f"**INVALID URL**\n\n{e}"
-        elif reply:
-            path = Path(input[0])
-            if path.exists():
-                if not path.name.endswith(
-                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
-                ):
-                    return "`File is invalid for Streaming`"
-                playable = str(path.absolute())
-                title = path.name
-                duration = await self.duration(reply.file.duration)
-                img = input[1]
-            else:
-                return "`File Path is invalid`"
+        
         else:
             yt_url = await yt_search(input)
             
