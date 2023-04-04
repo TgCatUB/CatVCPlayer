@@ -1,3 +1,4 @@
+import os 
 import asyncio
 import logging
 
@@ -122,6 +123,9 @@ async def leaveVoicechat(event):
         await edit_or_reply(event, "Leaving VC ......")
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
+        for f in os.listdir():
+            if f.endswith(".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a"):
+                os.remove(f)
         await edit_delete(event, f"Left VC of {chat_name}")
     else:
         await edit_delete(event, "Not yet joined any VC")
