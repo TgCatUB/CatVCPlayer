@@ -208,9 +208,9 @@ async def play_video(event):
         out = await vc_player.join_vc(vc_chat, False)
     
     if flag:
-        resp = await vc_player.play_song(event, inputstr, Stream.audio, force=True)
+        resp = await vc_player.play_song(event, inputstr, Stream.video, force=True)
     else:
-        resp = await vc_player.play_song(event, inputstr, Stream.audio, force=False)
+        resp = await vc_player.play_song(event, inputstr, Stream.video, force=False)
     await event.delete()
     if resp: await event.client.send_file(chat, file=resp[0], caption=resp[1])#, time=30)
     
