@@ -135,10 +135,10 @@ class CatVC:
             pass
         else:
             yt_url = await yt_search(input)
-        print(yt_url)
+            
         if yt_url:
             with YoutubeDL({}) as ytdl:
-                ytdl_data = ytdl.extract_info(input, download=False)
+                ytdl_data = ytdl.extract_info(yt_url, download=False)
 
                 title = ytdl_data.get("title", None)
             if title:
