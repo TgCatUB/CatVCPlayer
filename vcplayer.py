@@ -273,6 +273,7 @@ async def play_audio(event):
     input_str = event.pattern_match.group(2)
     reply = await event.get_reply_message()
     
+    await edit_or_reply(event, "`Searching...`")
     if reply and reply.media and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
