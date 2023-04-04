@@ -36,6 +36,7 @@ asyncio.create_task(vc_player.start())
 @vc_player.app.on_stream_end()
 async def handler(_, update):
     resp = await vc_player.handle_next(update)
+    print("In the end it doesnt even matter")
     if resp and type(resp) is list:
         await catub.send_file(vc_player.CHAT_ID, resp[0], resp[1])#, time=30)
     elif resp and type(resp) is str: await catub.send_message(vc_player.CHAT_ID, resp)
@@ -74,7 +75,7 @@ async def joinVoicechat(event):
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
 
-    await edit_or_reply(event, "Joining VC ......")
+    event = await edit_or_reply(event, "Joining VC ......")
 
     if chat and chat != "-as":
         if chat.strip("-").isnumeric():
@@ -124,7 +125,7 @@ async def joinVoicechat(event):
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
     if vc_player.CHAT_ID:
-        await edit_or_reply(event, "Leaving VC ......")
+        event = await edit_or_reply(event, "Leaving VC ......")
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
         
@@ -149,7 +150,7 @@ async def leaveVoicechat(event):
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
-    await edit_or_reply(event, "Fetching Playlist ......")
+    event = await edit_or_reply(event, "Fetching Playlist ......")
     playl = vc_player.PLAYLIST
     if not playl:
         await edit_delete(event, "Playlist empty", time=10)
@@ -191,7 +192,7 @@ async def play_video(event):
     input_str = event.pattern_match.group(2)
 
     reply = await event.get_reply_message()
-    await edit_or_reply(event, "`Searching...`")
+    event = await edit_or_reply(event, "`Searching...`")
     if reply and reply.vedio and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
@@ -273,7 +274,7 @@ async def play_audio(event):
     input_str = event.pattern_match.group(2)
     reply = await event.get_reply_message()
     
-    await edit_or_reply(event, "`Searching...`")
+    event = await edit_or_reply(event, "`Searching...`")
     if reply and reply.media and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
@@ -296,7 +297,7 @@ async def play_audio(event):
             return await edit_delete(
                 event, "Voice Chats are not available in Private Chats"
             )
-        out = await vc_player.join_vc(vc_chat, False)
+        await vc_player.join_vc(vc_chat, False)
     
     if flag:
         resp = await vc_player.play_song(event, inputstr, Stream.audio, force=True, reply=reply)
@@ -343,7 +344,7 @@ async def play_audio(event):
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
-    await edit_or_reply(event, "Pausing VC ......")
+    event = await edit_or_reply(event, "Pausing VC ......")
     res = await vc_player.pause()
     await edit_delete(event, res, time=30)
 
@@ -364,7 +365,7 @@ async def pause_stream(event):
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
-    await edit_or_reply(event, "Resuming VC ......")
+    event =  await edit_or_reply(event, "Resuming VC ......")
     res = await vc_player.resume()
     await edit_delete(event, res, time=30)
 
@@ -385,7 +386,7 @@ async def resume_stream(event):
 )
 async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
-    await edit_or_reply(event, "Skiping Stream ......")
+    event = await edit_or_reply(event, "Skiping Stream ......")
     res = await vc_player.skip()
     if res and type(res) is list:
         await event.delete()
