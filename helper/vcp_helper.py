@@ -17,6 +17,7 @@ from telethon import functions
 from telethon.errors import ChatAdminRequiredError
 from yt_dlp import YoutubeDL
 
+from userbot import Config
 from userbot.helpers.functions import yt_search
 from .stream_helper import Stream, check_url, video_dl, yt_regex
 
@@ -142,9 +143,10 @@ class CatVC:
 
                 title = ytdl_data.get("title", None)
             if title:
-                playable = await video_dl(input, title)
+                playable = await video_dl(yt_url, title)
             else:
-                return "Error Fetching URL"
+                return [f"catvc/resources/error.jpg","Error Fetching URL"]
+            
             img = f"https://img.youtube.com/{ytdl_data['id']}/maxresdefault.jpg"
             duration = await self.duration(ytdl_data['duration'])
             url = yt_url
