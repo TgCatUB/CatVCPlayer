@@ -135,7 +135,7 @@ class CatVC:
             pass
         else:
             yt_url = await yt_search(input)
-
+        print(yt_url)
         if yt_url:
             with YoutubeDL({}) as ytdl:
                 ytdl_data = ytdl.extract_info(input, download=False)
@@ -148,7 +148,7 @@ class CatVC:
             img = f"https://img.youtube.com/{ytdl_data['id']}/maxresdefault.jpg"
             duration = await self.duration(ytdl_data['duration'])
             url = yt_url
-            
+
         # else:
         #     path = Path(input)
         #     if path.exists():
