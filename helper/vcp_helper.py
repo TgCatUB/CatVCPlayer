@@ -147,7 +147,7 @@ class CatVC:
             else:
                 return [f"catvc/resources/error.jpg","Error Fetching URL"]
             
-            img = f"https://img.youtube.com/{ytdl_data['id']}/maxresdefault.jpg"
+            img = f"https://img.youtube.com/vi/{ytdl_data['id']}/maxresdefault.jpg"
             duration = await self.duration(ytdl_data['duration'])
             url = yt_url
 
