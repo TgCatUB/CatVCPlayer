@@ -90,7 +90,16 @@ async def tg_dl(event):
         await mone.edit(
             f"**•  Downloaded in {ms} seconds.**\n**•  Downloaded to :- **  `{os.path.relpath(file_name,os.getcwd())}`\n"
         )
-        return os.path.relpath(file_name, os.getcwd())
+        try:
+            thumb = await reply.download_media(thumb=-1)
+        except TypeError as error:
+            try:
+                nail_ = await event.client.get_profile_photos(Config.OWNER_ID)
+                thumb = await event.client.download_media(nail_[0], file=downloads)
+            except:
+                thumb = Config.THUMB_IMAGE
+
+        return [os.path.relpath(file_name, os.getcwd()), thumb]
     else:
         await mone.edit("`Reply to a message to download and stream.`")
         return False

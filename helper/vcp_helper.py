@@ -133,7 +133,18 @@ class CatVC:
             except Exception as e:
                 return f"**INVALID URL**\n\n{e}"
         elif reply:
-            pass
+            path = Path(input[0])
+            if path.exists():
+                if not path.name.endswith(
+                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
+                ):
+                    return "`File is invalid for Streaming`"
+                playable = str(path.absolute())
+                title = path.name
+                duration = await self.duration(reply.file.duration)
+                img = input[1]
+            else:
+                return "`File Path is invalid`"
         else:
             yt_url = await yt_search(input)
             
@@ -145,7 +156,7 @@ class CatVC:
             if title:
                 playable = await video_dl(yt_url, title)
             else:
-                return [f"catvc/resources/error.jpg","Error Fetching URL"]
+                return "Error Fetching URL"
             
             img = f"https://img.youtube.com/vi/{ytdl_data['id']}/maxresdefault.jpg"
             duration = await self.duration(ytdl_data['duration'])
