@@ -173,7 +173,7 @@ class CatVC:
         print(playable)
         if self.PLAYING and not force:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
-            return [img, f"{title}\nAdded to playlist.\n Position: {len(self.PLAYLIST)+1}"]
+            return [img, f"**🎧 Added to playlist:** {title}\n**⏳ Duration:** `{duration}`\n\n\nPosition: {len(self.PLAYLIST)+1}"]
         if not self.PLAYING:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
             await self.skip()
