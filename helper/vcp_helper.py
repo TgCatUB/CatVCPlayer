@@ -221,11 +221,11 @@ class CatVC:
         except Exception:
             await self.skip()
         self.PLAYING = next
-        msg = f"**Skipped Stream**\n\n"
+        msg = f"**🌬 Skipped Stream**\n\n"
         msg += f"**🎧 Playing:** [{next['title']}]({next['url']})\n"
         msg += f"**⏳ Duration:** `{next['duration']}`\n"
         msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
-        return msg
+        return [msg]
 
     async def pause(self):
         if not self.PLAYING:
