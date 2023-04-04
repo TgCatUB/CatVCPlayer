@@ -225,7 +225,7 @@ class CatVC:
         msg += f"**🎧 Playing:** [{next['title']}]({next['url']})\n"
         msg += f"**⏳ Duration:** `{next['duration']}`\n"
         msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
-        return #msg
+        return [next['img'], msg]
 
     async def pause(self):
         if not self.PLAYING:

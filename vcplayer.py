@@ -35,7 +35,11 @@ asyncio.create_task(vc_player.start())
 
 @vc_player.app.on_stream_end()
 async def handler(_, update):
-    await vc_player.handle_next(update)
+    resp = await vc_player.handle_next(update)
+    if resp and type(resp) is list:
+        await catub.send_file(vc_player.CHAT_ID, resp[0], resp[1])#, time=30)
+    elif resp and type(resp) is str: await catub.send_message(vc_player.CHAT_ID, resp)
+    
 
 
 ALLOWED_USERS = set()
@@ -382,7 +386,10 @@ async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
     await edit_or_reply(event, "Skiping Stream ......")
     res = await vc_player.skip()
-    await edit_delete(event, res, time=30)
+    if res and type(res) is list:
+        await event.delete()
+        await event.client.send_file(event.chat_id, file=res[0], caption=res[1])#, time=30)
+    elif res and type(res) is str: await edit_or_reply(event, res)
 
 
 """
