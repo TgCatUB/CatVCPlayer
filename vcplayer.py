@@ -191,7 +191,7 @@ async def play_video(event):
     input_str = event.pattern_match.group(2)
 
     reply = await event.get_reply_message()
-    
+    await edit_or_reply(event, "`Searching...`")
     if reply and reply.vedio and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
