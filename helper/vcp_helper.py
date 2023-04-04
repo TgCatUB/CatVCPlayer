@@ -169,11 +169,11 @@ class CatVC:
 
         msg = f"**🎧 Playing:** [{title}]({yt_url})\n"
         msg += f"**⏳ Duration:** `{duration}`\n"
-        
+        msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
         print(playable)
         if self.PLAYING and not force:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
-            return [img, f"**🎧 Added to playlist:** {title}\n**⏳ Duration:** `{duration}`\n\n\nPosition: {len(self.PLAYLIST)+1}"]
+            return [img, f"**🎧 Added to playlist:** {title}\n**⏳ Duration:** `{duration}`\n**💭 Chat:** `{self.CHAT_NAME}`\n\n👾 Position: {len(self.PLAYLIST)+1}"]
         if not self.PLAYING:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
             await self.skip()
