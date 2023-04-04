@@ -216,10 +216,10 @@ async def play_video(event):
     else:
         resp = await vc_player.play_song(event, inputstr, Stream.video, force=False, reply=reply)
     
-    if resp and resp is list:
+    if resp and type(resp) is list:
         await event.delete()
         await event.client.send_file(chat, file=resp[0], caption=resp[1])#, time=30)
-    elif resp and resp is str: await edit_or_reply(event, resp)
+    elif resp and type(resp) is str: await edit_or_reply(event, resp)
     
 
     # if input_str == "" and event.reply_to_msg_id:
@@ -298,11 +298,10 @@ async def play_audio(event):
     else:
         resp = await vc_player.play_song(event, inputstr, Stream.audio, force=False, reply=reply)
 
-    if resp and resp is list:
+    if resp and type(resp) is list:
         await event.delete()
         await event.client.send_file(chat, file=resp[0], caption=resp[1])#, time=30)
-    elif resp and resp is str:
-        await edit_or_reply(event, resp)
+    elif resp and type(resp) is str: await edit_or_reply(event, resp)
 
     # if input_str == "" and event.reply_to_msg_id:
     #     input_str = await tg_dl(event)
