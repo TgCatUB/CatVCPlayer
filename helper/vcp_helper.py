@@ -196,7 +196,7 @@ class CatVC:
 
     async def handle_next(self, update):
         if isinstance(update, StreamAudioEnded):
-            await self.skip()
+            return await self.skip()
 
     async def skip(self, clear=False):
         if clear:
