@@ -38,7 +38,7 @@ async def handler(_, update):
     resp = await vc_player.handle_next(update)
     print("In the end it doesnt even matter")
     if resp and type(resp) is list:
-        await catub.send_file(vc_player.CHAT_ID, file=resp[0], caption=resp[1])#, time=30)
+        await catub.send_file(vc_player.CHAT_ID, file=resp[0], caption=resp[1].split("\n\n")[1])#, time=30)
     
 
 
