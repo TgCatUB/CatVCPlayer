@@ -176,7 +176,7 @@ class CatVC:
         #     else:
         #         return "`File Path is invalid`"
 
-        msg = f"**🎧 Playing:** [{title}]({yt_url})\n"
+        msg = f"**🎧 Playing:** [{title}]({url})\n"
         msg += f"**⏳ Duration:** `{duration}`\n"
         msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
         print(playable)
