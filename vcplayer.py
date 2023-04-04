@@ -128,7 +128,7 @@ async def leaveVoicechat(event):
     else:
         await edit_delete(event, "Not yet joined any VC")
     for f in os.listdir():
-        if f.endswith(".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a"):
+        if f.endswith((".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")):
             os.remove(f)
 
 
