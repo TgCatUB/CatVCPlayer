@@ -39,7 +39,6 @@ async def handler(_, update):
     print("In the end it doesnt even matter")
     if resp and type(resp) is list:
         await catub.send_file(vc_player.CHAT_ID, resp[0], resp[1])#, time=30)
-    elif resp and type(resp) is str: await catub.send_message(vc_player.CHAT_ID, resp)
     
 
 
