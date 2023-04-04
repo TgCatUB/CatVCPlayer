@@ -38,7 +38,6 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
-        self.TAG = 22#18
 
     async def start(self):
         await self.app.start()
@@ -101,11 +100,14 @@ class CatVC:
         self.PLAYING = False
         self.PLAYLIST = []
 
-    async def duration(self, filename):
-        file_ = VideoFileClip(filename)
-        str_ = str(file_.duration)
-        split, b = str_.split(".", 2)
-        int_ = int(split)
+    async def duration(self, name, secs=False):
+        if secs:
+            int_ = int(name)
+        else:
+            file_ = VideoFileClip(name)
+            str_ = str(file_.duration)
+            split, b = str_.split(".", 2)
+            int_ = int(split)
         ute = int_//60
         ond_ = int_%60
         if int(ond_) in list(range(0, 10)):
@@ -147,9 +149,9 @@ class CatVC:
 
         if yt_url:
             m_data = YouTube(yt_url)
-            playable = m_data.streams.get_by_itag(self.TAG).download()
+            playable = m_data.streams.get_highest_resolution().download()
             print(playable)
-            title = "".join(list(playable.split('/')[-1].split(".")[:-1]))
+            title = m_data.title
             img = m_data.thumbnail_url
             duration = await self.duration(playable)
 
@@ -165,7 +167,9 @@ class CatVC:
         #     else:
         #         return "`File Path is invalid`"
 
-        msg = f"**🎧 Playing:** `{title}`\n**⏳ Duration:** `{duration}`\n**💭 Chat:** `{self.CHAT_NAME}`"
+        msg = f"**🎧 Playing:** [{title}]({yt_url})\n"
+        msg += f"**⏳ Duration:** `{duration}`\n"
+        
         print(playable)
         if self.PLAYING and not force:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
@@ -188,7 +192,7 @@ class CatVC:
     async def skip(self, clear=False):
         if clear:
             self.PLAYLIST = []
-
+        #log chat name
         if not self.PLAYLIST:
             if self.PLAYING:
                 await self.app.change_stream(
