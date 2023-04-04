@@ -188,7 +188,7 @@ async def play_video(event):
 
     reply = await event.get_reply_message()
     
-    if reply and reply.media and not reply.photo:
+    if reply and reply.vedio and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
         inputstr = reply.text
