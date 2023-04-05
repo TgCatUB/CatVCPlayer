@@ -111,6 +111,7 @@ class CatVC:
 
     async def play_song(self, event, input, stream=Stream.audio, force=False, reply=False, **kwargs):
         yt_url = False
+        img = False
         if reply:
             path = Path(input[0])
             if path.exists():
@@ -183,17 +184,17 @@ class CatVC:
         print(playable)
         if self.PLAYING and not force:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream, "img": img, "duration": duration, "url": url})
-            return [img, f"**🎧 Added to playlist:** {title}\n**⏳ Duration:** `{duration}`\n**💭 Chat:** `{self.CHAT_NAME}`\n\n👾 Position: {len(self.PLAYLIST)+1}"]
+            return [img, f"**🎧 Added to playlist:** {msg[15:]}\n\n👾 Position: {len(self.PLAYLIST)+1}"] if img else f"**🎧 Added to playlist:** {msg[15:]}\n\n👾 Position: {len(self.PLAYLIST)+1}"
         if not self.PLAYING:
             self.PLAYLIST.append({"title": title, "path": playable, "stream": stream, "img": img, "duration": duration, "url": url})
             await self.skip()
-            return [img, msg]
+            return [img, msg] if img else msg
         if force and self.PLAYING:
             self.PLAYLIST.insert(
                 0, {"title": title, "path": playable, "stream": stream, "img": img, "duration": duration, "url": url}
             )
             await self.skip()
-            return [img, msg]
+            return [img, msg] if img else msg
 
     async def handle_next(self, update):
         if isinstance(update, StreamAudioEnded):

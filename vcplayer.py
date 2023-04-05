@@ -49,7 +49,7 @@ async def sendmsg(event, res):
         event = await event.client.send_file(event.chat_id, file=res[0], caption=res[1])#, time=30)
     elif res and type(res) is str: event = await edit_or_reply(event, res)
     if vc_player.CLEANMODE:
-        asyncio.sleep(vc_player.CLEANMODE)
+        await asyncio.sleep(vc_player.CLEANMODE)
         await event.delete()
 
 
@@ -602,7 +602,7 @@ async def repeatvc(event):
         url = vc_player.PLAYING['url']
 
         resp = await vc_player.play_song(event, input, stream, force=False, duration=duration, url=url)
-        await event.edit(resp[1], buttons=buttons)
+        await event.edit(resp, buttons=buttons)
     else:
         await event.answer("Nothing playing in vc...")
 
