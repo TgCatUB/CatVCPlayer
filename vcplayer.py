@@ -44,7 +44,7 @@ async def handler(_, update):
         caption = resp[1].split(f'\n\n')[1]
         await catub.send_file(vc_player.CHAT_ID, file=resp[0], caption=caption)#, time=30)
     elif resp and type(resp) is str:
-        resp = resp.split(f'\n\n')[1]
+        resp = resp.split(f'\n\n')[1] if f'\n\n' in resp else resp
         event = await edit_or_reply(event, resp)
     
 async def sendmsg(event, res):
@@ -605,7 +605,7 @@ async def repeatvc(event):
         duration = vc_player.PLAYING['duration']
         url = vc_player.PLAYING['url']
         img = vc_player.PLAYING['img']
-        resp = await vc_player.play_song(event, input, stream, force=False, duration=duration, url=url, img=img)
+        res = await vc_player.play_song(event, input, stream, force=False, duration=duration, url=url, img=img)
         if res and type(res) is list: await event.edit(res[1], buttons=buttons)
         elif res and type(res) is str: await event.answer(res, buttons=buttons)
     else:
