@@ -611,7 +611,6 @@ async def repeatvc(event):
 @check_owner
 async def playlistvc(event):
     playl = vc_player.PLAYLIST
-    if vc_player.PLAYING: playl.insert(0, vc_player.PLAYING)
     if not playl:
         await event.answer(f"Playlist empty")
     else:
