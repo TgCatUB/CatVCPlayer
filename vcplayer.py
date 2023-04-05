@@ -43,6 +43,14 @@ async def handler(_, update):
     if resp and type(resp) is list:
         await catub.send_file(vc_player.CHAT_ID, file=resp[0], caption=resp[1].split("\n\n")[1])#, time=30)
     
+async def sendmsg(event, res):
+    if res and type(res) is list:
+        await event.delete()
+        event = await event.client.send_file(event.chat_id, file=res[0], caption=res[1])#, time=30)
+    elif res and type(res) is str: event = await edit_or_reply(event, res)
+    if vc_player.CLEANMODE:
+        asyncio.sleep(vc_player.CLEANMODE)
+        await event.delete()
 
 
 ALLOWED_USERS = set()
@@ -222,11 +230,8 @@ async def play_video(event):
         resp = await vc_player.play_song(event, inputstr, Stream.video, force=True, reply=reply)
     else:
         resp = await vc_player.play_song(event, inputstr, Stream.video, force=False, reply=reply)
-    
-    if resp and type(resp) is list:
-        await event.delete()
-        await event.client.send_file(chat, file=resp[0], caption=resp[1])#, time=30)
-    elif resp and type(resp) is str: await edit_or_reply(event, resp)
+
+    if resp: await sendmsg(event, resp)
     
 
     # if input_str == "" and event.reply_to_msg_id:
@@ -306,10 +311,7 @@ async def play_audio(event):
     else:
         resp = await vc_player.play_song(event, inputstr, Stream.audio, force=False, reply=reply)
 
-    if resp and type(resp) is list:
-        await event.delete()
-        await event.client.send_file(chat, file=resp[0], caption=resp[1])#, time=30)
-    elif resp and type(resp) is str: await edit_or_reply(event, resp)
+    if resp: await sendmsg(event, resp)
 
     # if input_str == "" and event.reply_to_msg_id:
     #     input_str = await tg_dl(event)
@@ -390,10 +392,7 @@ async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
     event = await edit_or_reply(event, "Skiping Stream ......")
     res = await vc_player.skip()
-    if res and type(res) is list:
-        await event.delete()
-        await event.client.send_file(event.chat_id, file=res[0], caption=res[1])#, time=30)
-    elif res and type(res) is str: await edit_or_reply(event, res)
+    if res: await sendmsg(event, res)
 
 
 """
@@ -508,6 +507,7 @@ async def speak(event):
          await edit_or_reply(event, f"**Error:**\n`{e}`")
 """
 
+#INLINE
 
 buttons = [
     [
@@ -530,7 +530,7 @@ buttons = [
 
 @catub.tgbot.on(InlineQuery(pattern="^vchelper$"))
 async def inlinevchelper(event):
-    await event.answer([event.builder.article(title="** | VC Helper| **", text=".", buttons=buttons)])
+    await event.answer([event.builder.article(title=" | VC Helper| ", text=".", buttons=buttons)])
 
 
 @catub.bot_cmd(pattern="^/vchelper$")
@@ -610,27 +610,82 @@ async def repeatvc(event):
 @catub.tgbot.on(CallbackQuery(pattern="playlistvc"))
 @check_owner
 async def playlistvc(event):
-    await event.answer(f"Fetching Playlist ......")
     playl = vc_player.PLAYLIST
     if not playl:
         await event.answer(f"Playlist empty")
     else:
+        await event.answer(f"Fetching Playlist ......")
         cat = ""
-        for num, item in enumerate(playl, 1):
+        playl.insert(0, vc_player.PLAYING)
+        for num, item in enumerate(playl):
             if item["stream"] == Stream.audio:
                 cat += f"{num}. 🔉  `{item['title']}`\n"
             else:
                 cat += f"{num}. 📺  `{item['title']}`\n"
-        await event.edit(f"**Playlist:**\n\n{cat}\n**Enjoy the show**", buttons=[Button.inline("Back", data="backvc")])
+        await event.edit(f"**Playlist:**\n\n{cat}\n**Enjoy the show**", buttons=[Button.inline("⬅️ Back", data="backvc")])
 
     
 @catub.tgbot.on(CallbackQuery(pattern="settingvc"))
 @check_owner
 async def settingvc(event):
-    await event.answer("Wait for update")
+    buttons = [
+        [Button.inline("🎩 Auth Mode", data="amodeinfo"), Button.inline("🏠 Private", data="amode")],
+        [Button.inline("🤖 Bot Mode", data="bmodeinfo"), Button.inline("❌ Disabled", data="bmode")],
+        [Button.inline("🗑 Clean Mode", data="cmodeinfo"), Button.inline("✅ Enabled", data="cmode")],
+        [Button.inline("⬅️ Back", data="backvc")]
+    ]
+    await event.edit("** | Settings | **", buttons=buttons)
 
     
 @catub.tgbot.on(CallbackQuery(pattern="backvc"))
 @check_owner
 async def vc(event):
     await event.edit(".", buttons=buttons)
+
+
+#SETTINGS
+
+@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)mode"))
+@check_owner
+async def vc(event):
+    mode = (event.pattern_match.group(1)).decode("UTF-8")
+    if mode == "a":
+        if vc_player.PUBLICMODE:
+            vc_player.PUBLICMODE = False
+            atntext = "🏠 Private"
+        else:
+            vc_player.PUBLICMODE = True
+            abtntext = "🏢 Public"
+    elif mode == "b":
+        if vc_player.BOTMODE:
+            vc_player.BOTMODE = False
+            bbtntext = "❌ Disabled"
+        else:
+            vc_player.BOTMODE = True
+            bbtntext = "✅ Enabled"
+    elif mode == "c":
+        if vc_player.CLEANMODE:
+            vc_player.CLEANMODE = False
+            cbtntext = "❌ Disabled"
+        else:
+            vc_player.CLEANMODE = 30
+            cbtntext = "✅ Enabled"
+
+    buttons = [
+        [Button.inline("🎩 Auth Mode", data="amodeinfo"), Button.inline(abtntext, data="amode")],
+        [Button.inline("🤖 Bot Mode", data="bmodeinfo"), Button.inline(bbtntext, data="bmode")],
+        [Button.inline("🗑 Clean Mode", data="cmodeinfo"), Button.inline(cbtntext, data="cmode")],
+        [Button.inline("⬅️ Back", data="backvc")]
+    ]
+
+    await event.edit("** | Settings | **", buttons=buttons)
+
+
+@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)modeinfo"))
+@check_owner
+async def vc(event):
+    mode = (event.pattern_match.group(1)).decode("UTF-8")
+    if mode == "a": text = "AUTH mode"
+    if mode == "b": text = "Choose whether to use bot or user client"
+    if mode == "c": text = "Clean Mode - When enabled messages get deleted after 30 secs automatically"
+    await event.answer(text)
