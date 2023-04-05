@@ -192,7 +192,7 @@ async def play_video(event):
 
     reply = await event.get_reply_message()
     event = await edit_or_reply(event, "`Searching...`")
-    if reply and reply.vedio and not reply.photo:
+    if reply and reply.video and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
         inputstr = reply.text
@@ -364,7 +364,7 @@ async def pause_stream(event):
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
-    event =  await edit_or_reply(event, "Resuming VC ......")
+    event = await edit_or_reply(event, "Resuming VC ......")
     res = await vc_player.resume()
     await edit_delete(event, res, time=30)
 
