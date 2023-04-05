@@ -529,7 +529,7 @@ buttons = [
     ]
 
 
-@catub.bot_cmd(pattern="^/vchelper$", from_users=Config.OWNER_ID)
+@catub.bot_cmd(pattern="^/vchelper$")
 async def vchelper(event):
     await event.client.send_message(event.chat_id, ".", buttons=buttons)
 
