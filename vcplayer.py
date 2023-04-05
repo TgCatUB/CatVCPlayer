@@ -44,7 +44,7 @@ async def handler(_, update):
         caption = resp[1].split(f'\n\n')[1]
         await catub.send_file(vc_player.CHAT_ID, file=resp[0], caption=caption)#, time=30)
     elif resp and type(resp) is str:
-        resp = resp[1].split(f'\n\n')[1]
+        resp = resp.split(f'\n\n')[1]
         event = await edit_or_reply(event, resp)
     
 async def sendmsg(event, res):
