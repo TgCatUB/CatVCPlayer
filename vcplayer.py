@@ -511,22 +511,22 @@ async def speak(event):
 
 buttons = [
     [
-        [Button.inline("👾 Join VC", data="joinvc")],
-        [Button.inline("🍃 Leave VC", data="leavevc")]
+        Button.inline("👾 Join VC", data="joinvc"),
+        Button.inline("🍃 Leave VC", data="leavevc")
     ],
     [
-        [Button.inline("▶️ Resume", data="resumevc")],
-        [Button.inline("⏸ Pause", data="pausevc")]
+        Button.inline("▶️ Resume", data="resumevc"),
+        Button.inline("⏸ Pause", data="pausevc")
     ],
     [
-        [Button.inline("🪡 Skip", data="skipvc")],
-        [Button.inline("❌ Stop", data="stopvc")]
-        ],
-        [
-            [Button.inline("📜 Playlist", data="playlistvc")],
-            [Button.inline("⚙️ Settings", data="settingvc")]
-        ]
+        Button.inline("🪡 Skip", data="skipvc"),
+        Button.inline("❌ Stop", data="stopvc")
+    ],
+    [
+        Button.inline("📜 Playlist", data="playlistvc"),
+        Button.inline("⚙️ Settings", data="settingvc")
     ]
+]
 
 
 @catub.bot_cmd(pattern="^/vchelper$")
