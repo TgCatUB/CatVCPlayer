@@ -596,7 +596,7 @@ async def skipvc(event):
 @check_owner
 async def repeatvc(event):
     if vc_player.PLAYING:
-        input = vc_player.PLAYING['playable']
+        input = vc_player.PLAYING['path']
         stream = vc_player.PLAYING['stream']
         duration = vc_player.PLAYING['duration']
         url = vc_player.PLAYING['url']
@@ -611,12 +611,12 @@ async def repeatvc(event):
 @check_owner
 async def playlistvc(event):
     playl = vc_player.PLAYLIST
+    playl.insert(0, vc_player.PLAYING)
     if not playl:
         await event.answer(f"Playlist empty")
     else:
         await event.answer(f"Fetching Playlist ......")
         cat = ""
-        playl.insert(0, vc_player.PLAYING)
         for num, item in enumerate(playl):
             if item["stream"] == Stream.audio:
                 cat += f"{num}. 🔉  `{item['title']}`\n"
