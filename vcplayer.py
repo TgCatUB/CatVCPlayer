@@ -536,7 +536,7 @@ async def vchelper(event):
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
 @check_owner
 async def joinvc(event):
-    chat = event.pattern_match.group(1)
+    chat = event.chat_id
 
     if vc_player.app.active_calls:
         return await event.answer(f"You have already Joined in {vc_player.CHAT_NAME}")
