@@ -155,6 +155,7 @@ class CatVC:
                 if kwargs:
                     duration = kwargs['duration']
                     url = kwargs['url']
+                    img = kwargs['img']
                 else:
                     duration = "UNKNOWN"
                     url = ""
@@ -227,7 +228,7 @@ class CatVC:
         msg += f"**🎧 Playing:** [{next['title']}]({next['url']})\n"
         msg += f"**⏳ Duration:** `{next['duration']}`\n"
         msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
-        return [next['img'], msg]
+        return [next['img'], msg] if next['img'] else msg
 
     async def pause(self):
         if not self.PLAYING:
