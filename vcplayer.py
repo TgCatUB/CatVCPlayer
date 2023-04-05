@@ -604,8 +604,8 @@ async def repeatvc(event):
         stream = vc_player.PLAYING['stream']
         duration = vc_player.PLAYING['duration']
         url = vc_player.PLAYING['url']
-
-        resp = await vc_player.play_song(event, input, stream, force=False, duration=duration, url=url)
+        img = vc_player.PLAYING['img']
+        resp = await vc_player.play_song(event, input, stream, force=False, duration=duration, url=url, img=img)
         await event.edit(resp, buttons=buttons)
     else:
         await event.answer("Nothing playing in vc...")
