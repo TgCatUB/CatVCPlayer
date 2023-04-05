@@ -106,7 +106,7 @@ class CatVC:
         duration = f"{ute}:{ond}"
         return duration
 
-    async def play_song(self, event, input, stream=Stream.audio, force=False, reply=False):
+    async def play_song(self, event, input, stream=Stream.audio, force=False, reply=False, **kwargs):
         yt_url = False
         if reply:
             path = Path(input[0])
@@ -124,14 +124,6 @@ class CatVC:
                 return "`File Path is invalid`"
         elif yt_regex.match(input):
             yt_url = input
-        # if yt_regex.match(input):
-        #     with YoutubeDL({}) as ytdl:
-        #         ytdl_data = ytdl.extract_info(input, download=False)
-        #         title = ytdl_data.get("title", None)
-        #     if title:
-        #         playable = await video_dl(input, title)
-        #     else:
-        #         return "Error Fetching URL"
         elif check_url(input):
             try:
                 res = requests.get(input, allow_redirects=True, stream=True)
@@ -144,11 +136,27 @@ class CatVC:
                 else:
                     title = input
                 playable = input
+                url = input
             except Exception as e:
                 return f"**INVALID URL**\n\n{e}"
-        
         else:
-            yt_url = await yt_search(input)
+            path = Path(input)
+            if path.exists():
+                if not path.name.endswith(
+                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
+                ):
+                    return "`File is invalid for Streaming`"
+                playable = str(path.absolute())
+                title = path.name
+                if kwargs:
+                    duration = kwargs['duration']
+                    url = kwargs['url']
+                else:
+                    duration = "UNKNOWN"
+                    url = ""
+            else:
+                yt_url = await yt_search(input)
+            
             
         if yt_url:
             with YoutubeDL({}) as ytdl:
@@ -164,17 +172,7 @@ class CatVC:
             duration = await self.duration(ytdl_data['duration'])
             url = yt_url
 
-        # else:
-        #     path = Path(input)
-        #     if path.exists():
-        #         if not path.name.endswith(
-        #             (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
-        #         ):
-        #             return "`File is invalid for Streaming`"
-        #         playable = str(path.absolute())
-        #         title = path.name
-        #     else:
-        #         return "`File Path is invalid`"
+        
 
         msg = f"**🎧 Playing:** [{title}]({url})\n"
         msg += f"**⏳ Duration:** `{duration}`\n"

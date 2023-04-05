@@ -3,9 +3,9 @@ import asyncio
 import logging
 
 from telethon.tl.types import User
-from telethon.events import CallbackQuery
+from telethon.events import CallbackQuery, InlineQuery
 from telethon.sessions import StringSession
-from telethon import TelegramClient, events, Button
+from telethon import TelegramClient, Button
 
 from userbot import Config, catub
 from userbot.core import check_owner
@@ -520,13 +520,16 @@ buttons = [
     ],
     [
         Button.inline("🪡 Skip", data="skipvc"),
-        Button.inline("❌ repeat", data="repeatvc")
+        Button.inline("🔁 repeat", data="repeatvc")
     ],
     [
         Button.inline("📜 Playlist", data="playlistvc"),
         Button.inline("⚙️ Settings", data="settingvc")
     ]
 ]
+
+@catub.tgbot.on(InlineQuery(pattern="^vchelper$"))
+
 
 
 @catub.bot_cmd(pattern="^/vchelper$")
@@ -584,24 +587,21 @@ async def pausevc(event):
 @check_owner
 async def skipvc(event):
     res = await vc_player.skip()
-    if res and type(res) is list:
-        await event.delete()
-        await event.client.send_file(event.chat_id, file=res[0], caption=res[1])#, time=30)
+    if res and type(res) is list: await event.edit(res[1], buttons=buttons)
     elif res and type(res) is str: await event.answer(res)
 
     
 @catub.tgbot.on(CallbackQuery(pattern="repeatvc"))
 @check_owner
 async def repeatvc(event):
-    media = False
     if vc_player.PLAYING:
-        input = vc_player.PLAYING['url']
+        input = vc_player.PLAYING['playable']
         stream = vc_player.PLAYING['stream']
-        if "t.me/c/" in input:
-            pass
-        else:
-            resp = await vc_player.play_song(event, input, stream, force=False, reply=media)
-            await event.edit(resp, buttons=buttons)
+        duration = vc_player.PLAYING['duration']
+        url = vc_player.PLAYING['url']
+
+        resp = await vc_player.play_song(event, input, stream, force=False, duration=duration, url=url)
+        await event.edit(resp[1], buttons=buttons)
     else:
         await event.answer("Nothing playing in vc...")
 
