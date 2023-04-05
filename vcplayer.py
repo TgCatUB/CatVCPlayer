@@ -41,7 +41,11 @@ async def handler(_, update):
     resp = await vc_player.handle_next(update)
     print("In the end it doesnt even matter")
     if resp and type(resp) is list:
-        await catub.send_file(vc_player.CHAT_ID, file=resp[0], caption=resp[1].split("\n\n")[1])#, time=30)
+        caption = resp[1].split(f'\n\n')[1]
+        await catub.send_file(vc_player.CHAT_ID, file=resp[0], caption=caption)#, time=30)
+    elif resp and type(resp) is str:
+        resp = resp[1].split(f'\n\n')[1]
+        event = await edit_or_reply(event, resp)
     
 async def sendmsg(event, res):
     if res and type(res) is list:
@@ -616,7 +620,7 @@ async def playlistvc(event):
     else:
         await event.answer(f"Fetching Playlist ......")
         cat = ""
-        for num, item in enumerate(playl):
+        for num, item in enumerate(playl, 1):
             if item["stream"] == Stream.audio:
                 cat += f"{num}. 🔉  `{item['title']}`\n"
             else:
