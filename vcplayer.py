@@ -593,7 +593,7 @@ async def pausevc(event):
 async def skipvc(event):
     res = await vc_player.skip()
     if res and type(res) is list: await event.edit(res[1], buttons=buttons)
-    elif res and type(res) is str: await event.answer(res)
+    elif res and type(res) is str: await event.answer(res, buttons=buttons)
 
     
 @catub.tgbot.on(CallbackQuery(pattern="repeatvc"))
@@ -606,7 +606,8 @@ async def repeatvc(event):
         url = vc_player.PLAYING['url']
         img = vc_player.PLAYING['img']
         resp = await vc_player.play_song(event, input, stream, force=False, duration=duration, url=url, img=img)
-        await event.edit(resp, buttons=buttons)
+        if res and type(res) is list: await event.edit(res[1], buttons=buttons)
+        elif res and type(res) is str: await event.answer(res, buttons=buttons)
     else:
         await event.answer("Nothing playing in vc...")
 
