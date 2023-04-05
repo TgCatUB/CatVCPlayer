@@ -529,7 +529,8 @@ buttons = [
 ]
 
 @catub.tgbot.on(InlineQuery(pattern="^vchelper$"))
-
+async def inlinevchelper(event):
+    await event.answer([event.builder.article(title="** | VC Helper| **", text=".", buttons=buttons)])
 
 
 @catub.bot_cmd(pattern="^/vchelper$")
