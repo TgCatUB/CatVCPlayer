@@ -123,7 +123,7 @@ class CatVC:
                 title = path.name
                 duration = await self.duration(reply.file.duration)
                 img = input[1]
-                url = f"https://t.me/c/{abs(reply.chat_id) if not str(abs(reply.chat_id)).startswith('100') else str(abs(reply.chat_id))}/{reply.id}"
+                url = f"https://t.me/c/{abs(reply.chat_id) if not str(abs(reply.chat_id)).startswith('100') else str(abs(reply.chat_id))[3:]}/{reply.id}"
             else:
                 return "`File Path is invalid`"
         elif yt_regex.match(input):
