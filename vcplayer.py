@@ -649,7 +649,12 @@ async def vc(event):
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
-
+    abtntext = "🏠 Private"
+    bbtntext = "❌ Disabled"
+    cbtntext = "❌ Disabled"
+    if vc_player.PUBLICMODE: abtntext = "🏢 Public"
+    if vc_player.BOTMODE: bbtntext = "✅ Enabled"
+    if vc_player.CLEANMODE: cbtntext = "✅ Enabled"
     if mode == "a":
         if vc_player.PUBLICMODE:
             vc_player.PUBLICMODE = False
@@ -671,13 +676,6 @@ async def vc(event):
         else:
             vc_player.CLEANMODE = 30
             cbtntext = "✅ Enabled"
-    else:
-        if vc_player.PUBLICMODE: abtntext = "🏢 Public"
-        else: abtntext = "🏠 Private"
-        if vc_player.BOTMODE: bbtntext = "✅ Enabled"
-        else: bbtntext = "❌ Disabled"
-        if vc_player.CLEANMODE: cbtntext = "✅ Enabled"
-        else: bbtntext = "❌ Disabled"
 
     buttons = [
         [Button.inline("🎩 Auth Mode", data="amodeinfo"), Button.inline(abtntext, data="amode")],
