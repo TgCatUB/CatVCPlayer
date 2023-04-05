@@ -520,7 +520,7 @@ buttons = [
     ],
     [
         Button.inline("🪡 Skip", data="skipvc"),
-        Button.inline("❌ Stop", data="stopvc")
+        Button.inline("❌ repeat", data="repeatvc")
     ],
     [
         Button.inline("📜 Playlist", data="playlistvc"),
