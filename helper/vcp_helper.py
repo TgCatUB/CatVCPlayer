@@ -33,6 +33,9 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
+        self.PUBLICMODE = False
+        self.BOTMODE = False
+        self.CLEANMODE = 30
 
     async def start(self):
         await self.app.start()
@@ -44,9 +47,6 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
-        self.PUBLICMODE = False
-        self.BOTMODE = False
-        self.CLEANMODE = 30
 
     async def join_vc(self, chat, join_as=None):
         if self.CHAT_ID:
