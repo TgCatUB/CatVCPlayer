@@ -42,6 +42,8 @@ async def handler(_, update):
     resp = await vc_player.handle_next(update)
     vcbot = catub.tgbot if vc_player.BOTMODE else catub
     print("In the end it doesnt even matter")
+    if not vc_player.PLAYLIST:
+        return
     if resp and type(resp) is list:
         caption = resp[1].split(f'\n\n')[1] if f'\n\n' in resp else resp
         event = await vcbot.send_file(vc_player.CHAT_ID, file=resp[0], caption=caption)
