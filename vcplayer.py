@@ -606,12 +606,12 @@ buttons = [
     ]
 ]
 
-@catub.tgbot.on(InlineQuery(pattern="^vchelper$"))
+@catub.tgbot.on(InlineQuery(pattern="^vcplayer$"))
 async def inlinevchelper(event):
     await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
 
 
-@catub.bot_cmd(pattern="^/vchelper$")
+@catub.bot_cmd(pattern="^/vcplayer$")
 async def vchelper(event):
     await event.client.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
 
@@ -667,7 +667,7 @@ async def pausevc(event):
 async def skipvc(event):
     res = await vc_player.skip()
     if res and type(res) is list: await event.edit(res[1], buttons=buttons)
-    elif res and type(res) is str: await event.answer(res, buttons=buttons)
+    elif res and type(res) is str: await event.answer(res)
 
     
 @catub.tgbot.on(CallbackQuery(pattern="repeatvc"))
@@ -681,7 +681,7 @@ async def repeatvc(event):
         img = vc_player.PLAYING['img']
         res = await vc_player.play_song(event, input, stream, force=False, duration=duration, url=url, img=img)
         if res and type(res) is list: await event.edit(res[1], buttons=buttons)
-        elif res and type(res) is str: await event.answer(res, buttons=buttons)
+        elif res and type(res) is str: await event.answer(res)
     else:
         await event.answer("Nothing playing in vc...")
 
