@@ -45,12 +45,26 @@ async def handler(_, update):
     if not vc_player.PLAYLIST:
         if vc_player.CHAT_ID: return await vc_player.leave_vc()
         else: return
+    buttons = [
+        [
+            Button.inline("▶️ Resume", data="resumevc"),
+            Button.inline("⏸ Pause", data="pausevc"),
+            Button.inline("🔁 repeat", data="repeatvc")
+        ],
+        [
+            Button.inline("🪡 Skip", data="skipvc"),
+            Button.inline("❌ Stop", data="leavevc")
+        ],
+        [
+            Button.inline("🗑 close", data="closepage"),
+        ]
+    ]
     if resp and type(resp) is list:
         caption = resp[1].split(f'\n\n')[1] if f'\n\n' in resp else resp
-        event = await vcbot.send_file(vc_player.CHAT_ID, file=resp[0], caption=caption)
+        event = await vcbot.send_file(vc_player.CHAT_ID, file=resp[0], caption=caption, buttons=buttons)
     elif resp and type(resp) is str:
         resp = resp.split(f'\n\n')[1] if f'\n\n' in resp else resp
-        event = await vcbot.send_message(vc_player.CHAT_ID, resp)
+        event = await vcbot.send_message(vc_player.CHAT_ID, resp, buttons)
     if vc_player.CLEANMODE and event:
         await asyncio.sleep(vc_player.CLEANMODE)
         await event.delete()
@@ -68,9 +82,9 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
             catevent = await catub.tgbot.send_message(event.chat_id, text, **kwargs)
     else:
         if file:
-            catevent = await catub.send_file(event.chat_id, file=file, caption=text, **kwargs)
+            catevent = await catub.send_file(event.chat_id, file=file, caption=text)
         else: 
-            catevent = await edit_or_reply(event, text, **kwargs)
+            catevent = await edit_or_reply(event, text)
     if vc_player.CLEANMODE and not edit:
         await asyncio.sleep(vc_player.CLEANMODE)
         await event.delete()
@@ -79,10 +93,24 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
 
 
 async def sendmsg(event, res):
+    buttons = [
+        [
+            Button.inline("▶️ Resume", data="resumevc"),
+            Button.inline("⏸ Pause", data="pausevc"),
+            Button.inline("🔁 repeat", data="repeatvc")
+        ],
+        [
+            Button.inline("🪡 Skip", data="skipvc"),
+            Button.inline("❌ Stop", data="leavevc")
+        ],
+        [
+            Button.inline("🗑 close", data="closepage"),
+        ]
+    ]
     if res and type(res) is list:
         await event.delete()
-        event = await vc_reply(event,  res[1], file=res[0])
-    elif res and type(res) is str: event = await vc_reply(event, res)
+        event = await vc_reply(event,  res[1], file=res[0], buttons=buttons)
+    elif res and type(res) is str: event = await vc_reply(event, res, buttons)
     
 
 
@@ -558,17 +586,20 @@ buttons = [
     [
         Button.inline("📜 Playlist", data="playlistvc"),
         Button.inline("⚙️ Settings", data="settingvc")
+    ],
+    [
+        Button.inline("🗑 close", data="closepage"),
     ]
 ]
 
 @catub.tgbot.on(InlineQuery(pattern="^vchelper$"))
 async def inlinevchelper(event):
-    await event.answer([event.builder.article(title=" | VC Helper| ", text=".", buttons=buttons)])
+    await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
 
 
 @catub.bot_cmd(pattern="^/vchelper$")
 async def vchelper(event):
-    await event.client.send_message(event.chat_id, ".", buttons=buttons)
+    await event.client.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
 
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
 @check_owner
@@ -665,7 +696,7 @@ async def settingvc(event):
         [Button.inline("🎩 Auth Mode", data="amodeinfo"), Button.inline("🏠 Private", data="amode")],
         [Button.inline("🤖 Bot Mode", data="bmodeinfo"), Button.inline("❌ Disabled", data="bmode")],
         [Button.inline("🗑 Clean Mode", data="cmodeinfo"), Button.inline("✅ Enabled", data="cmode")],
-        [Button.inline("⬅️ Back", data="backvc")]
+        [Button.inline("⬅️ Back", data="backvc"), Button.inline("🗑 close", data="closepage")],
     ]
     await event.edit("** | Settings | **", buttons=buttons)
 
@@ -673,11 +704,18 @@ async def settingvc(event):
 @catub.tgbot.on(CallbackQuery(pattern="backvc"))
 @check_owner
 async def vc(event):
-    await event.edit(".", buttons=buttons)
+    await event.edit("** | VC PLAYER | **", buttons=buttons)
+
+
+@catub.tgbot.on(CallbackQuery(pattern="closepage"))
+@check_owner
+async def vc(event):
+    await event.delete()
+
+
 
 
 #SETTINGS
-
 @catub.tgbot.on(CallbackQuery(pattern="(a|b|c)mode"))
 @check_owner
 async def vc(event):
@@ -714,7 +752,7 @@ async def vc(event):
         [Button.inline("🎩 Auth Mode", data="amodeinfo"), Button.inline(abtntext, data="amode")],
         [Button.inline("🤖 Bot Mode", data="bmodeinfo"), Button.inline(bbtntext, data="bmode")],
         [Button.inline("🗑 Clean Mode", data="cmodeinfo"), Button.inline(cbtntext, data="cmode")],
-        [Button.inline("⬅️ Back", data="backvc")]
+        [Button.inline("⬅️ Back", data="backvc"), Button.inline("🗑 close", data="closepage")],
     ]
 
     await event.edit("** | Settings | **", buttons=buttons)
