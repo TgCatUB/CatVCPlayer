@@ -342,6 +342,7 @@ async def play_video(event):
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
+    print("play")
     chat = event.chat_id
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
