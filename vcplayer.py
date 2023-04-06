@@ -52,7 +52,7 @@ async def handler(_, update):
         await asyncio.sleep(vc_player.CLEANMODE)
         await event.delete()
 
-async def vc_reply(event, text, file=False, **kwargs):
+async def vc_reply(event, text, file=False, edit=False, **kwargs):
     # if publicm:
     #     if botm:
     #     else:
@@ -60,17 +60,19 @@ async def vc_reply(event, text, file=False, **kwargs):
     
     if vc_player.BOTMODE:
         if file: 
-            await catub.tgbot.send_file(event.chat_id, file=file, caption=text, **kwargs)
+            catevent = await catub.tgbot.send_file(event.chat_id, file=file, caption=text, **kwargs)
         else: 
-            await catub.tgbot.send_message(event.chat_id, text, **kwargs)
+            catevent = await catub.tgbot.send_message(event.chat_id, text, **kwargs)
     else:
         if file:
-            await catub.send_file(event.chat_id, file=file, caption=text, **kwargs)
+            catevent = await catub.send_file(event.chat_id, file=file, caption=text, **kwargs)
         else: 
-            await edit_or_reply(event, text, **kwargs)
-    if vc_player.CLEANMODE and event:
+            catevent = await edit_or_reply(event, text, **kwargs)
+    if vc_player.CLEANMODE and not edit:
         await asyncio.sleep(vc_player.CLEANMODE)
         await event.delete()
+    else:
+        return catevent
 
 
 async def sendmsg(event, res):
@@ -113,7 +115,7 @@ async def joinVoicechat(event):
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
 
-    event = await edit_or_reply(event, "Joining VC ......")
+    event = await vc_reply(event, "Joining VC ......", edit=True)
 
     if chat and chat != "-as":
         if chat.strip("-").isnumeric():
@@ -137,8 +139,8 @@ async def joinVoicechat(event):
         )
 
     if joinas and not vc_chat.username:
-        await edit_or_reply(
-            event, "Unable to use Join as in Private Chat. Joining as Yourself..."
+        await vc_reply(
+            event, "Unable to use Join as in Private Chat. Joining as Yourself...", edit=True
         )
         joinas = False
 
@@ -163,7 +165,7 @@ async def joinVoicechat(event):
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
     if vc_player.CHAT_ID:
-        event = await edit_or_reply(event, "Leaving VC ......")
+        event = await vc_reply(event, "Leaving VC ......", edit=True)
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
         
@@ -188,7 +190,7 @@ async def leaveVoicechat(event):
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
-    event = await edit_or_reply(event, "Fetching Playlist ......")
+    event = await vc_reply(event, "Fetching Playlist ......", edit=True)
     playl = vc_player.PLAYLIST
     if not playl:
         await vc_reply(event, "Playlist empty", time=10)
@@ -230,7 +232,7 @@ async def play_video(event):
     input_str = event.pattern_match.group(2)
 
     reply = await event.get_reply_message()
-    event = await edit_or_reply(event, "`Searching...`")
+    event = await vc_reply(event, "`Searching...`", edit=True)
     if reply and reply.video and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
@@ -309,7 +311,7 @@ async def play_audio(event):
     input_str = event.pattern_match.group(2)
     reply = await event.get_reply_message()
     
-    event = await edit_or_reply(event, "`Searching...`")
+    event = await vc_reply(event, "`Searching...`", edit=True)
     if reply and reply.media and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
@@ -376,7 +378,7 @@ async def play_audio(event):
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
-    event = await edit_or_reply(event, "Pausing VC ......")
+    event = await vc_reply(event, "Pausing VC ......", edit=True)
     res = await vc_player.pause()
     await vc_reply(event, res, time=30)
 
@@ -397,7 +399,7 @@ async def pause_stream(event):
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
-    event = await edit_or_reply(event, "Resuming VC ......")
+    event = await vc_reply(event, "Resuming VC ......", edit=True)
     res = await vc_player.resume()
     await vc_reply(event, res, time=30)
 
@@ -418,7 +420,7 @@ async def resume_stream(event):
 )
 async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
-    event = await edit_or_reply(event, "Skiping Stream ......")
+    event = await vc_reply(event, "Skiping Stream ......", edit=True)
     res = await vc_player.skip()
     if res: await sendmsg(event, res)
 
