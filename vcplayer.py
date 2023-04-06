@@ -422,7 +422,7 @@ async def pause_stream(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     event = await vc_reply(event, "Pausing VC ......", edit=True)
     res = await vc_player.pause()
-    await vc_reply(event, res, time=30)
+    await vc_reply(event, res)
 
 
 @catub.cat_cmd(
@@ -445,7 +445,7 @@ async def resume_stream(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     event = await vc_reply(event, "Resuming VC ......", edit=True)
     res = await vc_player.resume()
-    await vc_reply(event, res, time=30)
+    await vc_reply(event, res)
 
 
 @catub.cat_cmd(
