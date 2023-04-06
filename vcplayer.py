@@ -44,7 +44,7 @@ async def handler(_, update):
     vcbot = catub.tgbot if vc_player.BOTMODE else catub
     print("In the end it doesnt even matter")
     if not vc_player.PLAYLIST:
-        if vc_player.CHAT_ID: return await vc_player.leave_vc()
+        if vc_player.CHAT_ID and vc_player.PLAYING: return await vc_player.leave_vc()
         else: return
     buttons = [
         [
