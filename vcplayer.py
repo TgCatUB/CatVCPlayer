@@ -42,7 +42,7 @@ async def handler(_, update):
     resp = await vc_player.handle_next(update)
     print("In the end it doesnt even matter")
     if resp and type(resp) is list:
-        caption = resp[1].split(f'\n\n')[1]
+        caption = resp[1].split(f'\n\n')[1] you if f'\n\n' in resp else resp
         event = await catub.send_file(vc_player.CHAT_ID, file=resp[0], caption=caption)#, time=30)
     elif resp and type(resp) is str:
         resp = resp.split(f'\n\n')[1] if f'\n\n' in resp else resp
