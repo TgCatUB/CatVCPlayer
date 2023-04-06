@@ -13,7 +13,7 @@ from userbot.core.managers import edit_or_reply
 
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
-from .helper.vcp_helper import CatVC, vc_reply
+from .helper.vcp_helper import CatVC
 
 plugin_category = "extra"
 
