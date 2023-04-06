@@ -607,7 +607,7 @@ buttons = [
     ]
 ]
 
-@catub.on_cmd(pattern="vcplayer$")
+@catub.cat_cmd(pattern="vcplayer$")
 async def vchelper(event):
     try:
         await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
