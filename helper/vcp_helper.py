@@ -130,20 +130,20 @@ class CatVC:
         elif yt_regex.match(input):
             yt_url = input
         elif check_url(input):
-try:
-    res = requests.get(input, allow_redirects=True, stream=True)
-    ctype = res.headers.get("Content-Type")
-    if "video" not in ctype or "audio" not in ctype:
-        return "INVALID URL"
-    name = res.headers.get("Content-Disposition", None)
-    if name:
-        title = name.split('="')[0].split('"') or ""
-    else:
-        title = input
-    playable = input
-    url = input
-except Exception as e:
-    return f"**INVALID URL**\n\n{e}"
+            try:
+                res = requests.get(input, allow_redirects=True, stream=True)
+                ctype = res.headers.get("Content-Type")
+                if "video" not in ctype or "audio" not in ctype:
+                    return "INVALID URL"
+                name = res.headers.get("Content-Disposition", None)
+                if name:
+                    title = name.split('="')[0].split('"') or ""
+                else:
+                    title = input
+                playable = input
+                url = input
+            except Exception as e:
+                return f"**INVALID URL**\n\n{e}"
         else:
             path = Path(input)
             if path.exists():
