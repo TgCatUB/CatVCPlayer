@@ -13,7 +13,7 @@ from userbot.core.managers import edit_or_reply
 
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
-from .helper.vcp_helper import CatVC
+from .helper.vcp_helper import CatVC, vc_reply
 
 plugin_category = "extra"
 
@@ -53,16 +53,21 @@ async def handler(_, update):
         await event.delete()
 
 async def vc_reply(event, text, file=False, **kwargs):
+    # if publicm:
+    #     if botm:
+    #     else:
+    # else:
+    
     if vc_player.BOTMODE:
         if file: 
-            catevent = await catub.tgbot.send_file(event.chat_id, file=file, caption=text, **kwargs)
+            await catub.tgbot.send_file(event.chat_id, file=file, caption=text, **kwargs)
         else: 
-            catevent = await catub.tgbot.send_message(event.chat_id, text, **kwargs)
+            await catub.tgbot.send_message(event.chat_id, text, **kwargs)
     else:
         if file:
-            catevent = await catub.send_file(event.chat_id, file=file, caption=text, **kwargs)
+            await catub.send_file(event.chat_id, file=file, caption=text, **kwargs)
         else: 
-            catevent = await edit_or_reply(event, text, **kwargs)
+            await edit_or_reply(event, text, **kwargs)
     if vc_player.CLEANMODE and event:
         await asyncio.sleep(vc_player.CLEANMODE)
         await event.delete()
@@ -108,7 +113,7 @@ async def joinVoicechat(event):
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
 
-    event = await vc_reply(event, "Joining VC ......")
+    event = await edit_or_reply(event, "Joining VC ......")
 
     if chat and chat != "-as":
         if chat.strip("-").isnumeric():
@@ -132,7 +137,7 @@ async def joinVoicechat(event):
         )
 
     if joinas and not vc_chat.username:
-        await vc_reply(
+        await edit_or_reply(
             event, "Unable to use Join as in Private Chat. Joining as Yourself..."
         )
         joinas = False
@@ -158,7 +163,7 @@ async def joinVoicechat(event):
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
     if vc_player.CHAT_ID:
-        event = await vc_reply(event, "Leaving VC ......")
+        event = await edit_or_reply(event, "Leaving VC ......")
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
         
@@ -183,7 +188,7 @@ async def leaveVoicechat(event):
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
-    event = await vc_reply(event, "Fetching Playlist ......")
+    event = await edit_or_reply(event, "Fetching Playlist ......")
     playl = vc_player.PLAYLIST
     if not playl:
         await vc_reply(event, "Playlist empty", time=10)
@@ -225,7 +230,7 @@ async def play_video(event):
     input_str = event.pattern_match.group(2)
 
     reply = await event.get_reply_message()
-    event = await vc_reply(event, "`Searching...`")
+    event = await edit_or_reply(event, "`Searching...`")
     if reply and reply.video and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
@@ -260,20 +265,20 @@ async def play_video(event):
     # if input_str == "" and event.reply_to_msg_id:
     #     input_str = await tg_dl(event)
     # if not input_str:
-    #     return await vc_reply(
+    #     return await edit_delete(
     #         event, "Please Provide a media file to stream on VC", time=20
     #     )
     # if not vc_player.CHAT_ID:
-    #     return await vc_reply(event, "Join a VC and use play command")
+    #     return await edit_or_reply(event, "Join a VC and use play command")
     # if not input_str:
-    #     return await vc_reply(event, "No Input to play in vc")
-    # await vc_reply(event, "Playing in VC ......")
+    #     return await edit_or_reply(event, "No Input to play in vc")
+    # await edit_or_reply(event, "Playing in VC ......")
     # if flag:
     #     resp = await vc_player.play_song(input_str, Stream.video, force=True)
     # else:
     #     resp = await vc_player.play_song(input_str, Stream.video, force=False)
     # if resp:
-    #     await vc_reply(event, resp, time=30)
+    #     await edit_delete(event, resp, time=30)
 
 
 @catub.cat_cmd(
@@ -304,7 +309,7 @@ async def play_audio(event):
     input_str = event.pattern_match.group(2)
     reply = await event.get_reply_message()
     
-    event = await vc_reply(event, "`Searching...`")
+    event = await edit_or_reply(event, "`Searching...`")
     if reply and reply.media and not reply.photo:
         inputstr = await tg_dl(event)
     elif reply and reply.message and not input_str:
@@ -339,20 +344,20 @@ async def play_audio(event):
     # if input_str == "" and event.reply_to_msg_id:
     #     input_str = await tg_dl(event)
     # if not input_str:
-    #     return await vc_reply(
+    #     return await edit_delete(
     #         event, "Please Provide a media file to stream on VC", time=20
     #     )
     # if not vc_player.CHAT_ID:
-    #     return await vc_reply(event, "Join a VC and use play command")
+    #     return await edit_or_reply(event, "Join a VC and use play command")
     # if not input_str:
-    #     return await vc_reply(event, "No Input to play in vc")
-    # await vc_reply(event, "Playing in VC ......")
+    #     return await edit_or_reply(event, "No Input to play in vc")
+    # await edit_or_reply(event, "Playing in VC ......")
     # if flag:
     #     resp = await vc_player.play_song(input_str, Stream.audio, force=True)
     # else:
     #     resp = await vc_player.play_song(input_str, Stream.audio, force=False)
     # if resp:
-    #     await vc_reply(event, resp, time=30)
+    #     await edit_delete(event, resp, time=30)
 
 
 @catub.cat_cmd(
@@ -371,7 +376,7 @@ async def play_audio(event):
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
-    event = await vc_reply(event, "Pausing VC ......")
+    event = await edit_or_reply(event, "Pausing VC ......")
     res = await vc_player.pause()
     await vc_reply(event, res, time=30)
 
@@ -392,7 +397,7 @@ async def pause_stream(event):
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
-    event = await vc_reply(event, "Resuming VC ......")
+    event = await edit_or_reply(event, "Resuming VC ......")
     res = await vc_player.resume()
     await vc_reply(event, res, time=30)
 
@@ -413,7 +418,7 @@ async def resume_stream(event):
 )
 async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
-    event = await vc_reply(event, "Skiping Stream ......")
+    event = await edit_or_reply(event, "Skiping Stream ......")
     res = await vc_player.skip()
     if res: await sendmsg(event, res)
 
@@ -440,9 +445,9 @@ async def allowvc(event):
         reply = await event.get_reply_message()
         user_id = [reply.from_id]
     if not user_id:
-        return await vc_reply(event, "Whom should i Add")
+        return await edit_delete(event, "Whom should i Add")
     ALLOWED_USERS.update(user_id)
-    return await vc_reply(event, "Added User to Allowed List")
+    return await edit_delete(event, "Added User to Allowed List")
 
 
 @catub.cat_cmd(
@@ -466,9 +471,9 @@ async def disallowvc(event):
         reply = await event.get_reply_message()
         user_id = [reply.from_id]
     if not user_id:
-        return await vc_reply(event, "Whom should i remove")
+        return await edit_delete(event, "Whom should i remove")
     ALLOWED_USERS.difference_update(user_id)
-    return await vc_reply(event, "Removed User to Allowed List")
+    return await edit_delete(event, "Removed User to Allowed List")
 
 
 @catub.on(
@@ -519,7 +524,7 @@ async def speak(event):
         try:
             t_response = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
         except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
-            await vc_reply(event, str(exc))
+            await edit_or_reply(event, str(exc))
         else:
             os.remove(file)
             file = file + ".opus"
@@ -527,7 +532,7 @@ async def speak(event):
         await event.delete()
         os.remove(file)
     except Exception as e:
-         await vc_reply(event, f"**Error:**\n`{e}`")
+         await edit_or_reply(event, f"**Error:**\n`{e}`")
 """
 
 #INLINE
