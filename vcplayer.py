@@ -9,6 +9,7 @@ from telethon import TelegramClient, Button
 
 from userbot import Config, catub
 from userbot.core import check_owner
+from userbot.core.data import _sudousers_list
 from userbot.core.managers import edit_or_reply
 
 from .helper.stream_helper import Stream
@@ -20,7 +21,7 @@ plugin_category = "extra"
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
 OWNER_ID = catub.uid
-
+sudos = [OWNER_ID] + _sudousers_list()
 vc_session = Config.VC_SESSION
 
 if vc_session:
@@ -70,11 +71,6 @@ async def handler(_, update):
         await event.delete()
 
 async def vc_reply(event, text, file=False, edit=False, **kwargs):
-    # if publicm:
-    #     if botm:
-    #     else:
-    # else:
-    
     if vc_player.BOTMODE:
         if file: 
             catevent = await catub.tgbot.send_file(event.chat_id, file=file, caption=text, **kwargs)
@@ -83,8 +79,9 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
     else:
         if file:
             catevent = await catub.send_file(event.chat_id, file=file, caption=text)
-        else: 
-            catevent = await edit_or_reply(event, text)
+        else:
+            if vc_player.PUBLICMODE: catevent = await catub.send_message(event.chat_id, text, **kwargs)
+            else: catevent = await edit_or_reply(event, text)
     if vc_player.CLEANMODE and not edit:
         await asyncio.sleep(vc_player.CLEANMODE)
         await event.delete()
@@ -144,6 +141,7 @@ ALLOWED_USERS = set()
 )
 async def joinVoicechat(event):
     "To join a Voice Chat."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
 
@@ -197,6 +195,7 @@ async def joinVoicechat(event):
 )
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     if vc_player.CHAT_ID:
         event = await vc_reply(event, "Leaving VC ......", edit=True)
         chat_name = vc_player.CHAT_NAME
@@ -224,6 +223,7 @@ async def leaveVoicechat(event):
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     event = await vc_reply(event, "Fetching Playlist ......", edit=True)
     playl = vc_player.PLAYLIST
     if not playl:
@@ -262,6 +262,7 @@ async def get_playlist(event):
 )
 async def play_video(event):
     "To Play a media as video on VC."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     chat = event.chat_id
     flag = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
@@ -342,6 +343,7 @@ async def play_video(event):
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     print("play")
     chat = event.chat_id
     flag = event.pattern_match.group(1)
@@ -416,6 +418,7 @@ async def play_audio(event):
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     event = await vc_reply(event, "Pausing VC ......", edit=True)
     res = await vc_player.pause()
     await vc_reply(event, res, time=30)
@@ -438,6 +441,7 @@ async def pause_stream(event):
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     event = await vc_reply(event, "Resuming VC ......", edit=True)
     res = await vc_player.resume()
     await vc_reply(event, res, time=30)
@@ -459,6 +463,7 @@ async def resume_stream(event):
     public=True
 )
 async def skip_stream(event):
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     "To Skip currently playing stream on Voice Chat."
     event = await vc_reply(event, "Skiping Stream ......", edit=True)
     res = await vc_player.skip()
