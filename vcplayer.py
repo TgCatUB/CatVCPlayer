@@ -81,7 +81,7 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
 async def sendmsg(event, res):
     if res and type(res) is list:
         await event.delete()
-        event = await vc_reply(event.chat_id,  res[1], file=res[0])
+        event = await vc_reply(event,  res[1], file=res[0])
     elif res and type(res) is str: event = await vc_reply(event, res)
     
 
