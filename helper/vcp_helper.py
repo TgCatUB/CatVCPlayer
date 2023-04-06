@@ -110,7 +110,7 @@ class CatVC:
         duration = f"{ute}:{ond}"
         return duration
 
-    async def play_song(self, input, stream=Stream.audio, force=False, reply=False, **kwargs):
+    async def play_song(self, event, input, stream=Stream.audio, force=False, reply=False, **kwargs):
         yt_url = False
         img = False
         if reply:
