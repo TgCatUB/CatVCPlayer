@@ -74,8 +74,9 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
     if vc_player.BOTMODE:
         if file: 
             catevent = await catub.tgbot.send_file(event.chat_id, file=file, caption=text, **kwargs)
-        else: 
-            catevent = await catub.tgbot.send_message(event.chat_id, text, **kwargs)
+        else:
+            if edit: catevent = await catub.tgbot.send_message(event.chat_id, text, **kwargs)
+            else: catevent = await event.edit(text, **kwargs)
     else:
         if file:
             catevent = await catub.send_file(event.chat_id, file=file, caption=text)
@@ -706,10 +707,16 @@ async def playlistvc(event):
 @catub.tgbot.on(CallbackQuery(pattern="settingvc"))
 @check_owner
 async def settingvc(event):
+    abtntext = "🏠 Private"
+    bbtntext = "❌ Disabled"
+    cbtntext = "❌ Disabled"
+    if vc_player.PUBLICMODE: abtntext = "🏢 Public"
+    if vc_player.BOTMODE: bbtntext = "✅ Enabled"
+    if vc_player.CLEANMODE: cbtntext = "✅ Enabled"
     buttons = [
-        [Button.inline("🎩 Auth Mode", data="amodeinfo"), Button.inline("🏠 Private", data="amode")],
-        [Button.inline("🤖 Bot Mode", data="bmodeinfo"), Button.inline("❌ Disabled", data="bmode")],
-        [Button.inline("🗑 Clean Mode", data="cmodeinfo"), Button.inline("✅ Enabled", data="cmode")],
+        [Button.inline("🎩 Auth Mode", data="amodeinfo"), Button.inline(abtntext, data="amode")],
+        [Button.inline("🤖 Bot Mode", data="bmodeinfo"), Button.inline(bbtntext, data="bmode")],
+        [Button.inline("🗑 Clean Mode", data="cmodeinfo"), Button.inline(cbtntext, data="cmode")],
         [Button.inline("⬅️ Back", data="backvc"), Button.inline("🗑 close", data="closepage")],
     ]
     await event.edit("** | Settings | **", buttons=buttons)
