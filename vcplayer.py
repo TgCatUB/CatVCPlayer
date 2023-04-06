@@ -208,7 +208,7 @@ async def leaveVoicechat(event):
 
 
 @catub.cat_cmd(
-    pattern="playlist",
+    pattern="playlist$",
     command=("playlist", plugin_category),
     info={
         "header": "To Get all playlist.",
@@ -607,14 +607,12 @@ buttons = [
     ]
 ]
 
-@catub.tgbot.on(InlineQuery(pattern="^vcplayer$"))
-async def inlinevchelper(event):
-    await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
-
-
-@catub.bot_cmd(pattern="^/vcplayer$")
+@catub.on_cmd(pattern="vcplayer$")
 async def vchelper(event):
-    await event.client.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+    try:
+        await catib.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+    except:
+        return
 
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
 @check_owner

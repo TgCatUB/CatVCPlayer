@@ -36,7 +36,7 @@ class CatVC:
         self.PLAYLIST = []
         self.PUBLICMODE = False
         self.BOTMODE = True
-        self.CLEANMODE = 300
+        self.CLEANMODE = 30
 
     async def start(self):
         await self.app.start()
