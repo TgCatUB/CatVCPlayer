@@ -140,6 +140,7 @@ ALLOWED_USERS = set()
             "{tr}joinvc -1005895485 -as -1005895485",
         ],
     },
+    public=True
 )
 async def joinVoicechat(event):
     "To join a Voice Chat."
@@ -192,6 +193,7 @@ async def joinVoicechat(event):
             "{tr}leavevc",
         ],
     },
+    public=True
 )
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
@@ -218,6 +220,7 @@ async def leaveVoicechat(event):
             "{tr}playlist",
         ],
     },
+    public=True
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
@@ -255,6 +258,7 @@ async def get_playlist(event):
             "{tr}vplay -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
         ],
     },
+    public=True
 )
 async def play_video(event):
     "To Play a media as video on VC."
@@ -334,6 +338,7 @@ async def play_video(event):
             "{tr}play -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
         ],
     },
+    public=True
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
@@ -406,6 +411,7 @@ async def play_audio(event):
             "{tr}pause",
         ],
     },
+    public=True
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
@@ -427,6 +433,7 @@ async def pause_stream(event):
             "{tr}resume",
         ],
     },
+    public=True
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
@@ -448,6 +455,7 @@ async def resume_stream(event):
             "{tr}skip",
         ],
     },
+    public=True
 )
 async def skip_stream(event):
     "To Skip currently playing stream on Voice Chat."
