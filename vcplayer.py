@@ -610,7 +610,7 @@ buttons = [
 @catub.on_cmd(pattern="vcplayer$")
 async def vchelper(event):
     try:
-        await catib.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+        await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
     except:
         return
 
