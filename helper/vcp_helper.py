@@ -17,8 +17,9 @@ from telethon import functions
 from telethon.errors import ChatAdminRequiredError
 from yt_dlp import YoutubeDL
 
-from userbot import Config
+from userbot import Config, catub
 from userbot.helpers.functions import yt_search
+from userbot.core.managers import edit_or_reply
 from .stream_helper import Stream, check_url, video_dl, yt_regex
 
 
@@ -35,7 +36,7 @@ class CatVC:
         self.PLAYLIST = []
         self.PUBLICMODE = False
         self.BOTMODE = False
-        self.CLEANMODE = 30
+        self.CLEANMODE = 300
 
     async def start(self):
         await self.app.start()
@@ -261,3 +262,5 @@ class CatVC:
     #         await self.app.unmute_stream(self.CHAT_ID)
     #         self.MUTED = False
     #     return f"Unmuted Stream on {self.CHAT_NAME}"
+
+
