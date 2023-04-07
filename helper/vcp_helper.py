@@ -38,7 +38,7 @@ class CatVC:
         self.SILENT = False
         self.PUBLICMODE = False
         self.BOTMODE = True
-        self.CLEANMODE = 30
+        self.CLEANMODE = True
 
     async def start(self):
         await self.app.start()
@@ -51,7 +51,7 @@ class CatVC:
         self.MUTED = False
         self.PLAYLIST = []
 
-    async def join_vc(self, chat, media=False, stream=Stream.audio, join_as=None):
+    async def join_vc(self, chat, join_as=None):
         self.SILENT = True
         if self.CHAT_ID:
             return f"Already in a group call on {self.CHAT_NAME}"
@@ -64,14 +64,10 @@ class CatVC:
         else:
             join_as_chat = await self.client.get_me()
             join_as_title = ""
-        if stream == Stream.audio:
-            streamable = AudioPiped(media) if media else "catvc/resources/Silence01s.mp3"
-        else:
-            streamable = AudioVideoPiped(media)
         try:
             await self.app.join_group_call(
                 chat_id=chat.id,
-                stream=streamable,
+                stream=AudioPiped("catvc/resources/Silence01s.mp3"),
                 join_as=join_as_chat,
                 stream_type=StreamType().pulse_stream,
             )
