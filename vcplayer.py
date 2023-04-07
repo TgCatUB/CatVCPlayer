@@ -4,7 +4,7 @@ import logging
 
 from telethon.events import CallbackQuery, InlineQuery
 from telethon.sessions import StringSession
-from telethon import TelegramClient, Button
+from telethon import TelegramClient, Button, errors
 from telethon.tl.types import User
 
 from userbot.core.managers import edit_or_reply
@@ -81,7 +81,9 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
         if file:
             catevent = await catub.send_file(event.chat_id, file=file, caption=text)
         else:
-            if vc_player.PUBLICMODE: catevent = await catub.send_message(event.chat_id, text, **kwargs)
+            if vc_player.PUBLICMODE:
+                if edit: catevent = await catub.send_message(event.chat_id, text, **kwargs)
+                else: catevent = await event.edit(text, **kwargs)
             else: catevent = await edit_or_reply(event, text)
     if vc_player.CLEANMODE and not edit:
         vc_player.EVENTS.append(catevent)
@@ -614,15 +616,16 @@ async def Inlineplayer(event):
 @catub.cat_cmd(pattern="vcplayer$")
 async def vcplayer(event):
     if vc_player.BOTMODE:
-        await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
-    else:
-        reply_to_id = await reply_id(event)
-        results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
-        await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
-        await event.delete()
+        try:
+            return await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+        except:
+            pass
+    reply_to_id = await reply_id(event)
+    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+    await event.delete()
 
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
-@check_owner
 async def joinvc(event):
     chat = event.chat_id
 
@@ -677,7 +680,6 @@ async def skipvc(event):
 
     
 @catub.tgbot.on(CallbackQuery(pattern="repeatvc"))
-@check_owner
 async def repeatvc(event):
     if vc_player.PLAYING:
         input = vc_player.PLAYING['path']
@@ -693,7 +695,6 @@ async def repeatvc(event):
 
     
 @catub.tgbot.on(CallbackQuery(pattern="playlistvc"))
-@check_owner
 async def playlistvc(event):
     playl = vc_player.PLAYLIST
     if not playl:
