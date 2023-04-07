@@ -20,14 +20,14 @@ async def _get_file_name(path: pathlib.Path, full: bool = True) -> str:
     return str(path.absolute()) if full else path.stem + path.suffix
 
 
-async def tg_dl(event):
+async def tg_dl(event, reply):
     "To download the replied telegram file"
     mone = await edit_or_reply(event, "`Downloading....`")
     name = NAME
     path = None
     if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
         os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
-    reply = await event.get_reply_message()
+    # reply = await event.get_reply_message()
     if reply:
         start = datetime.now()
         for attr in getattr(reply.document, "attributes", []):
