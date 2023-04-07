@@ -615,7 +615,20 @@ async def Inlineplayer(event):
     await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
 
 
-@catub.cat_cmd(pattern="vcplayer$")
+@catub.cat_cmd(
+    pattern="vcplayer$",
+    command=("vcplayer", plugin_category),
+    info={
+        "header": "To Get VC PLAYER",
+        "description": "To Get VC PLAYER to change different modes or further use",
+        "usage": [
+            "{tr}vcplayer",
+        ],
+        "examples": [
+            "{tr}vcplayer",
+        ],
+    },
+    )
 async def vcplayer(event):
     if vc_player.BOTMODE:
         try:
