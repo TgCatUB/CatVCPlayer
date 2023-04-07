@@ -62,7 +62,7 @@ async def handler(_, update):
         ]
     ]
     if resp and type(resp) is list:
-        caption = resp[1].split(f'\n\n')[1] if f'\n\n' in resp else resp
+        caption = resp[1].split(f'\n\n')[1] if f'\n\n' in resp[1] else resp[1]
         event = await vcbot.send_file(vc_player.CHAT_ID, file=resp[0], caption=caption, buttons=buttons)
     elif resp and type(resp) is str:
         resp = resp.split(f'\n\n')[1] if f'\n\n' in resp else resp
@@ -718,9 +718,9 @@ async def playlistvc(event):
         return await event.answer(f"Playlist empty")
     elif vc_player.PLAYING:
         if vc_player.PLAYING["stream"] == Stream.audio:
-            cat += f"🎧 Playing. 🔉  `{item['title']}`\n"
+            cat += f"🎧 Playing. 🔉  `{vc_player.PLAYING['title']}`\n"
         else:
-            cat += f"🎧 Playing. 📺  `{item['title']}`\n"
+            cat += f"🎧 Playing. 📺  `{vc_player.PLAYING['title']}`\n"
     else:
         await event.answer(f"Fetching Playlist ......")
     for num, item in enumerate(playl, 1):
