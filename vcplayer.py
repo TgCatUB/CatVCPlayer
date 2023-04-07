@@ -2,7 +2,7 @@ import os
 import asyncio
 import logging
 
-from telethon.events import CallbackQuery, InlineQuery
+from telethon.events import CallbackQuery, InlineQuery, NewMessage
 from telethon.sessions import StringSession
 from telethon import TelegramClient, Button, errors
 from telethon.tl.types import User
@@ -743,3 +743,51 @@ async def vc(event):
     if mode == "b": text = "⁉️ What is This?\n\nWhen activated, Your assistant responds to the commands  with interactive buttons"
     if mode == "c": text = "⁉️ What is This?\n\nWhen activated, Bot will delete its message after leaving vc to make your chat clean and clear."
     await event.answer(text)
+
+
+
+
+# #EASTER CMD
+# @catub.on(NewMessage(outgoing=True, pattern=f"(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
+# )  #only for catub client
+# async def speak(event):
+#     "Speak in vc"
+#     r = event.pattern_match.group(2)
+#     input_str = event.pattern_match.group(3)
+#     re = await event.get_reply_message()
+#     if ";" in input_str:
+#         lan, text = input_str.split(";")
+#     else:
+#         if input_str:
+#             text = input_str
+#         elif re and re.text and not input_str:
+#             text = re.message
+#         else:
+#             return await event.delete()
+#         if r == "h":
+#             lan = "hi"
+#         elif r == "j":
+#             lan = "ja"
+#         else:
+#             lan = "en"
+#     text = deEmojify(text.strip())
+#     lan = lan.strip()
+#     if not os.path.isdir("./temp/"):
+#         os.makedirs("./temp/")
+#     file = "./temp/" + "voice.ogg"
+#     try:
+#         tts = gTTS(text, lang=lan)
+#         tts.save(file)
+#         cmd = ["ffmpeg", "-i", file, "-map", "0:a", "-codec:a", "libopus", "-b:a", "100k", "-vbr", "on", file + ".opus", ]
+#         try:
+#             t_response = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
+#         except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
+#             await edit_or_reply(event, str(exc))
+#         else:
+#             os.remove(file)
+#             file = file + ".opus"
+#         await vc_player.play_song(event, file, Stream.audio, force=False)
+#         await event.delete()
+#         os.remove(file)
+#     except Exception as e:
+#         return
