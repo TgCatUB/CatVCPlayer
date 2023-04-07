@@ -264,6 +264,7 @@ async def get_playlist(event):
 )
 async def play_video(event):
     "To Play a media as video on VC."
+    if event.text.endswith("playlist"): return
     if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     chat = event.chat_id
     flag = event.pattern_match.group(1)
@@ -345,7 +346,7 @@ async def play_video(event):
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
-    if event.text == "playlist": return
+    if event.text.endswith("playlist"): return
     if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     print("play")
     chat = event.chat_id
