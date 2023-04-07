@@ -48,8 +48,8 @@ async def handler(_, update):
         else: return
     buttons = [
         [
-            Button.inline("▶️ Resume", data="resumevc"),
             Button.inline("⏸ Pause", data="pausevc"),
+            Button.inline("▶️ Resume", data="resumevc"),
             Button.inline("🔁 repeat", data="repeatvc")
         ],
         [
@@ -91,8 +91,8 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
 async def sendmsg(event, res):
     buttons = [
         [
-            Button.inline("▶️ Resume", data="resumevc"),
             Button.inline("⏸ Pause", data="pausevc"),
+            Button.inline("▶️ Resume", data="resumevc"),
             Button.inline("🔁 repeat", data="repeatvc")
         ],
         [
@@ -319,7 +319,7 @@ async def play_video(event):
 
 
 @catub.cat_cmd(
-    pattern="play ?(-f)? ?([\S ]*)?",
+    pattern="play ?(-f)? ?([\S ]*)?$",
     command=("play", plugin_category),
     info={
         "header": "To Play a media as audio on VC.",

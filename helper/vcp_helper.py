@@ -37,8 +37,8 @@ class CatVC:
         self.EVENTS = []
         self.SILENT = False
         self.PUBLICMODE = False
-        self.BOTMODE = True
-        self.CLEANMODE = True
+        self.BOTMODE = False
+        self.CLEANMODE = False
 
     async def start(self):
         await self.app.start()
@@ -212,7 +212,7 @@ class CatVC:
             return await self.skip()
 
     async def skip(self, clear=False):
-        self.SILENT =  False
+        self.SILENT = False
         if clear:
             self.PLAYLIST = []
         #log chat name
