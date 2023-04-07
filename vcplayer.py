@@ -472,6 +472,8 @@ async def skip_stream(event):
     res = await vc_player.skip()
     if res: await sendmsg(event, res)
 
+
+
 @catub.cat_cmd(
     pattern="vcplayer$",
     command=("vcplayer", plugin_category),
@@ -488,11 +490,12 @@ async def skip_stream(event):
     public=True
 )
 async def vcplayer(event):
-
+    "To Get VC PLAYER"
     if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     if vc_player.BOTMODE:
         try:
-            return await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+            await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+            return
         except:
             pass
     reply_to_id = await reply_id(event)
@@ -760,8 +763,6 @@ async def vc(event):
 @check_owner
 async def vc(event):
     await event.delete()
-
-
 
 
 #SETTINGS
