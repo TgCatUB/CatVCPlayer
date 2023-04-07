@@ -96,7 +96,7 @@ async def tg_dl(event, reply, tgbot=False):
                 nail_ = await event.client.get_profile_photos(catub.me.id)
                 thumb = await event.client.download_media(nail_[0], file=downloads)
             except:
-                thumb = Config.THUMB_IMAGE
+                thumb = "catvc/resources/404.png"
 
         return [os.path.relpath(file_name, os.getcwd()), thumb]
     else:

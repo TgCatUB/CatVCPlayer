@@ -265,7 +265,7 @@ class CatVC:
     #         return "Nothing is playing to Mute"
     #     if not self.MUTED:
     #         await self.app.mute_stream(self.CHAT_ID)
-    #         self.PAUSED = True
+    #         self.MUTED = True
     #     return f"Muted Stream on {self.CHAT_NAME}"
 
     # async def unmute(self):
