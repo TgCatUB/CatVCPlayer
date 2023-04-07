@@ -614,35 +614,18 @@ buttons = [
 async def Inlineplayer(event):
     await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
 
-@catub.cat_cmd(
-    pattern="vcplayer$",
-    command=("vcplayer", plugin_category),
-    info={
-        "header": "To Get VC PLAYER",
-        "description": "To Get VC PLAYER to change different modes or further use",
-        "usage": [
-            "{tr}vcplayer",
-        ],
-        "examples": [
-            "{tr}vcplayer",
-        ],
-    },
-    public=True
-)
+
+@catub.cat_cmd(pattern="vcplayer$")
 async def vcplayer(event):
-    "To Get VC PLAYER"
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
     if vc_player.BOTMODE:
         try:
-            await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
-            return
+            return await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
         except:
             pass
     reply_to_id = await reply_id(event)
     results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     await event.delete()
-    
 
 
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
