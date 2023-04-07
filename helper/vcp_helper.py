@@ -35,7 +35,7 @@ class CatVC:
         self.MUTED = False
         self.PLAYLIST = []
         self.EVENTS = []
-        self.SILENT = False
+        self.SILENT = True
         self.PUBLICMODE = False
         self.BOTMODE = False
         self.CLEANMODE = False
@@ -182,6 +182,7 @@ class CatVC:
 
                 title = ytdl_data.get("title", None)
             if title:
+                await event.edit("`Downloading...`")
                 playable = await video_dl(yt_url, title)
             else:
                 return "Error Fetching URL"

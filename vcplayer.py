@@ -41,12 +41,12 @@ asyncio.create_task(vc_player.start())
 @vc_player.app.on_stream_end()
 async def handler(_, update):
     event = False
-    resp = await vc_player.handle_next(update)
-    vcbot = catub.tgbot if vc_player.BOTMODE else catub
-    print("In the end it doesnt even matter")
     if not vc_player.PLAYLIST:
         if vc_player.CHAT_ID and not vc_player.SILENT: return await vc_player.leave_vc()
         else: return
+    resp = await vc_player.handle_next(update)
+    vcbot = catub.tgbot if vc_player.BOTMODE else catub
+    print("In the end it doesnt even matter")
     buttons = [
         [
             Button.inline("⏸ Pause", data="pausevc"),
@@ -474,36 +474,6 @@ async def skip_stream(event):
 
 
 
-@catub.cat_cmd(
-    pattern="vcplayer$",
-    command=("vcplayer", plugin_category),
-    info={
-        "header": "To Get VC PLAYER",
-        "description": "To Get VC PLAYER to change different modes or further use",
-        "usage": [
-            "{tr}vcplayer",
-        ],
-        "examples": [
-            "{tr}vcplayer",
-        ],
-    },
-    public=True
-)
-async def vcplayer(event):
-    "To Get VC PLAYER"
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
-    if vc_player.BOTMODE:
-        try:
-            await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
-            return
-        except:
-            pass
-    reply_to_id = await reply_id(event)
-    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
-    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
-
-    
-
 """
 @catub.cat_cmd(
     pattern="a(?:llow)?vc ?([\d ]*)?",
@@ -643,6 +613,36 @@ buttons = [
 @catub.tgbot.on(InlineQuery(pattern="^vcplayer$"))
 async def Inlineplayer(event):
     await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
+
+@catub.cat_cmd(
+    pattern="vcplayer$",
+    command=("vcplayer", plugin_category),
+    info={
+        "header": "To Get VC PLAYER",
+        "description": "To Get VC PLAYER to change different modes or further use",
+        "usage": [
+            "{tr}vcplayer",
+        ],
+        "examples": [
+            "{tr}vcplayer",
+        ],
+    },
+    public=True
+)
+async def vcplayer(event):
+    "To Get VC PLAYER"
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
+    if vc_player.BOTMODE:
+        try:
+            await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+            return
+        except:
+            pass
+    reply_to_id = await reply_id(event)
+    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+    await event.delete()
+    
 
 
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
