@@ -273,7 +273,7 @@ async def play_video(event):
     reply = await event.get_reply_message()
     event = await vc_reply(event, "`Searching...`", edit=True)
     if reply and reply.video and not reply.photo:
-        inputstr = await tg_dl(event)
+        inputstr = await tg_dl(event, reply, vc_player.BOTMODE)
     elif reply and reply.message and not input_str:
         inputstr = reply.text
         reply = False
@@ -356,7 +356,7 @@ async def play_audio(event):
     
     event = await vc_reply(event, "`Searching...`", edit=True)
     if reply and reply.media and not reply.photo:
-        inputstr = await tg_dl(event, reply)
+        inputstr = await tg_dl(event, reply, )
     elif reply and reply.message and not input_str:
         inputstr = reply.text
         reply = False

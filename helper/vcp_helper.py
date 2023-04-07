@@ -122,6 +122,7 @@ class CatVC:
     async def play_song(self, event, input, stream=Stream.audio, force=False, reply=False, **kwargs):
         yt_url = False
         img = False
+        if not input: return
         if reply:
             path = Path(input[0])
             if path.exists():

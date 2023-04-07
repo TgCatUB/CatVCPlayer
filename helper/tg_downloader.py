@@ -7,6 +7,7 @@ from datetime import datetime
 
 from telethon.tl import types
 from telethon.utils import get_extension
+from userbot import catub
 from userbot.Config import Config
 from userbot.core.managers import edit_or_reply
 from userbot.helpers import progress
@@ -20,7 +21,7 @@ async def _get_file_name(path: pathlib.Path, full: bool = True) -> str:
     return str(path.absolute()) if full else path.stem + path.suffix
 
 
-async def tg_dl(event, reply):
+async def tg_dl(event, reply, tgbot=False):
     "To download the replied telegram file"
     mone = await edit_or_reply(event, "`Downloading....`")
     name = NAME
@@ -54,6 +55,10 @@ async def tg_dl(event, reply):
             file_name = downloads / name
         file_name.parent.mkdir(parents=True, exist_ok=True)
         c_time = time.time()
+        if tgbot: progress_callback = None
+        else : progress_callback = lambda d, t: asyncio.get_event_loop().create_task(
+                    progress(d, t, mone, c_time, "trying to download")
+        )
         if (
             not reply.document
             and reply.photo
@@ -64,25 +69,19 @@ async def tg_dl(event, reply):
         ):
             await reply.download_media(
                 file=file_name.absolute(),
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, mone, c_time, "trying to download")
-                ),
+                progress_callback=progress_callback
             )
         elif not reply.document:
             file_name = await reply.download_media(
                 file=downloads,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, mone, c_time, "trying to download")
-                ),
+                progress_callback=progress_callback
             )
         else:
             dl = io.FileIO(file_name.absolute(), "a")
-            await event.client.fast_download_file(
+            await catub.fast_download_file(
                 location=reply.document,
                 out=dl,
-                progress_callback=lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, mone, c_time, "trying to download")
-                ),
+                progress_callback=progress_callback,
             )
             dl.close()
         end = datetime.now()
