@@ -2,15 +2,16 @@ import os
 import asyncio
 import logging
 
-from telethon.tl.types import User
 from telethon.events import CallbackQuery, InlineQuery
 from telethon.sessions import StringSession
 from telethon import TelegramClient, Button
+from telethon.tl.types import User
 
-from userbot import Config, catub
-from userbot.core import check_owner
-from userbot.core.data import _sudousers_list
 from userbot.core.managers import edit_or_reply
+from userbot.core.data import _sudousers_list
+from userbot.helpers.utils import reply_id
+from userbot.core import check_owner
+from userbot import Config, catub
 
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
@@ -605,12 +606,20 @@ buttons = [
     ]
 ]
 
+@catub.on(InlineQuery(pattern="^vcplayer$"))
+async def Inlineplayer(event):
+    await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
+
+
 @catub.cat_cmd(pattern="vcplayer$")
-async def vchelper(event):
-    try:
+async def vcplayer(event):
+    if vc_player.BOTMODE:
         await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
-    except:
-        return
+    else:
+        reply_to_id = await reply_id(event)
+        results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+        await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+        await event.delete()
 
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
 @check_owner
