@@ -474,17 +474,6 @@ async def skip_stream(event):
 
 @catub.cat_cmd(
     pattern="vcplayer$",
-    command=("vcplayer", plugin_category),
-    info={
-        "header": "To Get VC PLAYER",
-        "description": "To Get VC PLAYER to change different modes or further use",
-        "usage": [
-            "{tr}vcplayer",
-        ],
-        "examples": [
-            "{tr}vcplayer",
-        ],
-    },
     public=True
     )
 async def vcplayer(event):
