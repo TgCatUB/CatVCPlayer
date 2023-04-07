@@ -93,7 +93,7 @@ async def tg_dl(event, reply, tgbot=False):
             thumb = await reply.download_media(thumb=-1)
         except TypeError as error:
             try:
-                nail_ = await event.client.get_profile_photos(Config.OWNER_ID)
+                nail_ = await event.client.get_profile_photos(catub.me.id)
                 thumb = await event.client.download_media(nail_[0], file=downloads)
             except:
                 thumb = Config.THUMB_IMAGE

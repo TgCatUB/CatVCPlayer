@@ -250,12 +250,12 @@ async def get_playlist(event):
             "-f": "Force play the Video",
         },
         "usage": [
-            "{tr}vplay (reply to message)",
-            "{tr}vplay (yt link)",
-            "{tr}vplay -f (yt link)",
+            "{tr}vplay <reply to message/reply to yt link>",
+            "{tr}vplay <search song/yt link>",
+            "{tr}vplay -f <search song/yt link>",
         ],
         "examples": [
-            "{tr}vplay",
+            "{tr}vplay open my letter",
             "{tr}vplay https://www.youtube.com/watch?v=c05GBLT_Ds0",
             "{tr}vplay -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
         ],
@@ -332,12 +332,12 @@ async def play_video(event):
             "-f": "Force play the Audio",
         },
         "usage": [
-            "{tr}play (reply to message)",
-            "{tr}play (yt link)",
-            "{tr}play -f (yt link)",
+            "{tr}play <reply to message/reply to yt link>",
+            "{tr}play <search song/yt link>",
+            "{tr}play -f <search song/yt link>",
         ],
         "examples": [
-            "{tr}play",
+            "{tr}play open my letter",
             "{tr}play https://www.youtube.com/watch?v=c05GBLT_Ds0",
             "{tr}play -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
         ],
@@ -472,6 +472,35 @@ async def skip_stream(event):
     res = await vc_player.skip()
     if res: await sendmsg(event, res)
 
+@catub.cat_cmd(
+    pattern="vcplayer$",
+    command=("vcplayer", plugin_category),
+    info={
+        "header": "To Get VC PLAYER",
+        "description": "To Get VC PLAYER to change different modes or further use",
+        "usage": [
+            "{tr}vcplayer",
+        ],
+        "examples": [
+            "{tr}vcplayer",
+        ],
+    },
+    public=True
+)
+async def vcplayer(event):
+
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
+    if vc_player.BOTMODE:
+        try:
+            return await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+        except:
+            pass
+    reply_to_id = await reply_id(event)
+    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+    await event.delete()
+
+    
 
 """
 @catub.cat_cmd(
@@ -614,18 +643,6 @@ async def Inlineplayer(event):
     await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
 
 
-@catub.cat_cmd(pattern="vcplayer$")
-async def vcplayer(event):
-    if vc_player.BOTMODE:
-        try:
-            return await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
-        except:
-            pass
-    reply_to_id = await reply_id(event)
-    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
-    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
-    await event.delete()
-
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
 async def joinvc(event):
     chat = event.chat_id
@@ -698,17 +715,22 @@ async def repeatvc(event):
 @catub.tgbot.on(CallbackQuery(pattern="playlistvc"))
 async def playlistvc(event):
     playl = vc_player.PLAYLIST
-    if not playl:
-        await event.answer(f"Playlist empty")
+    cat = ""
+    if not playl and not vc_player.PLAYING:
+        return await event.answer(f"Playlist empty")
+    elif vc_player.PLAYING:
+        if vc_player.PLAYING["stream"] == Stream.audio:
+            cat += f"🎧 Playing. 🔉  `{item['title']}`\n"
+        else:
+            cat += f"🎧 Playing. 📺  `{item['title']}`\n"
     else:
         await event.answer(f"Fetching Playlist ......")
-        cat = ""
-        for num, item in enumerate(playl, 1):
-            if item["stream"] == Stream.audio:
-                cat += f"{num}. 🔉  `{item['title']}`\n"
-            else:
-                cat += f"{num}. 📺  `{item['title']}`\n"
-        await event.edit(f"**Playlist:**\n\n{cat}\n**Enjoy the show**", buttons=[Button.inline("⬅️ Back", data="backvc")])
+    for num, item in enumerate(playl, 1):
+        if item["stream"] == Stream.audio:
+            cat += f"{num}. 🔉  `{item['title']}`\n"
+        else:
+            cat += f"{num}. 📺  `{item['title']}`\n"
+    await event.edit(f"**Playlist:**\n\n{cat}\n**Enjoy the show**", buttons=[Button.inline("⬅️ Back", data="backvc")])
 
     
 @catub.tgbot.on(CallbackQuery(pattern="settingvc"))
@@ -790,7 +812,7 @@ async def vc(event):
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
-    if mode == "a": text = "AUTH mode"
-    if mode == "b": text = "Choose whether to use bot or user client"
-    if mode == "c": text = "Clean Mode - When enabled messages get deleted after 30 secs automatically"
+    if mode == "a": text = "⁉️ What is This?\n\n🏢 Public: Anyone can use catuserbot vc player present in this group.\n\n🏠 Private: Only Owner of user bot and sudo users can use catuserbot vc player"
+    if mode == "b": text = "⁉️ What is This?\n\nWhen activated, Your assistant responds to the commands  with interactive buttons"
+    if mode == "c": text = "⁉️ What is This?\n\nWhen activated, Bot will delete its message after leaving vc to make your chat clean and clear."
     await event.answer(text)
