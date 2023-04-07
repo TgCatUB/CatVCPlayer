@@ -472,6 +472,35 @@ async def skip_stream(event):
     res = await vc_player.skip()
     if res: await sendmsg(event, res)
 
+@catub.cat_cmd(
+    pattern="vcplayer$",
+    # command=("vcplayer", plugin_category),
+    # info={
+    #     "header": "To Get VC PLAYER",
+    #     "description": "To Get VC PLAYER to change different modes or further use",
+    #     "usage": [
+    #         "{tr}vcplayer",
+    #     ],
+    #     "examples": [
+    #         "{tr}vcplayer",
+    #     ],
+    # },
+    public=True
+    )
+async def vcplayer(event):
+    "To Get VC PLAYER"
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos: return
+    if vc_player.BOTMODE:
+        try:
+            return await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
+        except:
+            pass
+    reply_to_id = await reply_id(event)
+    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+    await event.delete()
+
+
 
 
 """
@@ -525,69 +554,9 @@ async def disallowvc(event):
         return await edit_delete(event, "Whom should i remove")
     ALLOWED_USERS.difference_update(user_id)
     return await edit_delete(event, "Removed User to Allowed List")
-
-
-@catub.on(
-    events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
-)  #only for catub client
-async def speak(event):
-    "Speak in vc"
-    r = event.pattern_match.group(2)
-    input_str = event.pattern_match.group(3)
-    re = await event.get_reply_message()
-    if ";" in input_str:
-        lan, text = input_str.split(";")
-    else:
-        if input_str:
-            text = input_str
-        elif re and re.text and not input_str:
-            text = re.message
-        else:
-            return await event.delete()
-        if r == "h":
-            lan = "hi"
-        elif r == "j":
-            lan = "ja"
-        else:
-            lan = "en"
-    text = deEmojify(text.strip())
-    lan = lan.strip()
-    if not os.path.isdir("./temp/"):
-        os.makedirs("./temp/")
-    file = "./temp/" + "voice.ogg"
-    try:
-        tts = gTTS(text, lang=lan)
-        tts.save(file)
-        cmd = [
-            "ffmpeg",
-            "-i",
-            file,
-            "-map",
-            "0:a",
-            "-codec:a",
-            "libopus",
-            "-b:a",
-            "100k",
-            "-vbr",
-            "on",
-            file + ".opus",
-        ]
-        try:
-            t_response = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
-            await edit_or_reply(event, str(exc))
-        else:
-            os.remove(file)
-            file = file + ".opus"
-        await vc_player.play_song(file, Stream.audio, force=False)
-        await event.delete()
-        os.remove(file)
-    except Exception as e:
-         await edit_or_reply(event, f"**Error:**\n`{e}`")
 """
 
-#INLINE
-
+#=======================INLINE==============================
 buttons = [
     [
         Button.inline("👾 Join VC", data="joinvc"),
@@ -613,22 +582,6 @@ buttons = [
 @catub.tgbot.on(InlineQuery(pattern="^vcplayer$"))
 async def Inlineplayer(event):
     await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
-
-
-@catub.cat_cmd(
-    pattern="vcplayer$",
-    public=True
-    )
-async def vcplayer(event):
-    if vc_player.BOTMODE:
-        try:
-            return await catub.tgbot.send_message(event.chat_id, "** | VC PLAYER | **", buttons=buttons)
-        except:
-            pass
-    reply_to_id = await reply_id(event)
-    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
-    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
-    await event.delete()
 
 
 @catub.tgbot.on(CallbackQuery(pattern="joinvc"))
