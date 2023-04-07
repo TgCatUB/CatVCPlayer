@@ -606,7 +606,7 @@ buttons = [
     ]
 ]
 
-@catub.on(InlineQuery(pattern="^vcplayer$"))
+@catub.tgbot.on(InlineQuery(pattern="^vcplayer$"))
 async def Inlineplayer(event):
     await event.answer([event.builder.article(title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons)])
 
