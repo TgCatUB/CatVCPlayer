@@ -44,7 +44,7 @@ async def handler(_, update):
     vcbot = catub.tgbot if vc_player.BOTMODE else catub
     print("In the end it doesnt even matter")
     if not vc_player.PLAYLIST:
-        if vc_player.CHAT_ID and vc_player.PLAYING: return await vc_player.leave_vc()
+        if vc_player.CHAT_ID and not vc_player.SILENT: return await vc_player.leave_vc()
         else: return
     buttons = [
         [
@@ -67,8 +67,7 @@ async def handler(_, update):
         resp = resp.split(f'\n\n')[1] if f'\n\n' in resp else resp
         event = await vcbot.send_message(vc_player.CHAT_ID, resp, buttons)
     if vc_player.CLEANMODE and event:
-        await asyncio.sleep(vc_player.CLEANMODE)
-        await event.delete()
+        vc_player.EVENTS.append(event)
 
 async def vc_reply(event, text, file=False, edit=False, **kwargs):
     if vc_player.BOTMODE:
@@ -84,8 +83,7 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
             if vc_player.PUBLICMODE: catevent = await catub.send_message(event.chat_id, text, **kwargs)
             else: catevent = await edit_or_reply(event, text)
     if vc_player.CLEANMODE and not edit:
-        await asyncio.sleep(vc_player.CLEANMODE)
-        await event.delete()
+        vc_player.EVENTS.append(catevent)
     else:
         return catevent
 
@@ -228,7 +226,7 @@ async def get_playlist(event):
     event = await vc_reply(event, "Fetching Playlist ......", edit=True)
     playl = vc_player.PLAYLIST
     if not playl:
-        await vc_reply(event, "Playlist empty", time=10)
+        await vc_reply(event, "Playlist empty")
     else:
         cat = ""
         for num, item in enumerate(playl, 1):
@@ -280,7 +278,7 @@ async def play_video(event):
         reply = False
     else:
         return await vc_reply(
-            event, "Please Provide a media file to stream on VC", time=20
+            event, "Please Provide a media file to stream on VC"
         )
     if not vc_player.CHAT_ID:
         try:
@@ -362,10 +360,9 @@ async def play_audio(event):
         reply = False
     else:
         return await vc_reply(
-            event, "Please Provide a media file to stream on VC", time=20
+            event, "Please Provide a media file to stream on VC"
         )
     if not vc_player.CHAT_ID:
-        
         try:
             vc_chat = await catub.get_entity(chat)
         except Exception as e:

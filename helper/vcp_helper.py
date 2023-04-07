@@ -34,6 +34,8 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
+        self.EVENTS = []
+        self.SILENT = False
         self.PUBLICMODE = False
         self.BOTMODE = True
         self.CLEANMODE = 30
@@ -49,7 +51,8 @@ class CatVC:
         self.MUTED = False
         self.PLAYLIST = []
 
-    async def join_vc(self, chat, join_as=None):
+    async def join_vc(self, chat, media=False, stream=Stream.audio, join_as=None):
+        self.SILENT = True
         if self.CHAT_ID:
             return f"Already in a group call on {self.CHAT_NAME}"
         if join_as:
@@ -61,10 +64,14 @@ class CatVC:
         else:
             join_as_chat = await self.client.get_me()
             join_as_title = ""
+        if stream == Stream.audio:
+            streamable = AudioPiped(media) if media else "catvc/resources/Silence01s.mp3"
+        else:
+            streamable = AudioVideoPiped(media)
         try:
             await self.app.join_group_call(
                 chat_id=chat.id,
-                stream=AudioPiped("catvc/resources/Silence01s.mp3"),
+                stream=streamable,
                 join_as=join_as_chat,
                 stream_type=StreamType().pulse_stream,
             )
@@ -94,10 +101,16 @@ class CatVC:
             await self.app.leave_group_call(self.CHAT_ID)
         except (NotInGroupCallError, NoActiveGroupCall):
             pass
+        for event in self.EVENTS:
+            try:
+                await event.delete()
+            except:
+                pass
         self.CHAT_NAME = None
         self.CHAT_ID = None
         self.PLAYING = False
         self.PLAYLIST = []
+        self.EVENTS = []
 
     async def duration(self, name):
         int_ = int(name)
@@ -203,6 +216,7 @@ class CatVC:
             return await self.skip()
 
     async def skip(self, clear=False):
+        self.SILENT =  False
         if clear:
             self.PLAYLIST = []
         #log chat name
