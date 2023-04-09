@@ -55,10 +55,12 @@ async def tg_dl(event, reply, tgbot=False):
             file_name = downloads / name
         file_name.parent.mkdir(parents=True, exist_ok=True)
         c_time = time.time()
-        if tgbot: progress_callback = None
-        else : progress_callback = lambda d, t: asyncio.get_event_loop().create_task(
-                    progress(d, t, mone, c_time, "trying to download")
-        )
+        if tgbot:
+            progress_callback = None
+        else:
+            progress_callback = lambda d, t: asyncio.get_event_loop().create_task(
+                progress(d, t, mone, c_time, "trying to download")
+            )
         if (
             not reply.document
             and reply.photo
@@ -68,13 +70,11 @@ async def tg_dl(event, reply, tgbot=False):
             and not reply.photo
         ):
             await reply.download_media(
-                file=file_name.absolute(),
-                progress_callback=progress_callback
+                file=file_name.absolute(), progress_callback=progress_callback
             )
         elif not reply.document:
             file_name = await reply.download_media(
-                file=downloads,
-                progress_callback=progress_callback
+                file=downloads, progress_callback=progress_callback
             )
         else:
             dl = io.FileIO(file_name.absolute(), "a")
@@ -91,7 +91,7 @@ async def tg_dl(event, reply, tgbot=False):
         )
         try:
             thumb = await reply.download_media(thumb=-1)
-        except TypeError as error:
+        except TypeError:
             try:
                 nail_ = await event.client.get_profile_photos(catub.me.id)
                 thumb = await event.client.download_media(nail_[0], file=downloads)
