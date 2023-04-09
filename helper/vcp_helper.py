@@ -1,3 +1,4 @@
+import os
 import asyncio
 from pathlib import Path
 
@@ -16,7 +17,11 @@ from telethon import functions
 from telethon.errors import ChatAdminRequiredError
 from yt_dlp import YoutubeDL
 
+from userbot import Config, catub
+from userbot.helpers.functions import yt_search, get_ytthumb
+from userbot.core.managers import edit_or_reply
 from .stream_helper import Stream, check_url, video_dl, yt_regex
+
 
 
 class CatVC:
@@ -29,6 +34,11 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
+        self.EVENTS = []
+        self.SILENT = True
+        self.PUBLICMODE = False
+        self.BOTMODE = False
+        self.CLEANMODE = False
 
     async def start(self):
         await self.app.start()
@@ -42,6 +52,7 @@ class CatVC:
         self.PLAYLIST = []
 
     async def join_vc(self, chat, join_as=None):
+        self.SILENT = True
         if self.CHAT_ID:
             return f"Already in a group call on {self.CHAT_NAME}"
         if join_as:
@@ -86,20 +97,48 @@ class CatVC:
             await self.app.leave_group_call(self.CHAT_ID)
         except (NotInGroupCallError, NoActiveGroupCall):
             pass
+        for event in self.EVENTS:
+            try:
+                await event.delete()
+            except:
+                pass
         self.CHAT_NAME = None
         self.CHAT_ID = None
         self.PLAYING = False
         self.PLAYLIST = []
+        self.EVENTS = []
 
-    async def play_song(self, input, stream=Stream.audio, force=False):
-        if yt_regex.match(input):
-            with YoutubeDL({}) as ytdl:
-                ytdl_data = ytdl.extract_info(input, download=False)
-                title = ytdl_data.get("title", None)
-            if title:
-                playable = await video_dl(input, title)
+    async def duration(self, name):
+        int_ = int(name)
+        ute = int_//60
+        ond_ = int_%60
+        if int(ond_) in list(range(0, 10)):
+            ond = f"0{ond_}"
+        else:
+            ond = ond_
+        duration = f"{ute}:{ond}"
+        return duration
+
+    async def play_song(self, event, input, stream=Stream.audio, force=False, reply=False, **kwargs):
+        yt_url = False
+        img = False
+        if not input: return
+        if reply:
+            path = Path(input[0])
+            if path.exists():
+                if not path.name.endswith(
+                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
+                ):
+                    return "`File is invalid for Streaming`"
+                playable = str(path.absolute())
+                title = path.name
+                duration = await self.duration(reply.file.duration)
+                img = input[1]
+                url = f"https://t.me/c/{abs(reply.chat_id) if not str(abs(reply.chat_id)).startswith('100') else str(abs(reply.chat_id))[3:]}/{reply.id}"
             else:
-                return "Error Fetching URL"
+                return "`File Path is invalid`"
+        elif yt_regex.match(input):
+            yt_url = input
         elif check_url(input):
             try:
                 res = requests.get(input, allow_redirects=True, stream=True)
@@ -112,6 +151,9 @@ class CatVC:
                 else:
                     title = input
                 playable = input
+                url = input
+                img = "catvc/resources/404.png"
+                duration = "UNKNOWN"
             except Exception as e:
                 return f"**INVALID URL**\n\n{e}"
         else:
@@ -123,31 +165,61 @@ class CatVC:
                     return "`File is invalid for Streaming`"
                 playable = str(path.absolute())
                 title = path.name
+                if kwargs:
+                    duration = kwargs['duration']
+                    url = kwargs['url']
+                    img = kwargs['img']
+                else:
+                    duration = "UNKNOWN"
+                    url = ""
             else:
-                return "`File Path is invalid`"
+                yt_url = await yt_search(input)
+            
+            
+        if yt_url:
+            with YoutubeDL({}) as ytdl:
+                ytdl_data = ytdl.extract_info(yt_url, download=False)
+
+                title = ytdl_data.get("title", None)
+            if title:
+                await event.edit("`Downloading...`")
+                playable = await video_dl(yt_url, title)
+            else:
+                return "Error Fetching URL"
+            
+            img = await get_ytthumb(ytdl_data['id'])
+            duration = await self.duration(ytdl_data['duration'])
+            url = yt_url
+
+        
+
+        msg = f"**🎧 Playing:** [{title}]({url})\n"
+        msg += f"**⏳ Duration:** `{duration}`\n"
+        msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
         print(playable)
         if self.PLAYING and not force:
-            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
-            return f"Added to playlist.\n Position: {len(self.PLAYLIST)+1}"
+            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream, "img": img, "duration": duration, "url": url})
+            return [img, f"**🎧 Added to playlist:** {msg[15:]}\n\n👾 Position: {len(self.PLAYLIST)+1}"] if img else f"**🎧 Added to playlist:** {msg[15:]}\n\n👾 Position: {len(self.PLAYLIST)+1}"
         if not self.PLAYING:
-            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream})
+            self.PLAYLIST.append({"title": title, "path": playable, "stream": stream, "img": img, "duration": duration, "url": url})
             await self.skip()
-            return f"Playing {title}"
+            return [img, msg] if img else msg
         if force and self.PLAYING:
             self.PLAYLIST.insert(
-                0, {"title": title, "path": playable, "stream": stream}
+                0, {"title": title, "path": playable, "stream": stream, "img": img, "duration": duration, "url": url}
             )
             await self.skip()
-            return f"Playing {title}"
+            return [img, msg] if img else msg
 
     async def handle_next(self, update):
         if isinstance(update, StreamAudioEnded):
-            await self.skip()
+            return await self.skip()
 
     async def skip(self, clear=False):
+        self.SILENT = False
         if clear:
             self.PLAYLIST = []
-
+        #log chat name
         if not self.PLAYLIST:
             if self.PLAYING:
                 await self.app.change_stream(
@@ -155,7 +227,7 @@ class CatVC:
                     AudioPiped("catvc/resources/Silence01s.mp3"),
                 )
             self.PLAYING = False
-            return "Skipped Stream\nEmpty Playlist"
+            return "**Skipped Stream\nEmpty Playlist**"
 
         next = self.PLAYLIST.pop(0)
         if next["stream"] == Stream.audio:
@@ -167,7 +239,11 @@ class CatVC:
         except Exception:
             await self.skip()
         self.PLAYING = next
-        return f"Skipped Stream\nPlaying : `{next['title']}`"
+        msg = f"**🌬 Skipped Stream**\n\n"
+        msg += f"**🎧 Playing:** [{next['title']}]({next['url']})\n"
+        msg += f"**⏳ Duration:** `{next['duration']}`\n"
+        msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
+        return [next['img'], msg] if next['img'] else msg
 
     async def pause(self):
         if not self.PLAYING:
@@ -190,7 +266,7 @@ class CatVC:
     #         return "Nothing is playing to Mute"
     #     if not self.MUTED:
     #         await self.app.mute_stream(self.CHAT_ID)
-    #         self.PAUSED = True
+    #         self.MUTED = True
     #     return f"Muted Stream on {self.CHAT_NAME}"
 
     # async def unmute(self):
@@ -200,3 +276,5 @@ class CatVC:
     #         await self.app.unmute_stream(self.CHAT_ID)
     #         self.MUTED = False
     #     return f"Unmuted Stream on {self.CHAT_NAME}"
+
+
