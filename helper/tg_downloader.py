@@ -14,7 +14,7 @@ from userbot.helpers import progress
 
 NAME = "untitled"
 
-downloads = pathlib.Path(os.path.join(os.getcwd(), Config.TMP_DOWNLOAD_DIRECTORY))
+downloads = pathlib.Path(os.path.join(os.getcwd(), Config.TEMP_DIR))
 
 
 async def _get_file_name(path: pathlib.Path, full: bool = True) -> str:
@@ -26,8 +26,8 @@ async def tg_dl(event, reply, tgbot=False):
     mone = await edit_or_reply(event, "`Downloading....`")
     name = NAME
     path = None
-    if not os.path.isdir(Config.TMP_DOWNLOAD_DIRECTORY):
-        os.makedirs(Config.TMP_DOWNLOAD_DIRECTORY)
+    if not os.path.isdir(Config.TEMP_DIR):
+        os.makedirs(Config.TEMP_DIR)
     # reply = await event.get_reply_message()
     if reply:
         start = datetime.now()
