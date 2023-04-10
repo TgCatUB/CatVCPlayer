@@ -15,6 +15,7 @@ from pytgcalls.types.stream import StreamAudioEnded
 from telethon import functions
 from telethon.errors import ChatAdminRequiredError
 from userbot.helpers.functions import get_ytthumb, yt_search
+from userbot.helpers.utils import _catutils
 from yt_dlp import YoutubeDL
 
 from .stream_helper import Stream, check_url, video_dl, yt_regex
@@ -64,7 +65,7 @@ class CatVC:
             await self.app.join_group_call(
                 chat_id=chat.id,
                 stream=AudioPiped("catvc/resources/Silence01s.mp3"),
-                join_as=join_as_chat,
+                join_as=join_as_chat,g
                 stream_type=StreamType().pulse_stream,
             )
         except NoActiveGroupCall:
@@ -98,6 +99,9 @@ class CatVC:
                 await event.delete()
             except:
                 pass
+        exts = [".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a", ".jpg", ".png"]
+        for ext in exts:
+            await _catutils.runcmd(f"rm -f temp/*{ext}")
         self.CHAT_NAME = None
         self.CHAT_ID = None
         self.PLAYING = False
