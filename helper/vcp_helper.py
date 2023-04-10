@@ -99,9 +99,9 @@ class CatVC:
                 await event.delete()
             except:
                 pass
-        
+
         await _catutils.runcmd(f"rm -rf temp")
-        
+
         self.CHAT_NAME = None
         self.CHAT_ID = None
         self.PLAYING = False
