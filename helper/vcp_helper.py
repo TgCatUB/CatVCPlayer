@@ -99,20 +99,9 @@ class CatVC:
                 await event.delete()
             except:
                 pass
-        exts = [
-            ".mkv",
-            ".mp4",
-            ".webm",
-            ".m4v",
-            ".mp3",
-            ".flac",
-            ".wav",
-            ".m4a",
-            ".jpg",
-            ".png",
-        ]
-        for ext in exts:
-            await _catutils.runcmd(f"rm -f temp/*{ext}")
+        
+        await _catutils.runcmd(f"rm -rf temp")
+        
         self.CHAT_NAME = None
         self.CHAT_ID = None
         self.PLAYING = False
