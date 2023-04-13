@@ -82,12 +82,16 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
                 )
             else:
                 if edit:
-                    catevent = await catub.tgbot.send_message(event.chat_id, text, **kwargs)
+                    catevent = await catub.tgbot.send_message(
+                        event.chat_id, text, **kwargs
+                    )
                 else:
                     catevent = await event.edit(text, **kwargs)
         except:
             uname = await catub.tgbot.get_me()
-            await event.reply(f"Please disable Bot Mode or Invite @{uname.username} to the chat")
+            await event.reply(
+                f"Please disable Bot Mode or Invite @{uname.username} to the chat"
+            )
             edit = False
     else:
         if file:
