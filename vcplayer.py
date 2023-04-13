@@ -75,15 +75,20 @@ async def handler(_, update):
 
 async def vc_reply(event, text, file=False, edit=False, **kwargs):
     if vc_player.BOTMODE:
-        if file:
-            catevent = await catub.tgbot.send_file(
-                event.chat_id, file=file, caption=text, **kwargs
-            )
-        else:
-            if edit:
-                catevent = await catub.tgbot.send_message(event.chat_id, text, **kwargs)
+        try:
+            if file:
+                catevent = await catub.tgbot.send_file(
+                    event.chat_id, file=file, caption=text, **kwargs
+                )
             else:
-                catevent = await event.edit(text, **kwargs)
+                if edit:
+                    catevent = await catub.tgbot.send_message(event.chat_id, text, **kwargs)
+                else:
+                    catevent = await event.edit(text, **kwargs)
+        except:
+            uname = await catub.tgbot.get_me()
+            await event.reply(f"Please disable Bot Mode or Invite @{uname.username} to the chat")
+            edit = False
     else:
         if file:
             catevent = await catub.send_file(event.chat_id, file=file, caption=text)
