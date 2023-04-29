@@ -99,9 +99,9 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
         else:
             if vc_player.PUBLICMODE:
                 if edit:
-                    catevent = await event.edit(text, **kwargs)
-                else:
                     catevent = await catub.send_message(event.chat_id, text, **kwargs)
+                else:
+                    catevent = await event.edit(text, **kwargs)
             else:
                 catevent = await edit_or_reply(event, text)
     if vc_player.CLEANMODE and not edit:
@@ -159,6 +159,7 @@ ALLOWED_USERS = set()
         ],
     },
     public=True,
+    allow_sudo=False,
 )
 async def joinVoicechat(event):
     "To join a Voice Chat."
@@ -214,6 +215,7 @@ async def joinVoicechat(event):
         ],
     },
     public=True,
+    allow_sudo=False,
 )
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
@@ -243,6 +245,7 @@ async def leaveVoicechat(event):
         ],
     },
     public=True,
+    allow_sudo=False,
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
@@ -283,6 +286,7 @@ async def get_playlist(event):
         ],
     },
     public=True,
+    allow_sudo=False,
 )
 async def play_video(event):
     "To Play a media as video on VC."
@@ -369,6 +373,7 @@ async def play_video(event):
         ],
     },
     public=True,
+    allow_sudo=False,
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
@@ -452,6 +457,7 @@ async def play_audio(event):
         ],
     },
     public=True,
+    allow_sudo=False,
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
@@ -476,6 +482,7 @@ async def pause_stream(event):
         ],
     },
     public=True,
+    allow_sudo=False,
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
@@ -500,6 +507,7 @@ async def resume_stream(event):
         ],
     },
     public=True,
+    allow_sudo=False,
 )
 async def skip_stream(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
@@ -511,7 +519,7 @@ async def skip_stream(event):
         await sendmsg(event, res)
 
 
-@catub.cat_cmd(pattern="vcplayer$", public=True)
+@catub.cat_cmd(pattern="vcplayer$", public=True, allow_sudo=False,)
 async def vcplayer(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
