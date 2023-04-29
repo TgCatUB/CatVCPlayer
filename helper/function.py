@@ -53,7 +53,7 @@ async def handler(_, update):
         )
     elif resp and type(resp) is str:
         resp = resp.split(f"\n\n")[1] if f"\n\n" in resp else resp
-        event = await vcbot.send_message(vc_player.CHAT_ID, resp, buttons)
+        event = await vcbot.send_message(vc_player.CHAT_ID, resp, buttons=buttons)
     if vc_player.CLEANMODE and event:
         vc_player.EVENTS.append(event)
 
@@ -111,7 +111,7 @@ async def sendmsg(event, res):
         await event.delete()
         event = await vc_reply(event, res[1], file=res[0], buttons=buttons)
     elif res and type(res) is str:
-        event = await vc_reply(event, res, buttons)
+        event = await vc_reply(event, res, buttons=buttons)
 
 
 asyncio.create_task(vc_player.start())
