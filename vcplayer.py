@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 import logging
 
 from telethon import Button, TelegramClient
@@ -21,9 +22,8 @@ logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
 OWNER_ID = catub.uid
 sudos = [OWNER_ID] + _vcusers_list()
-vc_session = Config.VC_SESSION
 
-if vc_session:
+if vc_session := Config.VC_SESSION:
     vc_client = TelegramClient(
         StringSession(vc_session), Config.APP_ID, Config.API_HASH
     )
@@ -87,7 +87,7 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
                     )
                 else:
                     catevent = await event.edit(text, **kwargs)
-        except:
+        except Exception:
             uname = await catub.tgbot.get_me()
             await event.reply(
                 f"Please disable Bot Mode or Invite @{uname.username} to the chat"
@@ -130,9 +130,6 @@ async def sendmsg(event, res):
         event = await vc_reply(event, res[1], file=res[0], buttons=buttons)
     elif res and type(res) is str:
         event = await vc_reply(event, res, buttons)
-
-
-ALLOWED_USERS = set()
 
 
 @catub.cat_cmd(
@@ -252,17 +249,16 @@ async def get_playlist(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
     event = await vc_reply(event, "Fetching Playlist ......", edit=True)
-    playl = vc_player.PLAYLIST
-    if not playl:
-        await vc_reply(event, "Playlist empty")
-    else:
-        cat = ""
-        for num, item in enumerate(playl, 1):
-            if item["stream"] == Stream.audio:
-                cat += f"{num}. 🔉  `{item['title']}`\n"
-            else:
-                cat += f"{num}. 📺  `{item['title']}`\n"
+    if playl := vc_player.PLAYLIST:
+        cat = "".join(
+            f"{num}. 🔉  `{item['title']}`\n"
+            if item["stream"] == Stream.audio
+            else f"{num}. �  `{item['title']}`\n"
+            for num, item in enumerate(playl, 1)
+        )
         await vc_reply(event, f"**Playlist:**\n\n{cat}\n**Enjoy the show**")
+    else:
+        await vc_reply(event, "Playlist empty")
 
 
 @catub.cat_cmd(
@@ -332,24 +328,6 @@ async def play_video(event):
 
     if resp:
         await sendmsg(event, resp)
-
-    # if input_str == "" and event.reply_to_msg_id:
-    #     input_str = await tg_dl(event)
-    # if not input_str:
-    #     return await edit_delete(
-    #         event, "Please Provide a media file to stream on VC", time=20
-    #     )
-    # if not vc_player.CHAT_ID:
-    #     return await edit_or_reply(event, "Join a VC and use play command")
-    # if not input_str:
-    #     return await edit_or_reply(event, "No Input to play in vc")
-    # await edit_or_reply(event, "Playing in VC ......")
-    # if flag:
-    #     resp = await vc_player.play_song(input_str, Stream.video, force=True)
-    # else:
-    #     resp = await vc_player.play_song(input_str, Stream.video, force=False)
-    # if resp:
-    #     await edit_delete(event, resp, time=30)
 
 
 @catub.cat_cmd(
@@ -423,24 +401,6 @@ async def play_audio(event):
 
     if resp:
         await sendmsg(event, resp)
-
-    # if input_str == "" and event.reply_to_msg_id:
-    #     input_str = await tg_dl(event)
-    # if not input_str:
-    #     return await edit_delete(
-    #         event, "Please Provide a media file to stream on VC", time=20
-    #     )
-    # if not vc_player.CHAT_ID:
-    #     return await edit_or_reply(event, "Join a VC and use play command")
-    # if not input_str:
-    #     return await edit_or_reply(event, "No Input to play in vc")
-    # await edit_or_reply(event, "Playing in VC ......")
-    # if flag:
-    #     resp = await vc_player.play_song(input_str, Stream.audio, force=True)
-    # else:
-    #     resp = await vc_player.play_song(input_str, Stream.audio, force=False)
-    # if resp:
-    #     await edit_delete(event, resp, time=30)
 
 
 @catub.cat_cmd(
@@ -519,6 +479,8 @@ async def skip_stream(event):
         await sendmsg(event, res)
 
 
+# =======================INLINE==============================
+
 @catub.cat_cmd(
     pattern="vcplayer$",
     public=True,
@@ -528,19 +490,16 @@ async def vcplayer(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
     if vc_player.BOTMODE:
-        try:
+        with contextlib.suppress(Exception):
             return await catub.tgbot.send_message(
                 event.chat_id, "** | VC PLAYER | **", buttons=buttons
             )
-        except:
-            pass
     reply_to_id = await reply_id(event)
     results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     await event.delete()
 
 
-# =======================INLINE==============================
 buttons = [
     [
         Button.inline("👾 Join VC", data="joinvc"),
