@@ -132,12 +132,10 @@ class CatVC:
             try:
                 res = requests.get(input, allow_redirects=True, stream=True)
                 ctype = res.headers.get("Content-Type")
-                if any(opt in a for opt in ["video", "audio"]):
+                if any(opt in ctype for opt in ["video", "audio"]):
                     pass
                 else:
                     return f"**INVALID URL**"
-                if "video" not in ctype or "audio" not in ctype:
-                    return "INVALID URL"
                 if name := res.headers.get("Content-Disposition", None):
                     title = name.split('="')[0].split('"') or ""
                 else:
