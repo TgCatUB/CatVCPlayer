@@ -1,42 +1,23 @@
-import asyncio
 import contextlib
 import logging
 
-from telethon import Button, TelegramClient
+from telethon import Button
 from telethon.events import CallbackQuery, InlineQuery
-from telethon.sessions import StringSession
 from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core import check_owner
-from userbot.core.data import _sudousers_list
-from userbot.core.managers import edit_or_reply
 from userbot.helpers.utils import reply_id
+from userbot.core.data import _sudousers_list
 
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
-from .helper.vcp_helper import CatVC
-from .helper.function import vc_reply, sendmsg
+from .helper.function import vc_reply, sendmsg, vc_player
+
 
 plugin_category = "extra"
 
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
-
-OWNER_ID = catub.uid
-sudos = [OWNER_ID] + _sudousers_list()
-
-if vc_session := Config.VC_SESSION:
-    vc_client = TelegramClient(
-        StringSession(vc_session), Config.APP_ID, Config.API_HASH
-    )
-else:
-    vc_client = catub
-
-vc_client.__class__.__module__ = "telethon.client.telegramclient"
-vc_player = CatVC(vc_client)
-
-if __name__ == "__main__";
-    asyncio.create_task(vc_player.start())
-
+sudos = [Config.OWNER_ID] + _sudousers_list()
 
 @catub.cat_cmd(
     pattern="joinvc ?(\S+)? ?(?:-as)? ?(\S+)?",
@@ -490,13 +471,13 @@ async def skipvc(event):
 @catub.tgbot.on(CallbackQuery(pattern="repeatvc"))
 async def repeatvc(event):
     if vc_player.PLAYING:
-        input = vc_player.PLAYING["path"]
+        song_input = vc_player.PLAYING["path"]
         stream = vc_player.PLAYING["stream"]
         duration = vc_player.PLAYING["duration"]
         url = vc_player.PLAYING["url"]
         img = vc_player.PLAYING["img"]
         res = await vc_player.play_song(
-            event, input, stream, force=False, duration=duration, url=url, img=img
+            event, song_input, stream, force=False, duration=duration, url=url, img=img
         )
         if res and type(res) is list:
             await event.edit(res[1], buttons=buttons)

@@ -1,6 +1,24 @@
-from telethon import Button
+import asyncio
+import logging
+from telethon import Button, TelegramClient
+from telethon.sessions import StringSession
+
+from .vcp_helper import CatVC
 from userbot import Config, catub
-from .vcplayer import vc_player
+from userbot.core.managers import edit_or_reply
+
+
+logging.getLogger("pytgcalls").setLevel(logging.ERROR)
+
+if vc_session := Config.VC_SESSION:
+    vc_client = TelegramClient(
+        StringSession(vc_session), Config.APP_ID, Config.API_HASH
+    )
+else:
+    vc_client = catub
+
+vc_client.__class__.__module__ = "telethon.client.telegramclient"
+vc_player = CatVC(vc_client)
 
 
 @vc_player.app.on_stream_end()
@@ -48,29 +66,28 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
                     event.chat_id, file=file, caption=text, **kwargs
                 )
             else:
-                if edit:
-                    catevent = await catub.tgbot.send_message(
+                catevent = (
+                    await catub.tgbot.send_message(
                         event.chat_id, text, **kwargs
                     )
-                else:
-                    catevent = await event.edit(text, **kwargs)
+                    if edit
+                    else await event.edit(text, **kwargs)
+                )
         except Exception:
-            uname = await catub.tgbot.get_me()
             await event.reply(
-                f"Please disable Bot Mode or Invite @{uname.username} to the chat"
+                f"Please disable Bot Mode or Invite {Config.TG_BOT_USERNAME} to the chat"
             )
             edit = False
+    elif file:
+        catevent = await catub.send_file(event.chat_id, file=file, caption=text)
+    elif vc_player.PUBLICMODE:
+        catevent = (
+            await catub.send_message(event.chat_id, text, **kwargs)
+            if edit
+            else await event.edit(text, **kwargs)
+        )
     else:
-        if file:
-            catevent = await catub.send_file(event.chat_id, file=file, caption=text)
-        else:
-            if vc_player.PUBLICMODE:
-                if edit:
-                    catevent = await catub.send_message(event.chat_id, text, **kwargs)
-                else:
-                    catevent = await event.edit(text, **kwargs)
-            else:
-                catevent = await edit_or_reply(event, text)
+        catevent = await edit_or_reply(event, text)
     if vc_player.CLEANMODE and not edit:
         vc_player.EVENTS.append(catevent)
     else:
@@ -97,3 +114,7 @@ async def sendmsg(event, res):
         event = await vc_reply(event, res[1], file=res[0], buttons=buttons)
     elif res and type(res) is str:
         event = await vc_reply(event, res, buttons)
+
+
+if __name__ == "__main__":
+    asyncio.create_task(vc_player.start())
