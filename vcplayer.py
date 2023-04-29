@@ -2,10 +2,9 @@ import contextlib
 import logging
 
 from telethon import Button
-from telethon.events import CallbackQuery, InlineQuery
+from telethon.events import InlineQuery
 from telethon.tl.types import User
 from userbot import Config, catub
-from userbot.core import check_owner
 from userbot.core.data import _sudousers_list
 from userbot.helpers.utils import reply_id
 

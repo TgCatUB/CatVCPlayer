@@ -1,6 +1,7 @@
-from telethon import Button,
+from telethon import Button
 from telethon.events import CallbackQuery
 from userbot import catub
+
 from .function import vc_player
 
 buttons = [
