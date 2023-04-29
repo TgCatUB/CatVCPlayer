@@ -113,6 +113,4 @@ async def sendmsg(event, res):
     elif res and type(res) is str:
         event = await vc_reply(event, res, buttons)
 
-
-if __name__ == "__main__":
-    asyncio.create_task(vc_player.start())
+asyncio.create_task(vc_player.start())
