@@ -219,7 +219,7 @@ async def mute_vc(event):
     for user in user_list:
         await catub(
             functions.phone.EditGroupCallParticipantRequest(
-                call=gc_call, participant=user, muted= not cmd
+                call=gc_call, participant=user, muted=not cmd
             )
         )
     await edit_delete(event, f"{check}d users in Group Call")
