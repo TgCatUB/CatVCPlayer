@@ -7,7 +7,7 @@ from telethon.sessions import StringSession
 from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core import check_owner
-from userbot.core.data import _sudousers_list
+from userbot.core.data import _vcusers_list
 from userbot.core.managers import edit_or_reply
 from userbot.helpers.utils import reply_id
 
@@ -20,7 +20,7 @@ plugin_category = "extra"
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
 OWNER_ID = catub.uid
-sudos = [OWNER_ID] + _sudousers_list()
+sudos = [OWNER_ID] + _vcusers_list()
 vc_session = Config.VC_SESSION
 
 if vc_session:
