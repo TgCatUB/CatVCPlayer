@@ -132,7 +132,7 @@ class CatVC:
             try:
                 res = requests.get(input, allow_redirects=True, stream=True)
                 ctype = res.headers.get("Content-Type")
-                if any(opt in a for opt in ["video","audio"]):
+                if any(opt in a for opt in ["video", "audio"]):
                     pass
                 else:
                     return f"**INVALID URL**"
