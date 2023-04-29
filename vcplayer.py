@@ -519,7 +519,11 @@ async def skip_stream(event):
         await sendmsg(event, res)
 
 
-@catub.cat_cmd(pattern="vcplayer$", public=True, allow_sudo=False,)
+@catub.cat_cmd(
+    pattern="vcplayer$",
+    public=True,
+    allow_sudo=False,
+)
 async def vcplayer(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
