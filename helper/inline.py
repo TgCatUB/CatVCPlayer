@@ -1,7 +1,11 @@
 from telethon import Button
 from telethon.events import CallbackQuery
-from userbot import catub
+from telethon.tl.types import User
 
+from userbot import catub
+from userbot.core import check_owner
+
+from .stream_helper import Stream
 from .function import vc_player
 
 buttons = [
@@ -85,13 +89,13 @@ async def skipvc(event):
 @catub.tgbot.on(CallbackQuery(pattern="repeatvc"))
 async def repeatvc(event):
     if vc_player.PLAYING:
-        input = vc_player.PLAYING["path"]
+        song_input = vc_player.PLAYING["path"]
         stream = vc_player.PLAYING["stream"]
         duration = vc_player.PLAYING["duration"]
         url = vc_player.PLAYING["url"]
         img = vc_player.PLAYING["img"]
         res = await vc_player.play_song(
-            event, input, stream, force=False, duration=duration, url=url, img=img
+            event, song_input, stream, force=False, duration=duration, url=url, img=img
         )
         if res and type(res) is list:
             await event.edit(res[1], buttons=buttons)
