@@ -8,7 +8,7 @@ from telethon.sessions import StringSession
 from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core import check_owner
-from userbot.core.data import _vcusers_list
+from userbot.core.data import _sudousers_list
 from userbot.core.managers import edit_or_reply
 from userbot.helpers.utils import reply_id
 
@@ -21,7 +21,7 @@ plugin_category = "extra"
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
 OWNER_ID = catub.uid
-sudos = [OWNER_ID] + _vcusers_list()
+sudos = [OWNER_ID] + _sudousers_list()
 
 if vc_session := Config.VC_SESSION:
     vc_client = TelegramClient(
@@ -156,7 +156,6 @@ async def sendmsg(event, res):
         ],
     },
     public=True,
-    allow_sudo=False,
 )
 async def joinVoicechat(event):
     "To join a Voice Chat."
@@ -212,7 +211,6 @@ async def joinVoicechat(event):
         ],
     },
     public=True,
-    allow_sudo=False,
 )
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
@@ -242,7 +240,6 @@ async def leaveVoicechat(event):
         ],
     },
     public=True,
-    allow_sudo=False,
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
@@ -282,7 +279,6 @@ async def get_playlist(event):
         ],
     },
     public=True,
-    allow_sudo=False,
 )
 async def play_video(event):
     "To Play a media as video on VC."
@@ -351,7 +347,6 @@ async def play_video(event):
         ],
     },
     public=True,
-    allow_sudo=False,
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
@@ -417,7 +412,6 @@ async def play_audio(event):
         ],
     },
     public=True,
-    allow_sudo=False,
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
@@ -442,7 +436,6 @@ async def pause_stream(event):
         ],
     },
     public=True,
-    allow_sudo=False,
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
@@ -467,7 +460,6 @@ async def resume_stream(event):
         ],
     },
     public=True,
-    allow_sudo=False,
 )
 async def skip_stream(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
@@ -485,7 +477,6 @@ async def skip_stream(event):
 @catub.cat_cmd(
     pattern="vcplayer$",
     public=True,
-    allow_sudo=False,
 )
 async def vcplayer(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:

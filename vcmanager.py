@@ -6,7 +6,7 @@ from telethon.errors import ChatAdminRequiredError, UserAlreadyInvitedError
 from telethon.tl.types import Channel, Chat, User
 from telethon.utils import get_display_name
 from userbot import catub
-from userbot.core.data import _vcusers_list
+from userbot.core.data import _vcusers_list, _sudousers_list
 from userbot.core.managers import edit_delete, edit_or_reply
 from userbot.helpers.utils import mentionuser
 from userbot.sql_helper import global_collectionjson as sql
@@ -273,7 +273,7 @@ async def add_sudo_user(event):
     if cmd == "get":
         if not vc_chats:
             return await edit_delete(
-                event, "__There are no sudo users for your Catuserbot.__"
+                event, "__There are no vc auth users for your Catuserbot.__"
             )
         result = "**The list of vc auth users for your Catuserbot are :**\n\n"
         for chat in [*vcusers]:
@@ -298,10 +298,10 @@ async def add_sudo_user(event):
         if cmd == "add":
             if replied_user.id == event.client.uid:
                 return await edit_delete(event, "__You already have the access.__.")
-            elif replied_user.id in vc_chats:
+            elif replied_user.id in (vc_chats + _sudousers_list()):
                 return await edit_delete(
                     event,
-                    f"{mentionuser(get_display_name(replied_user),replied_user.id)} __already added in access list.__",
+                    f"{mentionuser(get_display_name(replied_user),replied_user.id)} __already have access .__",
                 )
             date = str(datetime.now().strftime("%B %d, %Y"))
             userdata = {
