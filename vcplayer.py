@@ -481,6 +481,7 @@ async def skip_stream(event):
 
 # =======================INLINE==============================
 
+
 @catub.cat_cmd(
     pattern="vcplayer$",
     public=True,
