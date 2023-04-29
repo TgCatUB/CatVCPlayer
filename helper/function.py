@@ -1,12 +1,12 @@
 import asyncio
 import logging
+
 from telethon import Button, TelegramClient
 from telethon.sessions import StringSession
-
-from .vcp_helper import CatVC
 from userbot import Config, catub
 from userbot.core.managers import edit_or_reply
 
+from .vcp_helper import CatVC
 
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
@@ -67,9 +67,7 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
                 )
             else:
                 catevent = (
-                    await catub.tgbot.send_message(
-                        event.chat_id, text, **kwargs
-                    )
+                    await catub.tgbot.send_message(event.chat_id, text, **kwargs)
                     if edit
                     else await event.edit(text, **kwargs)
                 )
