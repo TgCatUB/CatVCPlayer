@@ -36,7 +36,7 @@ class CatVC:
         self.SILENT = True
         self.PUBLICMODE = False
         self.BOTMODE = False
-        self.CLEANMODE = False
+        self.CLEANMODE = True
 
     def clear_vars(self):
         self.CHAT_ID = None
@@ -194,14 +194,7 @@ class CatVC:
                     "url": url,
                 }
             )
-            return (
-                [
-                    img,
-                    f"**🎧 Added to playlist:** {msg[15:]}\n\n👾 Position: {len(self.PLAYLIST)+1}",
-                ]
-                if img
-                else f"**🎧 Added to playlist:** {msg[15:]}\n\n👾 Position: {len(self.PLAYLIST)+1}"
-            )
+            return f"**🎧 Added to playlist:** [{title}]({url})\n\n👾 Position: {len(self.PLAYLIST)+1}"
         if not self.PLAYING:
             self.PLAYLIST.append(
                 {
