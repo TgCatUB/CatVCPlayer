@@ -32,7 +32,7 @@ buttons = [
 ]
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"joinvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"joinvc")))
 async def joinvc(event):
     chat = event.chat_id
 
@@ -51,7 +51,7 @@ async def joinvc(event):
     await event.answer(out)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"leavevc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"leavevc")))
 @check_owner
 async def leavevc(event):
     if vc_player.CHAT_ID:
@@ -63,21 +63,21 @@ async def leavevc(event):
         await event.answer("Not yet joined any VC")
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"resumevc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"resumevc")))
 @check_owner
 async def resumevc(event):
     res = await vc_player.resume()
     await event.answer(res)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"pausevc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"pausevc")))
 @check_owner
 async def pausevc(event):
     res = await vc_player.pause()
     await event.answer(res)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"skipvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"skipvc")))
 @check_owner
 async def skipvc(event):
     res = await vc_player.skip()
@@ -87,7 +87,7 @@ async def skipvc(event):
         await event.answer(res)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"repeatvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"repeatvc")))
 async def repeatvc(event):
     if vc_player.PLAYING:
         song_input = vc_player.PLAYING["path"]
@@ -106,7 +106,7 @@ async def repeatvc(event):
         await event.answer("Nothing playing in vc...")
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"playlistvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"playlistvc")))
 async def playlistvc(event):
     playl = vc_player.PLAYLIST
     cat = ""
@@ -130,7 +130,7 @@ async def playlistvc(event):
     )
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"settingvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"settingvc")))
 @check_owner
 async def settingvc(event):
     abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
@@ -157,13 +157,13 @@ async def settingvc(event):
     await event.edit("** | Settings | **", buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"backvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"backvc")))
 @check_owner
 async def vc(event):
     await event.edit("** | VC PLAYER | **", buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(b"vc_close")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"vc_close")))
 @check_owner
 async def vc(event):
     await event.delete()
