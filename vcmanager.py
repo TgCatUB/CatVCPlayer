@@ -294,7 +294,13 @@ async def add_sudo_user(event):
         replied_user = await catub.get_entity(replied_user)
         if not isinstance(replied_user, User):
             return await edit_delete(event, "`Can't fetch the user...`")
-
+        date = str(datetime.now().strftime("%B %d, %Y"))
+        userdata = {
+            "chat_id": replied_user.id,
+            "chat_name": get_display_name(replied_user),
+            "chat_username": replied_user.username,
+            "date": date,
+        }
         if cmd == "add":
             if replied_user.id == event.client.uid:
                 return await edit_delete(event, "__You already have the access.__.")
@@ -303,14 +309,6 @@ async def add_sudo_user(event):
                     event,
                     f"{mentionuser(get_display_name(replied_user),replied_user.id)} __already have access .__",
                 )
-            date = str(datetime.now().strftime("%B %d, %Y"))
-            userdata = {
-                "chat_id": replied_user.id,
-                "chat_name": get_display_name(replied_user),
-                "chat_username": replied_user.username,
-                "date": date,
-            }
-
             vcusers[str(replied_user.id)] = userdata
         elif cmd == "del":
             if str(replied_user.id) not in vcusers:
@@ -322,7 +320,7 @@ async def add_sudo_user(event):
 
         sql.del_collection("vcusers_list")
         sql.add_collection("vcusers_list", vcusers, {})
-        output = f"{mentionuser(userdata['chat_name'],userdata['chat_id'])} __is Added to your vc auth users.__\n"
+        output = f"{mentionuser(userdata['chat_name'],userdata['chat_id'])} __is {'Added to' if cmd =='add' else 'Deleted from'} your vc auth users.__\n"
         output += "**Bot is reloading to apply the changes. Please wait for a minute**"
         msg = await edit_or_reply(event, output)
         await event.client.reload(msg)
