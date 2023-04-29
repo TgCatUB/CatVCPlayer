@@ -6,7 +6,7 @@ from telethon.errors import ChatAdminRequiredError, UserAlreadyInvitedError
 from telethon.tl.types import Channel, Chat, User
 from telethon.utils import get_display_name
 from userbot import catub
-from userbot.core.data import _vcusers_list, _sudousers_list
+from userbot.core.data import _sudousers_list, _vcusers_list
 from userbot.core.managers import edit_delete, edit_or_reply
 from userbot.helpers.utils import mentionuser
 from userbot.sql_helper import global_collectionjson as sql
