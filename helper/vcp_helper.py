@@ -1,4 +1,5 @@
 import asyncio
+import contextlib
 from pathlib import Path
 
 import requests
@@ -37,9 +38,6 @@ class CatVC:
         self.BOTMODE = False
         self.CLEANMODE = False
 
-    async def start(self):
-        await self.app.start()
-
     def clear_vars(self):
         self.CHAT_ID = None
         self.CHAT_NAME = None
@@ -47,6 +45,10 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
+        self.EVENTS = []
+
+    async def start(self):
+        await self.app.start()
 
     async def join_vc(self, chat, join_as=None):
         self.SILENT = True
@@ -78,7 +80,7 @@ class CatVC:
                 )
                 await self.join_vc(chat=chat, join_as=join_as)
             except ChatAdminRequiredError:
-                return "You need to become an admin to start VC, or ask one to start"
+                return "You need to become an admin to start VC, or ask admins to start"
         except (NodeJSNotInstalled, TooOldNodeJSVersion):
             return "Latest version of NodeJs is not installed"
         except AlreadyJoinedError:
@@ -90,34 +92,19 @@ class CatVC:
         return f"Joined VC of **{chat.title}**{join_as_title}"
 
     async def leave_vc(self):
-        try:
+        with contextlib.suppress(NotInGroupCallError, NoActiveGroupCall):
             await self.app.leave_group_call(self.CHAT_ID)
-        except (NotInGroupCallError, NoActiveGroupCall):
-            pass
         for event in self.EVENTS:
-            try:
+            with contextlib.suppress(Exception):
                 await event.delete()
-            except:
-                pass
-
-        await _catutils.runcmd(f"rm -rf temp")
-
-        self.CHAT_NAME = None
-        self.CHAT_ID = None
-        self.PLAYING = False
-        self.PLAYLIST = []
-        self.EVENTS = []
+        await _catutils.runcmd("rm -rf temp")
+        self.clear_vars()
 
     async def duration(self, name):
         int_ = int(name)
-        ute = int_ // 60
-        ond_ = int_ % 60
-        if int(ond_) in list(range(0, 10)):
-            ond = f"0{ond_}"
-        else:
-            ond = ond_
-        duration = f"{ute}:{ond}"
-        return duration
+        ute, ond_ = divmod(int_, 60)
+        ond = f"0{ond_}" if int(ond_) in list(range(10)) else ond_
+        return f"{ute}:{ond}"
 
     async def play_song(
         self, event, input, stream=Stream.audio, force=False, reply=False, **kwargs
@@ -128,18 +115,17 @@ class CatVC:
             return
         if reply:
             path = Path(input[0])
-            if path.exists():
-                if not path.name.endswith(
-                    (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
-                ):
-                    return "`File is invalid for Streaming`"
-                playable = str(path.absolute())
-                title = path.name
-                duration = await self.duration(reply.file.duration)
-                img = input[1]
-                url = f"https://t.me/c/{abs(reply.chat_id) if not str(abs(reply.chat_id)).startswith('100') else str(abs(reply.chat_id))[3:]}/{reply.id}"
-            else:
+            if not path.exists():
                 return "`File Path is invalid`"
+            if not path.name.endswith(
+                (".mkv", ".mp4", ".webm", ".m4v", ".mp3", ".flac", ".wav", ".m4a")
+            ):
+                return "`File is invalid for Streaming`"
+            playable = str(path.absolute())
+            title = path.name
+            duration = await self.duration(reply.file.duration)
+            img = input[1]
+            url = f"https://t.me/c/{str(abs(reply.chat_id))[3:] if str(abs(reply.chat_id)).startswith('100') else abs(reply.chat_id)}/{reply.id}"
         elif yt_regex.match(input):
             yt_url = input
         elif check_url(input):
@@ -148,8 +134,7 @@ class CatVC:
                 ctype = res.headers.get("Content-Type")
                 if "video" not in ctype or "audio" not in ctype:
                     return "INVALID URL"
-                name = res.headers.get("Content-Disposition", None)
-                if name:
+                if name := res.headers.get("Content-Disposition", None):
                     title = name.split('="')[0].split('"') or ""
                 else:
                     title = input
@@ -183,12 +168,11 @@ class CatVC:
                 ytdl_data = ytdl.extract_info(yt_url, download=False)
 
                 title = ytdl_data.get("title", None)
-            if title:
-                await event.edit("`Downloading...`")
-                playable = await video_dl(yt_url, title)
-            else:
+            if not title:
                 return "Error Fetching URL"
 
+            await event.edit("`Downloading...`")
+            playable = await video_dl(yt_url, title)
             img = await get_ytthumb(ytdl_data["id"])
             duration = await self.duration(ytdl_data["duration"])
             url = yt_url
@@ -229,7 +213,7 @@ class CatVC:
             )
             await self.skip()
             return [img, msg] if img else msg
-        if force and self.PLAYING:
+        if force:
             self.PLAYLIST.insert(
                 0,
                 {
@@ -262,21 +246,21 @@ class CatVC:
             self.PLAYING = False
             return "**Skipped Stream\nEmpty Playlist**"
 
-        next = self.PLAYLIST.pop(0)
-        if next["stream"] == Stream.audio:
-            streamable = AudioPiped(next["path"])
+        next_song = self.PLAYLIST.pop(0)
+        if next_song["stream"] == Stream.audio:
+            streamable = AudioPiped(next_song["path"])
         else:
-            streamable = AudioVideoPiped(next["path"])
+            streamable = AudioVideoPiped(next_song["path"])
         try:
             await self.app.change_stream(self.CHAT_ID, streamable)
         except Exception:
             await self.skip()
-        self.PLAYING = next
+        self.PLAYING = next_song
         msg = f"**🌬 Skipped Stream**\n\n"
-        msg += f"**🎧 Playing:** [{next['title']}]({next['url']})\n"
-        msg += f"**⏳ Duration:** `{next['duration']}`\n"
+        msg += f"**🎧 Playing:** [{next_song['title']}]({next_song['url']})\n"
+        msg += f"**⏳ Duration:** `{next_song['duration']}`\n"
         msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
-        return [next["img"], msg] if next["img"] else msg
+        return [next_song["img"], msg] if next_song["img"] else msg
 
     async def pause(self):
         if not self.PLAYING:
@@ -293,19 +277,3 @@ class CatVC:
             await self.app.resume_stream(self.CHAT_ID)
             self.PAUSED = False
         return f"Resumed Stream on {self.CHAT_NAME}"
-
-    # async def mute(self):
-    #     if not self.PLAYING:
-    #         return "Nothing is playing to Mute"
-    #     if not self.MUTED:
-    #         await self.app.mute_stream(self.CHAT_ID)
-    #         self.MUTED = True
-    #     return f"Muted Stream on {self.CHAT_NAME}"
-
-    # async def unmute(self):
-    #     if not self.PLAYING:
-    #         return "Nothing is playing to Unmute"
-    #     if self.MUTED:
-    #         await self.app.unmute_stream(self.CHAT_ID)
-    #         self.MUTED = False
-    #     return f"Unmuted Stream on {self.CHAT_NAME}"

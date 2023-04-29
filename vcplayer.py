@@ -58,7 +58,7 @@ async def handler(_, update):
             Button.inline("❌ Stop", data="leavevc"),
         ],
         [
-            Button.inline("🗑 close", data="closepage"),
+            Button.inline("🗑 close", data="vc_close"),
         ],
     ]
     if resp and type(resp) is list:
@@ -99,9 +99,9 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
         else:
             if vc_player.PUBLICMODE:
                 if edit:
-                    catevent = await catub.send_message(event.chat_id, text, **kwargs)
-                else:
                     catevent = await event.edit(text, **kwargs)
+                else:
+                    catevent = await catub.send_message(event.chat_id, text, **kwargs)
             else:
                 catevent = await edit_or_reply(event, text)
     if vc_player.CLEANMODE and not edit:
@@ -122,7 +122,7 @@ async def sendmsg(event, res):
             Button.inline("❌ Stop", data="leavevc"),
         ],
         [
-            Button.inline("🗑 close", data="closepage"),
+            Button.inline("🗑 close", data="vc_close"),
         ],
     ]
     if res and type(res) is list:
@@ -528,59 +528,6 @@ async def vcplayer(event):
     await event.delete()
 
 
-"""
-@catub.cat_cmd(
-    pattern="a(?:llow)?vc ?([\d ]*)?",
-    command=("allowvc", plugin_category),
-    info={
-        "header": "To allow a user to control VC.",
-        "description": "To allow a user to controll VC.",
-        "usage": [
-            "{tr}allowvc",
-            "{tr}allowvc (user id)",
-        ],
-    },
-)
-async def allowvc(event):
-    "To allow a user to controll VC."
-    user_id = event.pattern_match.group(1)
-    if user_id:
-        user_id = user_id.split(" ")
-    if not user_id and event.reply_to_msg_id:
-        reply = await event.get_reply_message()
-        user_id = [reply.from_id]
-    if not user_id:
-        return await edit_delete(event, "Whom should i Add")
-    ALLOWED_USERS.update(user_id)
-    return await edit_delete(event, "Added User to Allowed List")
-
-
-@catub.cat_cmd(
-    pattern="d(?:isallow)?vc ?([\d ]*)?",
-    command=("disallowvc", plugin_category),
-    info={
-        "header": "To disallowvc a user to control VC.",
-        "description": "To disallowvc a user to controll VC.",
-        "usage": [
-            "{tr}disallowvc",
-            "{tr}disallowvc (user id)",
-        ],
-    },
-)
-async def disallowvc(event):
-    "To allow a user to controll VC."
-    user_id = event.pattern_match.group(1)
-    if user_id:
-        user_id = user_id.split(" ")
-    if not user_id and event.reply_to_msg_id:
-        reply = await event.get_reply_message()
-        user_id = [reply.from_id]
-    if not user_id:
-        return await edit_delete(event, "Whom should i remove")
-    ALLOWED_USERS.difference_update(user_id)
-    return await edit_delete(event, "Removed User to Allowed List")
-"""
-
 # =======================INLINE==============================
 buttons = [
     [
@@ -600,7 +547,7 @@ buttons = [
         Button.inline("⚙️ Settings", data="settingvc"),
     ],
     [
-        Button.inline("🗑 close", data="closepage"),
+        Button.inline("🗑 close", data="vc_close"),
     ],
 ]
 
@@ -644,7 +591,7 @@ async def leavevc(event):
 
         await event.answer(f"Left VC of {chat_name}")
     else:
-        await event.answer(f"Not yet joined any VC")
+        await event.answer("Not yet joined any VC")
 
 
 @catub.tgbot.on(CallbackQuery(pattern="resumevc"))
@@ -695,14 +642,14 @@ async def playlistvc(event):
     playl = vc_player.PLAYLIST
     cat = ""
     if not playl and not vc_player.PLAYING:
-        return await event.answer(f"Playlist empty")
+        return await event.answer("Playlist empty")
     elif vc_player.PLAYING:
         if vc_player.PLAYING["stream"] == Stream.audio:
             cat += f"🎧 Playing. 🔉  `{vc_player.PLAYING['title']}`\n"
         else:
             cat += f"🎧 Playing. 📺  `{vc_player.PLAYING['title']}`\n"
     else:
-        await event.answer(f"Fetching Playlist ......")
+        await event.answer("Fetching Playlist ......")
     for num, item in enumerate(playl, 1):
         if item["stream"] == Stream.audio:
             cat += f"{num}. 🔉  `{item['title']}`\n"
@@ -717,15 +664,9 @@ async def playlistvc(event):
 @catub.tgbot.on(CallbackQuery(pattern="settingvc"))
 @check_owner
 async def settingvc(event):
-    abtntext = "🏠 Private"
-    bbtntext = "❌ Disabled"
-    cbtntext = "❌ Disabled"
-    if vc_player.PUBLICMODE:
-        abtntext = "🏢 Public"
-    if vc_player.BOTMODE:
-        bbtntext = "✅ Enabled"
-    if vc_player.CLEANMODE:
-        cbtntext = "✅ Enabled"
+    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
+    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
+    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
     buttons = [
         [
             Button.inline("🎩 Auth Mode", data="amodeinfo"),
@@ -741,7 +682,7 @@ async def settingvc(event):
         ],
         [
             Button.inline("⬅️ Back", data="backvc"),
-            Button.inline("🗑 close", data="closepage"),
+            Button.inline("🗑 close", data="vc_close"),
         ],
     ]
     await event.edit("** | Settings | **", buttons=buttons)
@@ -753,7 +694,7 @@ async def vc(event):
     await event.edit("** | VC PLAYER | **", buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(pattern="closepage"))
+@catub.tgbot.on(CallbackQuery(pattern="vc_close"))
 @check_owner
 async def vc(event):
     await event.delete()
@@ -810,7 +751,7 @@ async def vc(event):
         ],
         [
             Button.inline("⬅️ Back", data="backvc"),
-            Button.inline("🗑 close", data="closepage"),
+            Button.inline("🗑 close", data="vc_close"),
         ],
     ]
 
@@ -823,8 +764,8 @@ async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
     if mode == "a":
         text = "⁉️ What is This?\n\n🏢 Public: Anyone can use catuserbot vc player present in this group.\n\n🏠 Private: Only Owner of user bot and sudo users can use catuserbot vc player"
-    if mode == "b":
+    elif mode == "b":
         text = "⁉️ What is This?\n\nWhen activated, Your assistant responds to the commands  with interactive buttons"
-    if mode == "c":
+    elif mode == "c":
         text = "⁉️ What is This?\n\nWhen activated, Bot will delete its message after leaving vc to make your chat clean and clear."
     await event.answer(text)
