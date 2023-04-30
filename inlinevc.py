@@ -133,7 +133,7 @@ async def skipvc(event):
     ]
     res = await vc_player.skip()
     if res and type(res) is list:
-        await event.edit(res[1], file=resp[0], buttons=buttons)
+        await event.edit(res[1], file=res[0], buttons=buttons)
     elif res and type(res) is str:
         await event.edit(res, buttons=buttons)
 
@@ -220,7 +220,11 @@ async def vc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close")))
 @check_owner
 async def vc(event):
-    await event.delete()
+    await event.edit("**| VC Player Closed |**", buttons=[
+            [Button.inline("Open again", data="backvc")]
+            #[Button.inline("Mode Info", data="modeinfovc")]
+        ]
+    )
 
 
 # SETTINGS
