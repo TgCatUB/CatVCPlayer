@@ -94,14 +94,15 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
 
 
 async def sendmsg(event, res):
-    buttons = [
+    buttons = buttons = [
         [
-            Button.inline("⏸ Pause", data="pausevc"),
-            Button.inline("▶️ Resume", data="resumevc"),
-            Button.inline("🔁 repeat", data="repeatvc"),
+            Button.inline("⏮ Prev", data="previousvc"),
+            Button.inline("⏸ Pause", data="pausevc0"),
+            # Button.inline("▶️ Resume", data="resumevc"),
+            Button.inline("⏭ Next", data="skipvc"),
         ],
         [
-            Button.inline("🪡 Skip", data="skipvc"),
+            Button.inline("🔁 repeat", data="repeatvc"),
             Button.inline("❌ Stop", data="leavevc"),
         ],
         [
