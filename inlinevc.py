@@ -89,7 +89,9 @@ async def skipvc(event):
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc")))
 async def repeatvc(event):
-    buttons = [[Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons]
+    buttons = [
+        [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons
+    ]
     if vc_player.PLAYING:
         song_input = vc_player.PLAYING["path"]
         stream = vc_player.PLAYING["stream"]
