@@ -44,7 +44,7 @@ async def handler(_, update):
             Button.inline("❌ Stop", data="leavevc"),
         ],
         [
-            Button.inline("🗑 close", data="vc_close"),
+            Button.inline("🗑 close", data="vc_close0"),
         ],
     ]
     if resp and type(resp) is list:
@@ -106,7 +106,7 @@ async def sendmsg(event, res):
             Button.inline("❌ Stop", data="leavevc"),
         ],
         [
-            Button.inline("🗑 close", data="vc_close"),
+            Button.inline("🗑 close", data="vc_close0"),
         ],
     ]
     if res and type(res) is list:
