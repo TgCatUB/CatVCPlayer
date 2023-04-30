@@ -378,31 +378,32 @@ async def vcplayer(event):
     await event.delete()
 
 
-buttons = [
-    [
-        Button.inline("👾 Join VC", data="joinvc"),
-        Button.inline("🍃 Leave VC", data="leavevc"),
-    ],
-    [
-        Button.inline("▶️ Resume", data="resumevc"),
-        Button.inline("⏸ Pause", data="pausevc"),
-    ],
-    [
-        Button.inline("🪡 Skip", data="skipvc"),
-        Button.inline("🔁 repeat", data="repeatvc"),
-    ],
-    [
-        Button.inline("📜 Playlist", data="playlistvc"),
-        Button.inline("⚙️ Settings", data="settingvc"),
-    ],
-    [
-        Button.inline("🗑 close", data="vc_close"),
-    ],
-]
+
 
 
 @catub.tgbot.on(InlineQuery(pattern="^vcplayer$"))
 async def Inlineplayer(event):
+    buttons = [
+        [
+            Button.inline("👾 Join VC", data="joinvc"),
+            Button.inline("🍃 Leave VC", data="leavevc"),
+        ],
+        [
+            Button.inline("▶️ Resume", data="resumevc"),
+            Button.inline("⏸ Pause", data="pausevc"),
+        ],
+        [
+            Button.inline("🪡 Skip", data="skipvc"),
+            Button.inline("🔁 repeat", data="repeatvc"),
+        ],
+        [
+            Button.inline("📜 Playlist", data="playlistvc"),
+            Button.inline("⚙️ Settings", data="settingvc"),
+        ],
+        [
+            Button.inline("🗑 close", data="vc_close"),
+        ],
+    ]
     await event.answer(
         [
             event.builder.article(
