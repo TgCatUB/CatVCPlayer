@@ -115,7 +115,8 @@ class CatVC:
         stream=Stream.audio,
         force=False,
         reply=False,
-        prev=False**kwargs,
+        prev=False,
+        **kwargs,
     ):
         yt_url = False
         img = False
