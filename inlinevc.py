@@ -66,6 +66,10 @@ async def leavevc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc")))
 @check_owner
 async def previousvc(event):
+    eve = await event.get_message()
+    buttons = [
+        [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
+    ]
     prev = vc_player.PREVIOUS[0]
     song_input = prev["path"]
     stream = prev["stream"]
@@ -77,9 +81,9 @@ async def previousvc(event):
     )
     vc_player.PREVIOUS.pop(0)
     if res and type(res) is list:
-        await event.edit(res[1], buttons=buttons)
+        await event.edit(res[1], file=resp[0], buttons=buttons)
     elif res and type(res) is str:
-        await event.answer(res)
+        await event.edit(res, buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc(\d)?")))
@@ -89,8 +93,9 @@ async def resumevc(event):
     res = await vc_player.resume()
     await event.answer(res)
     if pl and not vc_player.PAUSED:
+        eve = await event.get_message()
         buttons = [
-            [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons
+            [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
         ]
         buttons[0].pop(1)
         buttons[0].insert(1, Button.inline("⏸ Pause", data="pausevc0"))
@@ -104,8 +109,9 @@ async def pausevc(event):
     res = await vc_player.pause()
     await event.answer(res)
     if pl and vc_player.PAUSED:
+        eve = await event.get_message()
         buttons = [
-            [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons
+            [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
         ]
         buttons[0].pop(1)
         buttons[0].insert(1, Button.inline("▶️ Resume", data="resumevc0"))
@@ -115,11 +121,15 @@ async def pausevc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^skipvc")))
 @check_owner
 async def skipvc(event):
+    eve = await event.get_message()
+    buttons = [
+        [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
+    ]
     res = await vc_player.skip()
     if res and type(res) is list:
-        await event.edit(res[1], buttons=buttons)
+        await event.edit(res[1], file=resp[0], buttons=buttons)
     elif res and type(res) is str:
-        await event.answer(res)
+        await event.edit(res, buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc")))
