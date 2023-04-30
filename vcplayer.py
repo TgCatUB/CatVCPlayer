@@ -165,13 +165,13 @@ async def get_playlist(event):
                 for num, item in enumerate(playl, 1)
             )
         if play2 := vc_player.PLAYING:
-            cat += f"\n\n**🎧 Playing:** " + play2['title']
+            cat += f"\n\n**🎧 Playing:** " + play2["title"]
         if play3 := vc_player.PLAYLIST:
             cat += "\n\n" + "".join(
                 f"{num}. 🔉  `{item['title']}`\n"
                 if item["stream"] == Stream.audio
                 else f"{num}. �  `{item['title']}`\n"
-                for num, item in enumerate(play3, len(vc_player.PREVIOUS)+2)
+                for num, item in enumerate(play3, len(vc_player.PREVIOUS) + 2)
             )
         if cat != "":
             await vc_reply(event, f"**Full list:**\n\n{cat}\n**Enjoy the show**")
@@ -344,7 +344,14 @@ async def previous(event):
         url = prev["url"]
         img = prev["img"]
         res = await vc_player.play_song(
-            event, song_input, stream, force=True, prev=True, duration=duration, url=url, img=img
+            event,
+            song_input,
+            stream,
+            force=True,
+            prev=True,
+            duration=duration,
+            url=url,
+            img=img,
         )
         if res:
             await sendmsg(event, res)
