@@ -72,7 +72,7 @@ async def previousvc(event):
     ]
     if vc_player.PREVIOUS:
         pass
-    else: 
+    else:
         return await event.answer("No Previous track found.")
     prev = vc_player.PREVIOUS[-1]
     song_input = prev["path"]
