@@ -378,9 +378,6 @@ async def vcplayer(event):
     await event.delete()
 
 
-
-
-
 @catub.tgbot.on(InlineQuery(pattern="^vcplayer$"))
 async def Inlineplayer(event):
     buttons = [
