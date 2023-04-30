@@ -77,7 +77,14 @@ async def previousvc(event):
     url = prev["url"]
     img = prev["img"]
     res = await vc_player.play_song(
-        event, song_input, stream, force=True, prev=True, duration=duration, url=url, img=img
+        event,
+        song_input,
+        stream,
+        force=True,
+        prev=True,
+        duration=duration,
+        url=url,
+        img=img,
     )
     if res and type(res) is list:
         await event.edit(res[1], file=res[0], buttons=buttons)
