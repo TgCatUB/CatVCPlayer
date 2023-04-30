@@ -73,10 +73,10 @@ async def previousvc(event):
     url = prev["url"]
     img = prev["img"]
     res = await vc_player.play_song(
-            event, song_input, stream, force=True, duration=duration, url=url, img=img
-        )
-    
-        
+        event, song_input, stream, force=True, duration=duration, url=url, img=img
+    )
+
+
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc")))
 @check_owner
 async def resumevc(event):
