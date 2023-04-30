@@ -220,10 +220,12 @@ async def vc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close")))
 @check_owner
 async def vc(event):
-    await event.edit("**| VC Player Closed |**", buttons=[
+    await event.edit(
+        "**| VC Player Closed |**",
+        buttons=[
             [Button.inline("Open again", data="backvc")]
-            #[Button.inline("Mode Info", data="modeinfovc")]
-        ]
+            # [Button.inline("Mode Info", data="modeinfovc")]
+        ],
     )
 
 
