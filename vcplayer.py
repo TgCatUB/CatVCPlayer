@@ -113,7 +113,7 @@ async def leaveVoicechat(event):
 
 
 @catub.cat_cmd(
-    pattern="playlist$",
+    pattern="(play|prev|full)list$",
     command=("playlist", plugin_category),
     info={
         "header": "To Get all playlist.",
@@ -131,17 +131,52 @@ async def get_playlist(event):
     "To Get all playlist for Voice Chat."
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
-    event = await vc_reply(event, "Fetching Playlist ......", edit=True)
-    if playl := vc_player.PLAYLIST:
-        cat = "".join(
-            f"{num}. 🔉  `{item['title']}`\n"
-            if item["stream"] == Stream.audio
-            else f"{num}. �  `{item['title']}`\n"
-            for num, item in enumerate(playl, 1)
-        )
-        await vc_reply(event, f"**Playlist:**\n\n{cat}\n**Enjoy the show**")
-    else:
-        await vc_reply(event, "Playlist empty")
+    ppf = event.pattern_match.group(1)
+    event = await vc_reply(event, f"Fetching {ppf.title()}list ......", edit=True)
+    if ppf == "play":
+        if playl := vc_player.PLAYLIST:
+            cat = "".join(
+                f"{num}. 🔉  `{item['title']}`\n"
+                if item["stream"] == Stream.audio
+                else f"{num}. �  `{item['title']}`\n"
+                for num, item in enumerate(playl, 1)
+            )
+            await vc_reply(event, f"**Playlist:**\n\n{cat}\n**Enjoy the show**")
+        else:
+            await vc_reply(event, "Playlist empty")
+    elif ppf == "prev":
+        if playl := vc_player.PREVIOUS:
+            cat = "".join(
+                f"{num}. 🔉  `{item['title']}`\n"
+                if item["stream"] == Stream.audio
+                else f"{num}. �  `{item['title']}`\n"
+                for num, item in enumerate(playl, 1)
+            )
+            await vc_reply(event, f"**Previous list:**\n\n{cat}\n**Enjoy the show**")
+        else:
+            await vc_reply(event, "Previous list empty")
+    elif ppf == "full":
+        cat = ""
+        if playl := vc_player.PREVIOUS:
+            cat = "".join(
+                f"{num}. 🔉  `{item['title']}`\n"
+                if item["stream"] == Stream.audio
+                else f"{num}. �  `{item['title']}`\n"
+                for num, item in enumerate(playl, 1)
+            )
+        if play2 := vc_player.PLAYING:
+            cat += f"\n\n**🎧 Playing:** " + play2['title']
+        if play3 := vc_player.PLAYLIST:
+            cat += "\n\n" + "".join(
+                f"{num}. 🔉  `{item['title']}`\n"
+                if item["stream"] == Stream.audio
+                else f"{num}. �  `{item['title']}`\n"
+                for num, item in enumerate(play3, len(vc_player.PREVIOUS)+2)
+            )
+        if cat != "":
+            await vc_reply(event, f"**Full list:**\n\n{cat}\n**Enjoy the show**")
+        else:
+            await vc_reply(event, "Playlist empty")
 
 
 @catub.cat_cmd(
@@ -309,7 +344,7 @@ async def previous(event):
         url = prev["url"]
         img = prev["img"]
         res = await vc_player.play_song(
-            event, song_input, stream, force=True, duration=duration, url=url, img=img
+            event, song_input, stream, force=True, prev=True, duration=duration, url=url, img=img
         )
         if res:
             await sendmsg(event, res)
