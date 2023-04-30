@@ -32,6 +32,7 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
+        self.PREVIOUS = []
         self.EVENTS = []
         self.SILENT = True
         self.PUBLICMODE = False
@@ -45,6 +46,7 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
+        self.PREVIOUS = []
         self.EVENTS = []
 
     async def start(self):
