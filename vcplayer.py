@@ -315,7 +315,7 @@ async def previous(event):
         if resp:
             await sendmsg(event, resp)
     else:
-        vc_reply(event, "**No previous track found.**")
+        await vc_reply(event, "**No previous track found.**")
 
 
 @catub.cat_cmd(
