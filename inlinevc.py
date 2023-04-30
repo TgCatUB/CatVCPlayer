@@ -76,20 +76,35 @@ async def previousvc(event):
         event, song_input, stream, force=True, duration=duration, url=url, img=img
     )
     vc_player.PREVIOUS.pop(0)
+    if res and type(res) is list:
+        await event.edit(res[1], buttons=buttons)
+    elif res and type(res) is str:
+        await event.answer(res)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc(\d)?")))
 @check_owner
 async def resumevc(event):
+    pl = event.pattern_match.group(1)
     res = await vc_player.resume()
     await event.answer(res)
+    if pl and not vc_player.PAUSED:
+        buttons = [[Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons]
+        buttons[0].pop(1)
+        buttons[0].insert(1, Button.inline("⏸ Pause", data="pausevc0"))
+        await event.edit(buttons=buttons)
 
-
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^pausevc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^pausevc(\d)?")))
 @check_owner
 async def pausevc(event):
+    pl = event.pattern_match.group(1)
     res = await vc_player.pause()
     await event.answer(res)
+    if pl and vc_player.PAUSED:
+        buttons = [[Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons]
+        buttons[0].pop(1)
+        buttons[0].insert(1, Button.inline("▶️ Resume", data="resumevc0"))
+        await event.edit(buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^skipvc")))
