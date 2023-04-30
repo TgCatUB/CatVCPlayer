@@ -109,7 +109,7 @@ class CatVC:
         return f"{ute}:{ond}"
 
     async def play_song(
-        self, event, input, stream=Stream.audio, force=False, reply=False, **kwargs
+        self, event, input, stream=Stream.audio, force=False, reply=False, prev=False **kwargs
     ):
         yt_url = False
         img = False
@@ -220,19 +220,22 @@ class CatVC:
                     "url": url,
                 },
             )
-            await self.skip()
+            await self.skip(prev=prev)
             return [img, msg] if img else msg
 
     async def handle_next(self, update):
         if isinstance(update, StreamAudioEnded):
             return await self.skip()
 
-    async def skip(self, clear=False):
+    async def skip(self, clear=False, prev=False):
         self.SILENT = False
         if clear:
             self.PLAYLIST = []
-        if self.PLAYING:
-            self.PREVIOUS.append(self.PLAYING)
+        if prev: 
+            self.PREVIOUS.pop(-1)
+            self.PLAYLIST.insert(1, self.PLAYING)
+        else: 
+            if self.PLAYING: self.PREVIOUS.append(self.PLAYING) 
         # log chat name
         if not self.PLAYLIST:
             if self.PLAYING:
