@@ -1,8 +1,6 @@
 import contextlib
 import logging
 
-from telethon import Button
-from telethon.events import InlineQuery
 from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core.data import _sudousers_list
@@ -11,7 +9,7 @@ from userbot.helpers.utils import reply_id
 from .helper.function import sendmsg, vc_player, vc_reply
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
-from . inlinevc import buttons
+from .inlinevc import buttons
 
 plugin_category = "extra"
 
