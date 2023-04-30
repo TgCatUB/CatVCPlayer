@@ -220,6 +220,7 @@ async def vc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))
 @check_owner
 async def vc(event):
+    del = event.pattern_match.group(1)
     if del:
         return await event.delete()
     else:
