@@ -70,6 +70,10 @@ async def previousvc(event):
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
     ]
+    if vc_player.PREVIOUS:
+        pass
+    else: 
+        return await event.answer("No Previous track found.")
     prev = vc_player.PREVIOUS[-1]
     song_input = prev["path"]
     stream = prev["stream"]
@@ -87,7 +91,10 @@ async def previousvc(event):
         img=img,
     )
     if res and type(res) is list:
-        await event.edit(res[1], file=res[0], buttons=buttons)
+        try:
+            await event.edit(res[1], file=res[0], buttons=buttons)
+        except:
+            await event.edit(res[1], buttons=buttons)
     elif res and type(res) is str:
         await event.edit(res, buttons=buttons)
 
@@ -133,7 +140,10 @@ async def skipvc(event):
     ]
     res = await vc_player.skip()
     if res and type(res) is list:
-        await event.edit(res[1], file=res[0], buttons=buttons)
+        try:
+            await event.edit(res[1], file=res[0], buttons=buttons)
+        except:
+            await event.edit(res[1], buttons=buttons)
     elif res and type(res) is str:
         await event.edit(res, buttons=buttons)
 
