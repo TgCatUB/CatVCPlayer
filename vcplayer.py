@@ -302,7 +302,7 @@ async def play_audio(event):
 async def previous(event):
     "To play previous a stream on Voice Chat."
     if vc_player.PREVIOUS:
-        prev = vc_player.PREVIOUS[0]
+        prev = vc_player.PREVIOUS[-1]
         song_input = prev["path"]
         stream = prev["stream"]
         duration = prev["duration"]
@@ -311,7 +311,6 @@ async def previous(event):
         res = await vc_player.play_song(
             event, song_input, stream, force=True, duration=duration, url=url, img=img
         )
-        vc_player.PREVIOUS.pop(0)
         if res:
             await sendmsg(event, res)
     else:
