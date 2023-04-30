@@ -29,6 +29,7 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
+        self.PREVIOUS = []
 
     async def start(self):
         await self.app.start()
@@ -40,7 +41,8 @@ class CatVC:
         self.PAUSED = False
         self.MUTED = False
         self.PLAYLIST = []
-
+        self.PREVIOUS = []
+        
     async def join_vc(self, chat, join_as=None):
         if self.CHAT_ID:
             return f"Already in a group call on {self.CHAT_NAME}"
@@ -90,6 +92,7 @@ class CatVC:
         self.CHAT_ID = None
         self.PLAYING = False
         self.PLAYLIST = []
+        self.PREVIOUS = []
 
     async def play_song(self, input, stream=Stream.audio, force=False):
         if yt_regex.match(input):
