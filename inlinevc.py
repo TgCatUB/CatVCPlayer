@@ -63,6 +63,20 @@ async def leavevc(event):
         await event.answer("Not yet joined any VC")
 
 
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc")))
+@check_owner
+async def previousvc(event):
+    prev = vc_player.PREVIOUS[0]
+    song_input = prev["path"]
+    stream = prev["stream"]
+    duration = prev["duration"]
+    url = prev["url"]
+    img = prev["img"]
+    res = await vc_player.play_song(
+            event, song_input, stream, force=True, duration=duration, url=url, img=img
+        )
+    
+        
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc")))
 @check_owner
 async def resumevc(event):
