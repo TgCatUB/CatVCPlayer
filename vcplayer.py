@@ -312,8 +312,8 @@ async def previous(event):
             event, song_input, stream, force=True, duration=duration, url=url, img=img
         )
         vc_player.PREVIOUS.pop(0)
-        if resp:
-            await sendmsg(event, resp)
+        if res:
+            await sendmsg(event, res)
     else:
         await vc_reply(event, "**No previous track found.**")
 
