@@ -217,9 +217,13 @@ async def vc(event):
     await event.edit("** | VC PLAYER | **", buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))
 @check_owner
 async def vc(event):
+    if del:
+        return await event.delete()
+    else:
+        pass
     await event.edit(
         "**| VC Player Closed |**",
         buttons=[
