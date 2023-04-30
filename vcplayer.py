@@ -11,6 +11,7 @@ from userbot.helpers.utils import reply_id
 from .helper.function import sendmsg, vc_player, vc_reply
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
+from . inlinevc import buttons
 
 plugin_category = "extra"
 
@@ -452,35 +453,3 @@ async def vcplayer(event):
     results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     await event.delete()
-
-
-@catub.tgbot.on(InlineQuery(pattern="^vcplayer$"))
-async def Inlineplayer(event):
-    buttons = [
-        [
-            Button.inline("👾 Join VC", data="joinvc"),
-            Button.inline("🍃 Leave VC", data="leavevc"),
-        ],
-        [
-            Button.inline("▶️ Resume", data="resumevc"),
-            Button.inline("⏸ Pause", data="pausevc"),
-        ],
-        [
-            Button.inline("🪡 Skip", data="skipvc"),
-            Button.inline("🔁 repeat", data="repeatvc"),
-        ],
-        [
-            Button.inline("📜 Playlist", data="playlistvc"),
-            Button.inline("⚙️ Settings", data="settingvc"),
-        ],
-        [
-            Button.inline("🗑 close", data="vc_close"),
-        ],
-    ]
-    await event.answer(
-        [
-            event.builder.article(
-                title=" | VC PLAYER | ", text="** | VC PLAYER | **", buttons=buttons
-            )
-        ]
-    )
