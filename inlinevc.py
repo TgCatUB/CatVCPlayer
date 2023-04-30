@@ -81,7 +81,7 @@ async def previousvc(event):
     )
     vc_player.PREVIOUS.pop(0)
     if res and type(res) is list:
-        await event.edit(res[1], file=resp[0], buttons=buttons)
+        await event.edit(res[1], file=res[0], buttons=buttons)
     elif res and type(res) is str:
         await event.edit(res, buttons=buttons)
 
