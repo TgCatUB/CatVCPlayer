@@ -89,10 +89,13 @@ async def resumevc(event):
     res = await vc_player.resume()
     await event.answer(res)
     if pl and not vc_player.PAUSED:
-        buttons = [[Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons]
+        buttons = [
+            [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons
+        ]
         buttons[0].pop(1)
         buttons[0].insert(1, Button.inline("⏸ Pause", data="pausevc0"))
         await event.edit(buttons=buttons)
+
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^pausevc(\d)?")))
 @check_owner
@@ -101,7 +104,9 @@ async def pausevc(event):
     res = await vc_player.pause()
     await event.answer(res)
     if pl and vc_player.PAUSED:
-        buttons = [[Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons]
+        buttons = [
+            [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in event.buttons
+        ]
         buttons[0].pop(1)
         buttons[0].insert(1, Button.inline("▶️ Resume", data="resumevc0"))
         await event.edit(buttons=buttons)
