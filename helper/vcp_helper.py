@@ -42,7 +42,7 @@ class CatVC:
         self.MUTED = False
         self.PLAYLIST = []
         self.PREVIOUS = []
-        
+
     async def join_vc(self, chat, join_as=None):
         if self.CHAT_ID:
             return f"Already in a group call on {self.CHAT_NAME}"
