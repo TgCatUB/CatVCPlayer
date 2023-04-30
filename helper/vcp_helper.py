@@ -231,6 +231,8 @@ class CatVC:
         self.SILENT = False
         if clear:
             self.PLAYLIST = []
+        if self.PLAYING:
+            self.PREVIOUS.append(self.PLAYING)
         # log chat name
         if not self.PLAYLIST:
             if self.PLAYING:
