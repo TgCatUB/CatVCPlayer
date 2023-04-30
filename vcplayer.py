@@ -283,6 +283,7 @@ async def play_audio(event):
     if resp:
         await sendmsg(event, resp)
 
+
 @catub.cat_cmd(
     pattern="previous",
     command=("previous", plugin_category),
@@ -308,14 +309,15 @@ async def previous(event):
         url = prev["url"]
         img = prev["img"]
         res = await vc_player.play_song(
-                event, song_input, stream, force=True, duration=duration, url=url, img=img
+            event, song_input, stream, force=True, duration=duration, url=url, img=img
         )
         vc_player.PREVIOUS.pop(0)
         if resp:
             await sendmsg(event, resp)
     else:
         vc_reply(event, "**No previous track found.**")
-        
+
+
 @catub.cat_cmd(
     pattern="pause",
     command=("pause", plugin_category),
