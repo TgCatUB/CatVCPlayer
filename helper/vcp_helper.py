@@ -109,7 +109,13 @@ class CatVC:
         return f"{ute}:{ond}"
 
     async def play_song(
-        self, event, input, stream=Stream.audio, force=False, reply=False, prev=False **kwargs
+        self,
+        event,
+        input,
+        stream=Stream.audio,
+        force=False,
+        reply=False,
+        prev=False**kwargs,
     ):
         yt_url = False
         img = False
@@ -231,11 +237,12 @@ class CatVC:
         self.SILENT = False
         if clear:
             self.PLAYLIST = []
-        if prev: 
+        if prev:
             self.PREVIOUS.pop(-1)
             self.PLAYLIST.insert(1, self.PLAYING)
-        else: 
-            if self.PLAYING: self.PREVIOUS.append(self.PLAYING) 
+        else:
+            if self.PLAYING:
+                self.PREVIOUS.append(self.PLAYING)
         # log chat name
         if not self.PLAYLIST:
             if self.PLAYING:
