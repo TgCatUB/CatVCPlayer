@@ -165,9 +165,10 @@ async def get_playlist(event):
                 for num, item in enumerate(playl, 1)
             )
         if play2 := vc_player.PLAYING:
-            cat += f"\n\n**🎧 Playing:** " + play2["title"]
+            ic = "🔉" if item["stream"] == Stream.audio else "�"
+            cat += f"**{len(vc_player.PREVIOUS) + 1}. {ic} {play2["title"]}**\n"
         if play3 := vc_player.PLAYLIST:
-            cat += "\n\n" + "".join(
+            cat += "".join(
                 f"{num}. 🔉  `{item['title']}`\n"
                 if item["stream"] == Stream.audio
                 else f"{num}. �  `{item['title']}`\n"
