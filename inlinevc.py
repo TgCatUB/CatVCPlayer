@@ -70,7 +70,7 @@ async def previousvc(event):
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
     ]
-    prev = vc_player.PREVIOUS[0]
+    prev = vc_player.PREVIOUS[-1]
     song_input = prev["path"]
     stream = prev["stream"]
     duration = prev["duration"]
@@ -79,7 +79,6 @@ async def previousvc(event):
     res = await vc_player.play_song(
         event, song_input, stream, force=True, duration=duration, url=url, img=img
     )
-    vc_player.PREVIOUS.pop(0)
     if res and type(res) is list:
         await event.edit(res[1], file=res[0], buttons=buttons)
     elif res and type(res) is str:
