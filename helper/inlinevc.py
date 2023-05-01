@@ -7,11 +7,10 @@ from userbot import catub
 from userbot.core import check_owner
 
 from .function import vc_player
-from .stream_helper import Stream
 
 vcimg = "https://graph.org/file/0cfbd27455f66b6eb9d00.jpg"
 
-#📜
+# 📜
 buttons = [
     [
         Button.inline("👾 Join VC", data="joinvc"),
@@ -27,6 +26,7 @@ buttons = [
 ]
 
 # MAINMENU BUTTONS
+
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))
 @check_owner(vc=True)
@@ -58,6 +58,7 @@ async def leavevc(event):
     else:
         await event.answer("Not yet joined any VC")
 
+
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^playervc$")))
 @check_owner(vc=True)
 async def playervc(event):
@@ -88,7 +89,6 @@ async def playervc(event):
     msg += f"**⏳ Duration:** `{duration}`\n"
     msg += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
     await event.edit(msg, file=vcimg, buttons=buttons)
-
 
 
 # PLAYER BUTTONS
@@ -214,7 +214,6 @@ async def repeatvc(event):
             await event.edit(res, buttons=buttons)
     else:
         await event.answer("Nothing playing in vc...")
-
 
 
 # SETTINGS BUTTONS
