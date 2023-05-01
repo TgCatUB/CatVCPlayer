@@ -246,9 +246,6 @@ async def vc(event):
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
-    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
-    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
-    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
     if mode == "a":
         if vc_player.PUBLICMODE:
             vc_player.PUBLICMODE = False
@@ -303,4 +300,4 @@ async def vc(event):
         text = "⁉️ What is This?\n\nWhen activated, Your assistant responds to the commands  with interactive buttons"
     elif mode == "c":
         text = "⁉️ What is This?\n\nWhen activated, Bot will delete its message after leaving vc to make your chat clean and clear."
-    await event.answer(text)
+    await event.answer(text, cache_time=0, alert=True)
