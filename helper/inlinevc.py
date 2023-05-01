@@ -35,7 +35,7 @@ buttons = (
             Button.inline("〣 Mainmenu", data="menuvc"),
         ],
         [
-            Button.inline("🗑 close", data="vc_close0"),
+            Button.inline("🗑 close", data="vc_close"),
         ],
     ],
 )
@@ -127,7 +127,7 @@ async def previousvc(event):
             await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc$")))
 @check_owner(vc=True)
 async def resumevc(event):
     if not vc_player.PLAYING:
@@ -144,7 +144,7 @@ async def resumevc(event):
         await event.edit(buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^pausevc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^pausevc$")))
 @check_owner(vc=True)
 async def pausevc(event):
     if not vc_player.PLAYING:
@@ -231,26 +231,15 @@ async def vc(event):
     bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
     cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
     if mode == "a":
-        if vc_player.PUBLICMODE:
-            vc_player.PUBLICMODE = False
-            abtntext = "🏠 Private"
-        else:
-            vc_player.PUBLICMODE = True
-            abtntext = "🏢 Public"
+        vc_player.PUBLICMODE = not vc_player.PUBLICMODE
+        abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
     elif mode == "b":
-        if vc_player.BOTMODE:
-            vc_player.BOTMODE = False
-            bbtntext = "❌ Disabled"
-        else:
-            vc_player.BOTMODE = True
-            bbtntext = "✅ Enabled"
+        vc_player.BOTMODE = not vc_player.BOTMODE
+        bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
     elif mode == "c":
-        if vc_player.CLEANMODE:
-            vc_player.CLEANMODE = False
-            cbtntext = "❌ Disabled"
-        else:
-            vc_player.CLEANMODE = True
-            cbtntext = "✅ Enabled"
+        vc_player.CLEANMODE = not vc_player.CLEANMODE
+        cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
+
     buttons = [
         [
             Button.inline("🎩 Auth Mode", data="amodeinfo"),
@@ -293,18 +282,12 @@ async def vc(event):
     await event.edit("** | VC PLAYER | **", buttons=buttons[0])
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close$")))
 @check_owner(vc=True)
 async def vc(event):
-    # if del_ := event.pattern_match.group(1):
-    # return
-    await event.delete()
-
-
-# await event.edit(
-#   "**| VC Player Closed |**",
-#  buttons=[
-#      [Button.inline("Open again", data="backvc")]
-# [Button.inline("Mode Info", data="modeinfovc")]
-#  ],
-# )
+    try:
+        await event.delete()
+    except Exception:
+        await event.edit(
+            "**| VC Player Closed |**",
+            buttons=[[Button.inline("Open again", data="backvc")]])

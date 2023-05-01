@@ -241,9 +241,8 @@ class CatVC:
         if prev:
             self.PREVIOUS.pop(-1)
             self.PLAYLIST.insert(1, self.PLAYING)
-        else:
-            if self.PLAYING:
-                self.PREVIOUS.append(self.PLAYING)
+        elif self.PLAYING:
+            self.PREVIOUS.append(self.PLAYING)
         # log chat name
         if not self.PLAYLIST:
             if self.PLAYING:

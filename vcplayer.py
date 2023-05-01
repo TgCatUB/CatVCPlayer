@@ -4,6 +4,7 @@ import logging
 from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core.data import _sudousers_list
+from userbot.core.logger import logging
 from userbot.helpers.utils import reply_id
 
 from .helper.function import sendmsg, vc_player, vc_reply
@@ -13,7 +14,7 @@ from .helper.tg_downloader import tg_dl
 
 plugin_category = "extra"
 
-logging.getLogger("pytgcalls").setLevel(logging.ERROR)
+LOGS = logging.getLogger(__name__)
 sudos = [Config.OWNER_ID] + _sudousers_list()
 
 
@@ -83,7 +84,7 @@ async def joinVoicechat(event):
 
 
 @catub.cat_cmd(
-    pattern="leavevc",
+    pattern="leavevc$",
     command=("leavevc", plugin_category),
     info={
         "header": "To leave a Voice Chat.",
@@ -189,7 +190,7 @@ async def get_playlist(event):
 
 
 @catub.cat_cmd(
-    pattern="vplay ?(-f)? ?([\S ]*)?",
+    pattern="vplay(?:\s|$)([\s\S]*)",
     command=("vplay", plugin_category),
     info={
         "header": "To Play a media as video on VC.",
@@ -212,14 +213,14 @@ async def get_playlist(event):
 )
 async def play_video(event):
     "To Play a media as video on VC."
-    if event.text.endswith("playlist"):
-        return
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
-    chat = event.chat_id
-    flag = event.pattern_match.group(1)
-    input_str = event.pattern_match.group(2)
-
+    forced = False
+    input_str = event.pattern_match.group(1)
+    if "-f" in input_str:
+        input_str = input_str.replace("-f", "").strip()
+        forced = True
+    LOGS.info("Playing Video..")
     reply = await event.get_reply_message()
     event = await vc_reply(event, "`Searching...`", edit=True)
     if reply and reply.video and not reply.photo:
@@ -234,7 +235,7 @@ async def play_video(event):
         return await vc_reply(event, "Please Provide a media file to stream on VC")
     if not vc_player.CHAT_ID:
         try:
-            vc_chat = await catub.get_entity(chat)
+            vc_chat = await catub.get_entity(event.chat_id)
         except Exception as e:
             return await vc_reply(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
         if isinstance(vc_chat, User):
@@ -242,22 +243,13 @@ async def play_video(event):
                 event, "Voice Chats are not available in Private Chats"
             )
         await vc_player.join_vc(vc_chat, False)
-
-    if flag:
-        resp = await vc_player.play_song(
-            event, inputstr, Stream.video, force=True, reply=reply
-        )
-    else:
-        resp = await vc_player.play_song(
-            event, inputstr, Stream.video, force=False, reply=reply
-        )
-
+    resp = await vc_player.play_song(event, inputstr, Stream.video, force=forced, reply=reply)
     if resp:
         await sendmsg(event, resp)
 
 
 @catub.cat_cmd(
-    pattern="play ?(-f)? ?([\S ]*)?$",
+    pattern="play(?:\s|$)([\s\S]*)$",
     command=("play", plugin_category),
     info={
         "header": "To Play a media as audio on VC.",
@@ -280,22 +272,17 @@ async def play_video(event):
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
-    if event.text.endswith("playlist"):
-        return
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
-    print("play")
-    chat = event.chat_id
-    flag = event.pattern_match.group(1)
-    input_str = event.pattern_match.group(2)
-    reply = await event.get_reply_message()
-
+    forced = False
+    input_str = event.pattern_match.group(1)
+    if "-f" in input_str:
+        input_str = input_str.replace("-f", "").strip()
+        forced = True
+    LOGS.info("Playing Audio..")
     event = await vc_reply(event, "`Searching...`", edit=True)
     if reply and reply.media and not reply.photo:
-        inputstr = await tg_dl(
-            event,
-            reply,
-        )
+        inputstr = await tg_dl(event,reply,)
     elif reply and reply.message and not input_str:
         inputstr = reply.text
         reply = False
@@ -306,7 +293,7 @@ async def play_audio(event):
         return await vc_reply(event, "Please Provide a media file to stream on VC")
     if not vc_player.CHAT_ID:
         try:
-            vc_chat = await catub.get_entity(chat)
+            vc_chat = await catub.get_entity(event.chat_id)
         except Exception as e:
             return await vc_reply(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
         if isinstance(vc_chat, User):
@@ -315,21 +302,13 @@ async def play_audio(event):
             )
         await vc_player.join_vc(vc_chat, False)
 
-    if flag:
-        resp = await vc_player.play_song(
-            event, inputstr, Stream.audio, force=True, reply=reply
-        )
-    else:
-        resp = await vc_player.play_song(
-            event, inputstr, Stream.audio, force=False, reply=reply
-        )
-
+    resp = await vc_player.play_song(event, inputstr, Stream.audio, force=forced, reply=reply)
     if resp:
         await sendmsg(event, resp)
 
 
 @catub.cat_cmd(
-    pattern="previous",
+    pattern="previous$",
     command=("previous", plugin_category),
     info={
         "header": "To play previous a stream on VC.",
@@ -369,7 +348,7 @@ async def previous(event):
 
 
 @catub.cat_cmd(
-    pattern="pause",
+    pattern="pause$",
     command=("pause", plugin_category),
     info={
         "header": "To Pause a stream on Voice Chat.",
@@ -393,7 +372,7 @@ async def pause_stream(event):
 
 
 @catub.cat_cmd(
-    pattern="resume",
+    pattern="resume$",
     command=("resume", plugin_category),
     info={
         "header": "To Resume a stream on Voice Chat.",
@@ -417,7 +396,7 @@ async def resume_stream(event):
 
 
 @catub.cat_cmd(
-    pattern="skip",
+    pattern="skip$",
     command=("skip", plugin_category),
     info={
         "header": "To Skip currently playing stream on Voice Chat.",
