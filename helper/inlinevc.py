@@ -63,7 +63,7 @@ async def leavevc(event):
 @check_owner(vc=True)
 async def playervc(event):
     if not vc_player.PLAYING:
-        return await event.anwser("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...")
     buttons = [
         [
             Button.inline("⏮ Prev", data="previousvc"),
@@ -102,7 +102,7 @@ async def playervc(event):
 @check_owner
 async def previousvc(event):
     if not vc_player.PLAYING:
-        return await event.anwser("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...")
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
@@ -139,7 +139,7 @@ async def previousvc(event):
 @check_owner(vc=True)
 async def resumevc(event):
     if not vc_player.PLAYING:
-        return await event.anwser("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...")
     pl = event.pattern_match.group(1)
     res = await vc_player.resume()
     await event.answer(res)
@@ -157,7 +157,7 @@ async def resumevc(event):
 @check_owner(vc=True)
 async def pausevc(event):
     if not vc_player.PLAYING:
-        return await event.anwser("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...")
     pl = event.pattern_match.group(1)
     res = await vc_player.pause()
     await event.answer(res)
@@ -175,7 +175,7 @@ async def pausevc(event):
 @check_owner(vc=True)
 async def skipvc(event):
     if not vc_player.PLAYING:
-        return await event.anwser("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...")
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
@@ -194,7 +194,7 @@ async def skipvc(event):
 @check_owner(vc=True)
 async def repeatvc(event):
     if not vc_player.PLAYING:
-        return await event.anwser("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...")
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
