@@ -6,7 +6,7 @@ from telethon.tl.types import User
 from userbot import catub
 from userbot.core import check_owner
 
-from ..function import vc_player
+from .function import vc_player
 from .stream_helper import Stream
 
 buttons = [
