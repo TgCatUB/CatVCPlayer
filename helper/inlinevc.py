@@ -8,26 +8,26 @@ from userbot.core import check_owner
 
 from .function import vc_player
 
-vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
+vcimg = "catvc/resources/vcimg.jpg"
 
 
 buttons = [
     [
-        Button.inline("👾 Join VC", data="joinvc"),
-        Button.inline("🍃 Leave VC", data="leavevc"),
+        Button.inline("⏮ Prev", data="previousvc"),
+        Button.inline("⏸ Pause", data="pausevc"),
+        Button.inline("⏭ Next", data="skipvc"),
     ],
     [
-        Button.inline("🎛 Player", data="playervc"),
-        Button.inline("⚙️ Settings", data="settingvc"),
+        Button.inline("🔁 repeat", data="repeatvc"),
+        Button.inline("〣 Mainmenu", data="menuvc"),
     ],
     [
-        Button.inline("🗑 close", data="vc_close"),
+        Button.inline("🗑 close", data="vc_close0"),
     ],
 ]
 
+
 # MAINMENU BUTTONS
-
-
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))
 @check_owner(vc=True)
 async def joinvc(event):
@@ -64,22 +64,6 @@ async def leavevc(event):
 async def playervc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
-    buttons = [
-        [
-            Button.inline("⏮ Prev", data="previousvc"),
-            Button.inline("⏸ Pause", data="pausevc"),
-            # Button.inline("▶️ Resume", data="resumevc"),
-            Button.inline("⏭ Next", data="skipvc"),
-        ],
-        [
-            Button.inline("🔁 repeat", data="repeatvc"),
-            Button.inline("〣 Mainmenu", data="menuvc"),
-        ],
-        [
-            Button.inline("🗑 close", data="vc_close0"),
-        ],
-    ]
-
     playing = vc_player.PLAYING
     title = playing["title"]
     duration = playing["duration"]
@@ -95,6 +79,19 @@ async def playervc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^menuvc$")))
 @check_owner(vc=True)
 async def playervc(event):
+    buttons = [
+        [
+            Button.inline("👾 Join VC", data="joinvc"),
+            Button.inline("🍃 Leave VC", data="leavevc"),
+        ],
+        [
+            Button.inline("🎛 Player", data="playervc"),
+            Button.inline("⚙️ Settings", data="settingvc"),
+        ],
+        [
+            Button.inline("🗑 close", data="vc_close"),
+        ],
+    ]
     await event.edit("**| VC MENU |**", file=vcimg, buttons=buttons)
 
 
@@ -103,10 +100,6 @@ async def playervc(event):
 async def previousvc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
-    eve = await event.get_message()
-    buttons = [
-        [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
-    ]
     if not vc_player.PREVIOUS:
         return await event.answer("No Previous track found.")
     prev = vc_player.PREVIOUS[-1]
@@ -130,7 +123,7 @@ async def previousvc(event):
             try:
                 await event.edit(res[1], file=res[0], buttons=buttons)
             except Exception:
-                await event.edit(res[1], buttons=buttons)
+                await event.edit(res[1], file=vcimg, buttons=buttons)
         elif type(res) is str:
             await event.edit(res, buttons=buttons)
 
@@ -174,16 +167,12 @@ async def pausevc(event):
 async def skipvc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
-    eve = await event.get_message()
-    buttons = [
-        [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
-    ]
     res = await vc_player.skip()
     if res and type(res) is list:
         try:
             await event.edit(res[1], file=res[0], buttons=buttons)
         except Exception:
-            await event.edit(res[1], buttons=buttons)
+            await event.edit(res[1], file=vcimg, buttons=buttons)
     elif res and type(res) is str:
         await event.edit(res, buttons=buttons)
 
@@ -193,25 +182,18 @@ async def skipvc(event):
 async def repeatvc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
-    eve = await event.get_message()
-    buttons = [
-        [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
-    ]
-    if vc_player.PLAYING:
-        song_input = vc_player.PLAYING["path"]
-        stream = vc_player.PLAYING["stream"]
-        duration = vc_player.PLAYING["duration"]
-        url = vc_player.PLAYING["url"]
-        img = vc_player.PLAYING["img"]
-        res = await vc_player.play_song(
-            event, song_input, stream, force=False, duration=duration, url=url, img=img
-        )
-        if res and type(res) is list:
-            await event.edit(res[1], buttons=buttons)
-        elif res and type(res) is str:
-            await event.edit(res, buttons=buttons)
-    else:
-        await event.answer("Nothing playing in vc...")
+    song_input = vc_player.PLAYING["path"]
+    stream = vc_player.PLAYING["stream"]
+    duration = vc_player.PLAYING["duration"]
+    url = vc_player.PLAYING["url"]
+    img = vc_player.PLAYING["img"]
+    res = await vc_player.play_song(
+        event, song_input, stream, force=False, duration=duration, url=url, img=img
+    )
+    if res and type(res) is list:
+        await event.edit(res[1], buttons=buttons)
+    elif res and type(res) is str:
+        await event.edit(res, buttons=buttons)
 
 
 # SETTINGS BUTTONS
@@ -309,6 +291,19 @@ async def vc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc$")))
 @check_owner(vc=True)
 async def vc(event):
+    buttons = [
+        [
+            Button.inline("👾 Join VC", data="joinvc"),
+            Button.inline("🍃 Leave VC", data="leavevc"),
+        ],
+        [
+            Button.inline("🎛 Player", data="playervc"),
+            Button.inline("⚙️ Settings", data="settingvc"),
+        ],
+        [
+            Button.inline("🗑 close", data="vc_close"),
+        ],
+    ]
     await event.edit("** | VC PLAYER | **", buttons=buttons)
 
 
