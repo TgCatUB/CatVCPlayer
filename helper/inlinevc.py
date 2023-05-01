@@ -8,7 +8,7 @@ from userbot.core import check_owner
 
 from .function import vc_player
 
-vcimg = "catvc/resources/vcimg.jpg"
+vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
 
 
 buttons = [
