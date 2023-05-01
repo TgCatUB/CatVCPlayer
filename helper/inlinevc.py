@@ -122,7 +122,7 @@ async def previousvc(event):
         if type(res) is list:
             await event.edit(file=res[0], text=res[1], buttons=buttons)
         elif type(res) is str:
-            await event.edit(file="catvc/resources/404.png", text=res, buttons=buttons)
+            await event.edit(file=vcimg, text=res, buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc")))
@@ -170,7 +170,7 @@ async def skipvc(event):
         if type(res) is list:
             await event.edit(file=res[0], text=res[1], buttons=buttons)
         elif type(res) is str:
-            await event.edit(file="catvc/resources/404.png", text=res, buttons=buttons)
+            await event.edit(file=vcimg, text=res, buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
@@ -190,7 +190,7 @@ async def repeatvc(event):
         if type(res) is list:
             await event.edit(file=res[0], text=res[1], buttons=buttons)
         elif type(res) is str:
-            await event.edit(file="catvc/resources/404.png", text=res, buttons=buttons)
+            await event.edit(file=vcimg, text=res, buttons=buttons)
 
 
 # SETTINGS BUTTONS
