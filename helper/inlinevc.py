@@ -10,7 +10,19 @@ from .function import vc_player
 
 vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
 
-
+mbuttons = [
+        [
+            Button.inline("👾 Join VC", data="joinvc"),
+            Button.inline("🍃 Leave VC", data="leavevc"),
+        ],
+        [
+            Button.inline("🎛 Player", data="playervc"),
+            Button.inline("⚙️ Settings", data="settingvc"),
+        ],
+        [
+            Button.inline("🗑 close", data="vc_close"),
+        ],
+    ]
 buttons = [
     [
         Button.inline("⏮ Prev", data="previousvc"),
@@ -79,20 +91,7 @@ async def playervc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^menuvc$")))
 @check_owner(vc=True)
 async def playervc(event):
-    buttons = [
-        [
-            Button.inline("👾 Join VC", data="joinvc"),
-            Button.inline("🍃 Leave VC", data="leavevc"),
-        ],
-        [
-            Button.inline("🎛 Player", data="playervc"),
-            Button.inline("⚙️ Settings", data="settingvc"),
-        ],
-        [
-            Button.inline("🗑 close", data="vc_close"),
-        ],
-    ]
-    await event.edit("**| VC MENU |**", file=vcimg, buttons=buttons)
+    await event.edit(file=vcimg, text="**| VC MENU |**", buttons=mbuttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc$")))
@@ -121,12 +120,9 @@ async def previousvc(event):
     )
     if res:
         if type(res) is list:
-            try:
-                await event.edit(res[1], file=res[0], buttons=buttons)
-            except Exception:
-                await event.edit(res[1], file=vcimg, buttons=buttons)
+            await event.edit(file=res[0], text=res[1], buttons=buttons)
         elif type(res) is str:
-            await event.edit(res, buttons=buttons)
+            await event.edit(file="catvc/resources/404.png", text=res, buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc")))
@@ -170,13 +166,11 @@ async def skipvc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
     res = await vc_player.skip()
-    if res and type(res) is list:
-        try:
-            await event.edit(res[1], file=res[0], buttons=buttons)
-        except Exception:
-            await event.edit(res[1], file=vcimg, buttons=buttons)
-    elif res and type(res) is str:
-        await event.edit(res, buttons=buttons)
+    if res:
+        if type(res) is list:
+            await event.edit(file=res[0], text=res[1], buttons=buttons)
+        elif type(res) is str:
+            await event.edit(file="catvc/resources/404.png", text=res, buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
@@ -192,10 +186,11 @@ async def repeatvc(event):
     res = await vc_player.play_song(
         event, song_input, stream, force=False, duration=duration, url=url, img=img
     )
-    if res and type(res) is list:
-        await event.edit(res[1], buttons=buttons)
-    elif res and type(res) is str:
-        await event.edit(res, buttons=buttons)
+    if res:
+        if type(res) is list:
+            await event.edit(file=res[0], text=res[1], buttons=buttons)
+        elif type(res) is str:
+            await event.edit(file="catvc/resources/404.png", text=res, buttons=buttons)
 
 
 # SETTINGS BUTTONS
@@ -293,20 +288,7 @@ async def vc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc$")))
 @check_owner(vc=True)
 async def vc(event):
-    buttons = [
-        [
-            Button.inline("👾 Join VC", data="joinvc"),
-            Button.inline("🍃 Leave VC", data="leavevc"),
-        ],
-        [
-            Button.inline("🎛 Player", data="playervc"),
-            Button.inline("⚙️ Settings", data="settingvc"),
-        ],
-        [
-            Button.inline("🗑 close", data="vc_close"),
-        ],
-    ]
-    await event.edit("** | VC PLAYER | **", buttons=buttons)
+    await event.edit("** | VC PLAYER | **", buttons=mbuttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))

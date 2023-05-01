@@ -10,6 +10,7 @@ from userbot.helpers.utils import reply_id
 from .helper.function import sendmsg, vc_player, vc_reply
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
+from .helper.inlinevc import vcimg, buttons, mbuttons
 
 plugin_category = "extra"
 
@@ -117,11 +118,20 @@ async def leaveVoicechat(event):
     info={
         "header": "To Get all playlist.",
         "description": "To Get all playlist for Voice Chat.",
+        "flags": {
+            "play": "To get list of upcoming streams.",
+            "prev": "To get list of previous streams.",
+            "full": "To get list of all streams.",
+        },
         "usage": [
             "{tr}playlist",
+            "{tr}prevlist",
+            "{tr}fulllist",
         ],
         "examples": [
             "{tr}playlist",
+            "{tr}prevlist",
+            "{tr}fulllist",
         ],
     },
     public=True,
@@ -456,21 +466,8 @@ async def vcplayer(event):
                     event.chat_id, vcimg, caption=msg, buttons=buttons
                 )
             else:
-                buttons = [
-                    [
-                        Button.inline("👾 Join VC", data="joinvc"),
-                        Button.inline("🍃 Leave VC", data="leavevc"),
-                    ],
-                    [
-                        Button.inline("🎛 Player", data="playervc"),
-                        Button.inline("⚙️ Settings", data="settingvc"),
-                    ],
-                    [
-                        Button.inline("🗑 close", data="vc_close"),
-                    ],
-                ]
                 await catub.tgbot.send_file(
-                    event.chat_id, vcimg, caption="** | VC MENU | **", buttons=buttons
+                    event.chat_id, vcimg, caption="** | VC MENU | **", buttons=mbuttons
                 )
             return
     reply_to_id = await reply_id(event)
