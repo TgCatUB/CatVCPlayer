@@ -251,6 +251,7 @@ async def vc(event):
     abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
     bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
     cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
+    print(abtntext, bbtntext, cbtntext)
     if mode == "a":
         if vc_player.PUBLICMODE:
             vc_player.PUBLICMODE = False
@@ -258,6 +259,7 @@ async def vc(event):
         else:
             vc_player.PUBLICMODE = True
             abtntext = "🏢 Public"
+        print(abtntex)
     elif mode == "b":
         if vc_player.BOTMODE:
             vc_player.BOTMODE = False
@@ -265,13 +267,15 @@ async def vc(event):
         else:
             vc_player.BOTMODE = True
             bbtntext = "✅ Enabled"
+        print(bbtntex)
     elif mode == "c":
         if vc_player.CLEANMODE:
             vc_player.CLEANMODE = False
             cbtntext = "❌ Disabled"
         else:
-            vc_player.CLEANMODE = 30
+            vc_player.CLEANMODE = True
             cbtntext = "✅ Enabled"
+        print(cbtntex)
     buttons = [
         [
             Button.inline("🎩 Auth Mode", data="amodeinfo"),
