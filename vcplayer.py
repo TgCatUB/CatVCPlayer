@@ -445,20 +445,6 @@ async def vcplayer(event):
     if vc_player.BOTMODE:
         with contextlib.suppress(Exception):
             if play := vc_player.PLAYING:
-                buttons = [
-                    [
-                        Button.inline("⏮ Prev", data="previousvc"),
-                        Button.inline("⏸ Pause", data="pausevc"),
-                        Button.inline("⏭ Next", data="skipvc"),
-                    ],
-                    [
-                        Button.inline("🔁 repeat", data="repeatvc"),
-                        Button.inline("≡ Mainmenu", data="menuvc"),
-                    ],
-                    [
-                        Button.inline("🗑 close", data="vc_close0"),
-                    ],
-                ]
                 title = play["title"]
                 duration = play["duration"]
                 url = play["url"]
@@ -470,6 +456,19 @@ async def vcplayer(event):
                     event.chat_id, vcimg, caption=msg, buttons=buttons
                 )
             else:
+                buttons = [
+                    [
+                        Button.inline("👾 Join VC", data="joinvc"),
+                        Button.inline("🍃 Leave VC", data="leavevc"),
+                    ],
+                    [
+                        Button.inline("🎛 Player", data="playervc"),
+                        Button.inline("⚙️ Settings", data="settingvc"),
+                    ],
+                    [
+                        Button.inline("🗑 close", data="vc_close"),
+                    ],
+                ]
                 await catub.tgbot.send_file(
                     event.chat_id, vcimg, caption="** | VC MENU | **", buttons=buttons
                 )
