@@ -11,34 +11,35 @@ from .function import vc_player
 vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
 
 buttons = (
- [
     [
-        Button.inline("👾 Join VC", data="joinvc"),
-        Button.inline("🍃 Leave VC", data="leavevc"),
+        [
+            Button.inline("👾 Join VC", data="joinvc"),
+            Button.inline("🍃 Leave VC", data="leavevc"),
+        ],
+        [
+            Button.inline("🎛 Player", data="playervc"),
+            Button.inline("⚙️ Settings", data="settingvc"),
+        ],
+        [
+            Button.inline("🗑 close", data="vc_close"),
+        ],
     ],
     [
-        Button.inline("🎛 Player", data="playervc"),
-        Button.inline("⚙️ Settings", data="settingvc"),
+        [
+            Button.inline("⏮ Prev", data="previousvc"),
+            Button.inline("⏸ Pause", data="pausevc"),
+            Button.inline("⏭ Next", data="skipvc"),
+        ],
+        [
+            Button.inline("🔁 repeat", data="repeatvc"),
+            Button.inline("〣 Mainmenu", data="menuvc"),
+        ],
+        [
+            Button.inline("🗑 close", data="vc_close0"),
+        ],
     ],
-    [
-        Button.inline("🗑 close", data="vc_close"),
-    ],
-], 
-[
-    [
-        Button.inline("⏮ Prev", data="previousvc"),
-        Button.inline("⏸ Pause", data="pausevc"),
-        Button.inline("⏭ Next", data="skipvc"),
-    ],
-    [
-        Button.inline("🔁 repeat", data="repeatvc"),
-        Button.inline("〣 Mainmenu", data="menuvc"),
-    ],
-    [
-        Button.inline("🗑 close", data="vc_close0"),
-    ],
-]
 )
+
 
 # MAINMENU BUTTONS
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))

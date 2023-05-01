@@ -466,7 +466,10 @@ async def vcplayer(event):
                 )
             else:
                 await catub.tgbot.send_file(
-                    event.chat_id, vcimg, caption="** | VC MENU | **", buttons=buttons[0]
+                    event.chat_id,
+                    vcimg,
+                    caption="** | VC MENU | **",
+                    buttons=buttons[0],
                 )
             return
     reply_to_id = await reply_id(event)
