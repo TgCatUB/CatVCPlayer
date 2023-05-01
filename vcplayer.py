@@ -1,13 +1,14 @@
 import contextlib
 import logging
 
+from telethon import Button
 from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core.data import _sudousers_list
 from userbot.helpers.utils import reply_id
 
 from .helper.function import sendmsg, vc_player, vc_reply
-from .helper.inlinevc import buttons
+from .helper.inlinevc import buttons, vcimg
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
 
@@ -444,9 +445,36 @@ async def vcplayer(event):
         return
     if vc_player.BOTMODE:
         with contextlib.suppress(Exception):
-            return await catub.tgbot.send_message(
-                event.chat_id, "** | VC PLAYER | **", buttons=buttons
+            if play := vc_player.PLAYING:
+                buttons = [
+                    [
+                        Button.inline("⏮ Prev", data="previousvc"),
+                        Button.inline("⏸ Pause", data="pausevc"),
+                        Button.inline("⏭ Next", data="skipvc"),
+                    ],
+                    [
+                        Button.inline("🔁 repeat", data="repeatvc"),
+                        Button.inline("≡ Mainmenu", data="menuvc"),
+                    ],
+                    [
+                        Button.inline("🗑 close", data="vc_close0"),
+                    ],
+                ]
+                title = play["title"]
+                duration = play["duration"]
+                url = play["url"]
+                vcimg = play["img"]
+                msg = f"**🎧 Playing:** [{title}]({url})\n"
+                msg += f"**⏳ Duration:** `{duration}`\n"
+                msg += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
+                await catub.tgbot.send_file(
+                event.chat_id, vcimg, caption=msg, buttons=buttons
             )
+            else:
+                await catub.tgbot.send_file(
+                event.chat_id, vcimg, caption="** | VC MENU | **", buttons=buttons
+            )
+            return
     reply_to_id = await reply_id(event)
     results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)

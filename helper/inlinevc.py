@@ -8,7 +8,7 @@ from userbot.core import check_owner
 
 from .function import vc_player
 
-vcimg = "https://graph.org/file/0cfbd27455f66b6eb9d00.jpg"
+vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
 
 # 📜
 buttons = [
@@ -44,7 +44,7 @@ async def joinvc(event):
         return await event.answer("Voice Chats are not available in Private Chats")
 
     out = await vc_player.join_vc(vc_chat, False)
-    await event.answer(out)
+    await event.answer(out, alert=True)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^leavevc$")))
@@ -63,7 +63,7 @@ async def leavevc(event):
 @check_owner(vc=True)
 async def playervc(event):
     if not vc_player.PLAYING:
-        return await event.answer("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...", alert=True)
     buttons = [
         [
             Button.inline("⏮ Prev", data="previousvc"),
@@ -102,7 +102,7 @@ async def playervc(event):
 @check_owner
 async def previousvc(event):
     if not vc_player.PLAYING:
-        return await event.answer("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...", alert=True)
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
@@ -139,7 +139,7 @@ async def previousvc(event):
 @check_owner(vc=True)
 async def resumevc(event):
     if not vc_player.PLAYING:
-        return await event.answer("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...", alert=True)
     pl = event.pattern_match.group(1)
     res = await vc_player.resume()
     await event.answer(res)
@@ -157,7 +157,7 @@ async def resumevc(event):
 @check_owner(vc=True)
 async def pausevc(event):
     if not vc_player.PLAYING:
-        return await event.answer("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...", alert=True)
     pl = event.pattern_match.group(1)
     res = await vc_player.pause()
     await event.answer(res)
@@ -175,7 +175,7 @@ async def pausevc(event):
 @check_owner(vc=True)
 async def skipvc(event):
     if not vc_player.PLAYING:
-        return await event.answer("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...", alert=True)
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
@@ -194,7 +194,7 @@ async def skipvc(event):
 @check_owner(vc=True)
 async def repeatvc(event):
     if not vc_player.PLAYING:
-        return await event.answer("Play any audio or video stream first...")
+        return await event.answer("Play any audio or video stream first...", alert=True)
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
