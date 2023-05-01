@@ -196,32 +196,6 @@ async def playlistvc(event):
     )
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^settingvc$")))
-@check_owner
-async def settingvc(event):
-    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
-    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
-    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
-    buttons = [
-        [
-            Button.inline("🎩 Auth Mode", data="amodeinfo"),
-            Button.inline(abtntext, data="amode"),
-        ],
-        [
-            Button.inline("🤖 Bot Mode", data="bmodeinfo"),
-            Button.inline(bbtntext, data="bmode"),
-        ],
-        [
-            Button.inline("🗑 Clean Mode", data="cmodeinfo"),
-            Button.inline(cbtntext, data="cmode"),
-        ],
-        [
-            Button.inline("⬅️ Back", data="backvc"),
-            Button.inline("🗑 close", data="vc_close"),
-        ],
-    ]
-    await event.edit("** | Settings | **", buttons=buttons)
-
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc$")))
 @check_owner(vc=True)
@@ -244,7 +218,33 @@ async def vc(event):
 
 
 # SETTINGS
-@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)mode$"))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^settingvc$")))
+@check_owner
+async def settingvc(event):
+    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
+    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
+    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
+    buttons = [
+        [
+            Button.inline("🎩 Auth Mode", data="amodeinfo"),
+            Button.inline(abtntext, data="amo"),
+        ],
+        [
+            Button.inline("🤖 Bot Mode", data="bmodeinfo"),
+            Button.inline(bbtntext, data="bmo"),
+        ],
+        [
+            Button.inline("🗑 Clean Mode", data="cmodeinfo"),
+            Button.inline(cbtntext, data="cmo"),
+        ],
+        [
+            Button.inline("⬅️ Back", data="backvc"),
+            Button.inline("🗑 close", data="vc_close"),
+        ],
+    ]
+    await event.edit("** | Settings | **", buttons=buttons)
+
+@catub.tgbot.on(CallbackQuery(pattern="^(a|b|c)mo$"))
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
@@ -272,19 +272,18 @@ async def vc(event):
         else:
             vc_player.CLEANMODE = 30
             cbtntext = "✅ Enabled"
-
     buttons = [
         [
             Button.inline("🎩 Auth Mode", data="amodeinfo"),
-            Button.inline(abtntext, data="amode"),
+            Button.inline(abtntext, data="amo"),
         ],
         [
             Button.inline("🤖 Bot Mode", data="bmodeinfo"),
-            Button.inline(bbtntext, data="bmode"),
+            Button.inline(bbtntext, data="bmo"),
         ],
         [
             Button.inline("🗑 Clean Mode", data="cmodeinfo"),
-            Button.inline(cbtntext, data="cmode"),
+            Button.inline(cbtntext, data="cmo"),
         ],
         [
             Button.inline("⬅️ Back", data="backvc"),
