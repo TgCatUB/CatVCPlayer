@@ -35,7 +35,6 @@ buttons = [
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))
 @check_owner(vc=True)
 async def joinvc(event):
-
     chat = event.chat_id
     if vc_player.app.active_calls:
         return await event.answer(f"You have already Joined in {vc_player.CHAT_NAME}")
