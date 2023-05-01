@@ -70,9 +70,7 @@ async def previousvc(event):
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
     ]
-    if vc_player.PREVIOUS:
-        pass
-    else:
+    if not vc_player.PREVIOUS:
         return await event.answer("No Previous track found.")
     prev = vc_player.PREVIOUS[-1]
     song_input = prev["path"]
@@ -90,13 +88,14 @@ async def previousvc(event):
         url=url,
         img=img,
     )
-    if res and type(res) is list:
-        try:
-            await event.edit(res[1], file=res[0], buttons=buttons)
-        except:
-            await event.edit(res[1], buttons=buttons)
-    elif res and type(res) is str:
-        await event.edit(res, buttons=buttons)
+    if res:
+        if type(res) is list:
+            try:
+                await event.edit(res[1], file=res[0], buttons=buttons)
+            except Exception:
+                await event.edit(res[1], buttons=buttons)
+        elif type(res) is str:
+            await event.edit(res, buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc(\d)?")))
@@ -142,7 +141,7 @@ async def skipvc(event):
     if res and type(res) is list:
         try:
             await event.edit(res[1], file=res[0], buttons=buttons)
-        except:
+        except Exception:
             await event.edit(res[1], buttons=buttons)
     elif res and type(res) is str:
         await event.edit(res, buttons=buttons)
@@ -231,11 +230,8 @@ async def vc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))
 @check_owner
 async def vc(event):
-    del_ = event.pattern_match.group(1)
-    if del_:
+    if del_ := event.pattern_match.group(1):
         return await event.delete()
-    else:
-        pass
     await event.edit(
         "**| VC Player Closed |**",
         buttons=[
@@ -250,15 +246,9 @@ async def vc(event):
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
-    abtntext = "🏠 Private"
-    bbtntext = "❌ Disabled"
-    cbtntext = "❌ Disabled"
-    if vc_player.PUBLICMODE:
-        abtntext = "🏢 Public"
-    if vc_player.BOTMODE:
-        bbtntext = "✅ Enabled"
-    if vc_player.CLEANMODE:
-        cbtntext = "✅ Enabled"
+    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
+    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
+    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
     if mode == "a":
         if vc_player.PUBLICMODE:
             vc_player.PUBLICMODE = False
