@@ -9,7 +9,7 @@ from userbot.helpers.utils import reply_id
 from .helper.function import sendmsg, vc_player, vc_reply
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
-from .inlinevc import buttons
+from .helper.inlinevc import buttons
 
 plugin_category = "extra"
 
