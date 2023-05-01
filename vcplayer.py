@@ -243,7 +243,9 @@ async def play_video(event):
                 event, "Voice Chats are not available in Private Chats"
             )
         await vc_player.join_vc(vc_chat, False)
-    resp = await vc_player.play_song(event, inputstr, Stream.video, force=forced, reply=reply)
+    resp = await vc_player.play_song(
+        event, inputstr, Stream.video, force=forced, reply=reply
+    )
     if resp:
         await sendmsg(event, resp)
 
@@ -282,7 +284,10 @@ async def play_audio(event):
     LOGS.info("Playing Audio..")
     event = await vc_reply(event, "`Searching...`", edit=True)
     if reply and reply.media and not reply.photo:
-        inputstr = await tg_dl(event,reply,)
+        inputstr = await tg_dl(
+            event,
+            reply,
+        )
     elif reply and reply.message and not input_str:
         inputstr = reply.text
         reply = False
@@ -302,7 +307,9 @@ async def play_audio(event):
             )
         await vc_player.join_vc(vc_chat, False)
 
-    resp = await vc_player.play_song(event, inputstr, Stream.audio, force=forced, reply=reply)
+    resp = await vc_player.play_song(
+        event, inputstr, Stream.audio, force=forced, reply=reply
+    )
     if resp:
         await sendmsg(event, resp)
 

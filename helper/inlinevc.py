@@ -290,4 +290,5 @@ async def vc(event):
     except Exception:
         await event.edit(
             "**| VC Player Closed |**",
-            buttons=[[Button.inline("Open again", data="backvc")]])
+            buttons=[[Button.inline("Open again", data="backvc")]],
+        )
