@@ -202,15 +202,15 @@ async def settingvc(event):
     cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
     buttons = [
         [
-            Button.inline("🎩 Auth Mode", data="amodeinfo"),
+            Button.inline("🎩 Auth Mode", data="avcinfo"),
             Button.inline(abtntext, data="amode"),
         ],
         [
-            Button.inline("🤖 Bot Mode", data="bmodeinfo"),
+            Button.inline("🤖 Bot Mode", data="bvcinfo"),
             Button.inline(bbtntext, data="bmode"),
         ],
         [
-            Button.inline("🗑 Clean Mode", data="cmodeinfo"),
+            Button.inline("🗑 Clean Mode", data="cvcinfo"),
             Button.inline(cbtntext, data="cmode"),
         ],
         [
@@ -273,15 +273,15 @@ async def vc(event):
 
     buttons = [
         [
-            Button.inline("🎩 Auth Mode", data="amodeinfo"),
+            Button.inline("🎩 Auth Mode", data="avcinfo"),
             Button.inline(abtntext, data="amode"),
         ],
         [
-            Button.inline("🤖 Bot Mode", data="bmodeinfo"),
+            Button.inline("🤖 Bot Mode", data="bvcinfo"),
             Button.inline(bbtntext, data="bmode"),
         ],
         [
-            Button.inline("🗑 Clean Mode", data="cmodeinfo"),
+            Button.inline("🗑 Clean Mode", data="cvcinfo"),
             Button.inline(cbtntext, data="cmode"),
         ],
         [
@@ -293,7 +293,7 @@ async def vc(event):
     await event.edit("** | Settings | **", buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)modeinfo"))
+@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)vcinfo"))
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
