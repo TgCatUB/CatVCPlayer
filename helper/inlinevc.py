@@ -10,7 +10,8 @@ from .function import vc_player
 
 vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
 
-mbuttons = [
+buttons = (
+ [
     [
         Button.inline("👾 Join VC", data="joinvc"),
         Button.inline("🍃 Leave VC", data="leavevc"),
@@ -22,8 +23,8 @@ mbuttons = [
     [
         Button.inline("🗑 close", data="vc_close"),
     ],
-]
-buttons = [
+], 
+[
     [
         Button.inline("⏮ Prev", data="previousvc"),
         Button.inline("⏸ Pause", data="pausevc"),
@@ -37,7 +38,7 @@ buttons = [
         Button.inline("🗑 close", data="vc_close0"),
     ],
 ]
-
+)
 
 # MAINMENU BUTTONS
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))
@@ -91,7 +92,7 @@ async def playervc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^menuvc$")))
 @check_owner(vc=True)
 async def playervc(event):
-    await event.edit(file=vcimg, text="**| VC MENU |**", buttons=mbuttons)
+    await event.edit(file=vcimg, text="**| VC MENU |**", buttons=buttons[0])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc$")))
@@ -120,9 +121,9 @@ async def previousvc(event):
     )
     if res:
         if type(res) is list:
-            await event.edit(file=res[0], text=res[1], buttons=buttons)
+            await event.edit(file=res[0], text=res[1], buttons=buttons[1])
         elif type(res) is str:
-            await event.edit(file=vcimg, text=res, buttons=buttons)
+            await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc")))
@@ -188,9 +189,9 @@ async def repeatvc(event):
     )
     if res:
         if type(res) is list:
-            await event.edit(file=res[0], text=res[1], buttons=buttons)
+            await event.edit(file=res[0], text=res[1], buttons=buttons[1])
         elif type(res) is str:
-            await event.edit(file=vcimg, text=res, buttons=buttons)
+            await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
 # SETTINGS BUTTONS
@@ -288,7 +289,7 @@ async def vc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc$")))
 @check_owner(vc=True)
 async def vc(event):
-    await event.edit("** | VC PLAYER | **", buttons=mbuttons)
+    await event.edit("** | VC PLAYER | **", buttons=buttons[0])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))

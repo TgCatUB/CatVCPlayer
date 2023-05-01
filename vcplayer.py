@@ -7,7 +7,7 @@ from userbot.core.data import _sudousers_list
 from userbot.helpers.utils import reply_id
 
 from .helper.function import sendmsg, vc_player, vc_reply
-from .helper.inlinevc import buttons, mbuttons
+from .helper.inlinevc import buttons
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
 
@@ -462,11 +462,11 @@ async def vcplayer(event):
                 msg += f"**⏳ Duration:** `{duration}`\n"
                 msg += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
                 await catub.tgbot.send_file(
-                    event.chat_id, vcimg, caption=msg, buttons=buttons
+                    event.chat_id, vcimg, caption=msg, buttons=buttons[1]
                 )
             else:
                 await catub.tgbot.send_file(
-                    event.chat_id, vcimg, caption="** | VC MENU | **", buttons=mbuttons
+                    event.chat_id, vcimg, caption="** | VC MENU | **", buttons=buttons[0]
                 )
             return
     reply_to_id = await reply_id(event)
