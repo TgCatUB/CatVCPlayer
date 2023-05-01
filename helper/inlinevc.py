@@ -9,21 +9,16 @@ from userbot.core import check_owner
 from .function import vc_player
 from .stream_helper import Stream
 
+vcimg = "https://graph.org/file/0cfbd27455f66b6eb9d00.jpg"
+
+#📜
 buttons = [
     [
         Button.inline("👾 Join VC", data="joinvc"),
         Button.inline("🍃 Leave VC", data="leavevc"),
     ],
     [
-        Button.inline("▶️ Resume", data="resumevc"),
-        Button.inline("⏸ Pause", data="pausevc"),
-    ],
-    [
-        Button.inline("🪡 Skip", data="skipvc"),
-        Button.inline("🔁 repeat", data="repeatvc"),
-    ],
-    [
-        Button.inline("📜 Playlist", data="playlistvc"),
+        Button.inline("🎛 Player", data="playervc"),
         Button.inline("⚙️ Settings", data="settingvc"),
     ],
     [
@@ -31,6 +26,7 @@ buttons = [
     ],
 ]
 
+# MAINMENU BUTTONS
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))
 @check_owner(vc=True)
@@ -62,10 +58,51 @@ async def leavevc(event):
     else:
         await event.answer("Not yet joined any VC")
 
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^playervc$")))
+@check_owner(vc=True)
+async def playervc(event):
+    if not vc_player.PLAYING:
+        return await event.anwser("Play any audio or video stream first...")
+    buttons = [
+        [
+            Button.inline("⏮ Prev", data="previousvc"),
+            Button.inline("⏸ Pause", data="pausevc"),
+            # Button.inline("▶️ Resume", data="resumevc"),
+            Button.inline("⏭ Next", data="skipvc"),
+        ],
+        [
+            Button.inline("🔁 repeat", data="repeatvc"),
+            Button.inline("〣 Mainmenu", data="menuvc"),
+        ],
+        [
+            Button.inline("🗑 close", data="vc_close0"),
+        ],
+    ]
+
+    playing = vc_player.PLAYING
+    title = playing["title"]
+    duration = playing["duration"]
+    url = playing["url"]
+    vcimg = playing["img"]
+    msg = f"**🎧 Playing:** [{title}]({url})\n"
+    msg += f"**⏳ Duration:** `{duration}`\n"
+    msg += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
+    await event.edit(msg, file=vcimg, buttons=buttons)
+
+
+
+# PLAYER BUTTONS
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^menuvc$")))
+@check_owner(vc=True)
+async def playervc(event):
+    await event.edit(file=vcimg, caption="**| VC Menu |**", buttons=buttons)
+
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc$")))
 @check_owner
 async def previousvc(event):
+    if not vc_player.PLAYING:
+        return await event.anwser("Play any audio or video stream first...")
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
@@ -98,9 +135,11 @@ async def previousvc(event):
             await event.edit(res, buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc(\d)?")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc")))
 @check_owner(vc=True)
 async def resumevc(event):
+    if not vc_player.PLAYING:
+        return await event.anwser("Play any audio or video stream first...")
     pl = event.pattern_match.group(1)
     res = await vc_player.resume()
     await event.answer(res)
@@ -110,13 +149,15 @@ async def resumevc(event):
             [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
         ]
         buttons[0].pop(1)
-        buttons[0].insert(1, Button.inline("⏸ Pause", data="pausevc0"))
+        buttons[0].insert(1, Button.inline("⏸ Pause", data="pausevc"))
         await event.edit(buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^pausevc(\d)?")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^pausevc")))
 @check_owner(vc=True)
 async def pausevc(event):
+    if not vc_player.PLAYING:
+        return await event.anwser("Play any audio or video stream first...")
     pl = event.pattern_match.group(1)
     res = await vc_player.pause()
     await event.answer(res)
@@ -126,13 +167,15 @@ async def pausevc(event):
             [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
         ]
         buttons[0].pop(1)
-        buttons[0].insert(1, Button.inline("▶️ Resume", data="resumevc0"))
+        buttons[0].insert(1, Button.inline("▶️ Resume", data="resumevc"))
         await event.edit(buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^skipvc$")))
 @check_owner(vc=True)
 async def skipvc(event):
+    if not vc_player.PLAYING:
+        return await event.anwser("Play any audio or video stream first...")
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
@@ -150,6 +193,8 @@ async def skipvc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
 @check_owner(vc=True)
 async def repeatvc(event):
+    if not vc_player.PLAYING:
+        return await event.anwser("Play any audio or video stream first...")
     eve = await event.get_message()
     buttons = [
         [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
@@ -171,52 +216,8 @@ async def repeatvc(event):
         await event.answer("Nothing playing in vc...")
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^playlistvc$")))
-@check_owner(vc=True)
-async def playlistvc(event):
-    playl = vc_player.PLAYLIST
-    cat = ""
-    if not playl and not vc_player.PLAYING:
-        return await event.answer("Playlist empty")
-    elif vc_player.PLAYING:
-        if vc_player.PLAYING["stream"] == Stream.audio:
-            cat += f"🎧 Playing. 🔉  `{vc_player.PLAYING['title']}`\n"
-        else:
-            cat += f"🎧 Playing. 📺  `{vc_player.PLAYING['title']}`\n"
-    else:
-        await event.answer("Fetching Playlist ......")
-    for num, item in enumerate(playl, 1):
-        if item["stream"] == Stream.audio:
-            cat += f"{num}. 🔉  `{item['title']}`\n"
-        else:
-            cat += f"{num}. 📺  `{item['title']}`\n"
-    await event.edit(
-        f"**Playlist:**\n\n{cat}\n**Enjoy the show**",
-        buttons=[Button.inline("⬅️ Back", data="backvc")],
-    )
 
-
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc$")))
-@check_owner(vc=True)
-async def vc(event):
-    await event.edit("** | VC PLAYER | **", buttons=buttons)
-
-
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))
-@check_owner(vc=True)
-async def vc(event):
-    if del_ := event.pattern_match.group(1):
-        return await event.delete()
-    await event.edit(
-        "**| VC Player Closed |**",
-        buttons=[
-            [Button.inline("Open again", data="backvc")]
-            # [Button.inline("Mode Info", data="modeinfovc")]
-        ],
-    )
-
-
-# SETTINGS
+# SETTINGS BUTTONS
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^settingvc$")))
 @check_owner
 async def settingvc(event):
@@ -226,15 +227,15 @@ async def settingvc(event):
     buttons = [
         [
             Button.inline("🎩 Auth Mode", data="amodeinfo"),
-            Button.inline(abtntext, data="amo"),
+            Button.inline(abtntext, data="amode"),
         ],
         [
             Button.inline("🤖 Bot Mode", data="bmodeinfo"),
-            Button.inline(bbtntext, data="bmo"),
+            Button.inline(bbtntext, data="bmode"),
         ],
         [
             Button.inline("🗑 Clean Mode", data="cmodeinfo"),
-            Button.inline(cbtntext, data="cmo"),
+            Button.inline(cbtntext, data="cmode"),
         ],
         [
             Button.inline("⬅️ Back", data="backvc"),
@@ -244,14 +245,13 @@ async def settingvc(event):
     await event.edit("** | Settings | **", buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(pattern="^(a|b|c)mo$"))
+@catub.tgbot.on(CallbackQuery(pattern="^(a|b|c)mode$"))
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
     abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
     bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
     cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
-    print(abtntext, bbtntext, cbtntext)
     if mode == "a":
         if vc_player.PUBLICMODE:
             vc_player.PUBLICMODE = False
@@ -259,7 +259,6 @@ async def vc(event):
         else:
             vc_player.PUBLICMODE = True
             abtntext = "🏢 Public"
-        print(abtntext)
     elif mode == "b":
         if vc_player.BOTMODE:
             vc_player.BOTMODE = False
@@ -267,7 +266,6 @@ async def vc(event):
         else:
             vc_player.BOTMODE = True
             bbtntext = "✅ Enabled"
-        print(bbtntext)
     elif mode == "c":
         if vc_player.CLEANMODE:
             vc_player.CLEANMODE = False
@@ -275,19 +273,18 @@ async def vc(event):
         else:
             vc_player.CLEANMODE = True
             cbtntext = "✅ Enabled"
-        print(cbtntext)
     buttons = [
         [
             Button.inline("🎩 Auth Mode", data="amodeinfo"),
-            Button.inline(abtntext, data="amo"),
+            Button.inline(abtntext, data="amode"),
         ],
         [
             Button.inline("🤖 Bot Mode", data="bmodeinfo"),
-            Button.inline(bbtntext, data="bmo"),
+            Button.inline(bbtntext, data="bmode"),
         ],
         [
             Button.inline("🗑 Clean Mode", data="cmodeinfo"),
-            Button.inline(cbtntext, data="cmo"),
+            Button.inline(cbtntext, data="cmode"),
         ],
         [
             Button.inline("⬅️ Back", data="backvc"),
@@ -309,3 +306,24 @@ async def vc(event):
     elif mode == "c":
         text = "⁉️ What is This?\n\nWhen activated, Bot will delete its message after leaving vc to make your chat clean and clear."
     await event.answer(text, cache_time=0, alert=True)
+
+
+# COMMON BUTTONS
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc$")))
+@check_owner(vc=True)
+async def vc(event):
+    await event.edit("** | VC PLAYER | **", buttons=buttons)
+
+
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))
+@check_owner(vc=True)
+async def vc(event):
+    if del_ := event.pattern_match.group(1):
+        return await event.delete()
+    await event.edit(
+        "**| VC Player Closed |**",
+        buttons=[
+            [Button.inline("Open again", data="backvc")]
+            # [Button.inline("Mode Info", data="modeinfovc")]
+        ],
+    )

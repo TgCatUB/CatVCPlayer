@@ -35,13 +35,13 @@ async def handler(_, update):
     buttons = [
         [
             Button.inline("⏮ Prev", data="previousvc"),
-            Button.inline("⏸ Pause", data="pausevc0"),
+            Button.inline("⏸ Pause", data="pausevc"),
             # Button.inline("▶️ Resume", data="resumevc"),
             Button.inline("⏭ Next", data="skipvc"),
         ],
         [
             Button.inline("🔁 repeat", data="repeatvc"),
-            Button.inline("❌ Stop", data="leavevc"),
+            Button.inline("≡ Mainmenu", data="menuvc"),
         ],
         [
             Button.inline("🗑 close", data="vc_close0"),
@@ -97,13 +97,13 @@ async def sendmsg(event, res):
     buttons = buttons = [
         [
             Button.inline("⏮ Prev", data="previousvc"),
-            Button.inline("⏸ Pause", data="pausevc0"),
+            Button.inline("⏸ Pause", data="pausevc"),
             # Button.inline("▶️ Resume", data="resumevc"),
             Button.inline("⏭ Next", data="skipvc"),
         ],
         [
             Button.inline("🔁 repeat", data="repeatvc"),
-            Button.inline("❌ Stop", data="leavevc"),
+            Button.inline("≡ Mainmenu", data="menuvc"),
         ],
         [
             Button.inline("🗑 close", data="vc_close0"),
