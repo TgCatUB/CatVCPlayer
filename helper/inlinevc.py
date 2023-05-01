@@ -11,18 +11,18 @@ from .function import vc_player
 vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
 
 mbuttons = [
-        [
-            Button.inline("👾 Join VC", data="joinvc"),
-            Button.inline("🍃 Leave VC", data="leavevc"),
-        ],
-        [
-            Button.inline("🎛 Player", data="playervc"),
-            Button.inline("⚙️ Settings", data="settingvc"),
-        ],
-        [
-            Button.inline("🗑 close", data="vc_close"),
-        ],
-    ]
+    [
+        Button.inline("👾 Join VC", data="joinvc"),
+        Button.inline("🍃 Leave VC", data="leavevc"),
+    ],
+    [
+        Button.inline("🎛 Player", data="playervc"),
+        Button.inline("⚙️ Settings", data="settingvc"),
+    ],
+    [
+        Button.inline("🗑 close", data="vc_close"),
+    ],
+]
 buttons = [
     [
         Button.inline("⏮ Prev", data="previousvc"),
