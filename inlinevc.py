@@ -32,10 +32,11 @@ buttons = [
 ]
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))
+@check_owner(vc=True)
 async def joinvc(event):
-    chat = event.chat_id
 
+    chat = event.chat_id
     if vc_player.app.active_calls:
         return await event.answer(f"You have already Joined in {vc_player.CHAT_NAME}")
 
@@ -51,8 +52,8 @@ async def joinvc(event):
     await event.answer(out)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^leavevc")))
-@check_owner
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^leavevc$")))
+@check_owner(vc=True)
 async def leavevc(event):
     if vc_player.CHAT_ID:
         chat_name = vc_player.CHAT_NAME
@@ -63,7 +64,7 @@ async def leavevc(event):
         await event.answer("Not yet joined any VC")
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc$")))
 @check_owner
 async def previousvc(event):
     eve = await event.get_message()
@@ -99,7 +100,7 @@ async def previousvc(event):
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc(\d)?")))
-@check_owner
+@check_owner(vc=True)
 async def resumevc(event):
     pl = event.pattern_match.group(1)
     res = await vc_player.resume()
@@ -115,7 +116,7 @@ async def resumevc(event):
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^pausevc(\d)?")))
-@check_owner
+@check_owner(vc=True)
 async def pausevc(event):
     pl = event.pattern_match.group(1)
     res = await vc_player.pause()
@@ -130,8 +131,8 @@ async def pausevc(event):
         await event.edit(buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^skipvc")))
-@check_owner
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^skipvc$")))
+@check_owner(vc=True)
 async def skipvc(event):
     eve = await event.get_message()
     buttons = [
@@ -147,7 +148,8 @@ async def skipvc(event):
         await event.edit(res, buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
+@check_owner(vc=True)
 async def repeatvc(event):
     eve = await event.get_message()
     buttons = [
@@ -170,7 +172,8 @@ async def repeatvc(event):
         await event.answer("Nothing playing in vc...")
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^playlistvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^playlistvc$")))
+@check_owner(vc=True)
 async def playlistvc(event):
     playl = vc_player.PLAYLIST
     cat = ""
@@ -194,7 +197,7 @@ async def playlistvc(event):
     )
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^settingvc")))
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^settingvc$")))
 @check_owner
 async def settingvc(event):
     abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
@@ -202,15 +205,15 @@ async def settingvc(event):
     cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
     buttons = [
         [
-            Button.inline("🎩 Auth Mode", data="avcinfo"),
+            Button.inline("🎩 Auth Mode", data="amodeinfo"),
             Button.inline(abtntext, data="amode"),
         ],
         [
-            Button.inline("🤖 Bot Mode", data="bvcinfo"),
+            Button.inline("🤖 Bot Mode", data="bmodeinfo"),
             Button.inline(bbtntext, data="bmode"),
         ],
         [
-            Button.inline("🗑 Clean Mode", data="cvcinfo"),
+            Button.inline("🗑 Clean Mode", data="cmodeinfo"),
             Button.inline(cbtntext, data="cmode"),
         ],
         [
@@ -221,14 +224,14 @@ async def settingvc(event):
     await event.edit("** | Settings | **", buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc")))
-@check_owner
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc$")))
+@check_owner(vc=True)
 async def vc(event):
     await event.edit("** | VC PLAYER | **", buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close(\d)?")))
-@check_owner
+@check_owner(vc=True)
 async def vc(event):
     if del_ := event.pattern_match.group(1):
         return await event.delete()
@@ -242,10 +245,13 @@ async def vc(event):
 
 
 # SETTINGS
-@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)mode"))
+@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)mode$"))
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
+    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
+    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
+    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
     if mode == "a":
         if vc_player.PUBLICMODE:
             vc_player.PUBLICMODE = False
@@ -270,15 +276,15 @@ async def vc(event):
 
     buttons = [
         [
-            Button.inline("🎩 Auth Mode", data="avcinfo"),
+            Button.inline("🎩 Auth Mode", data="amodeinfo"),
             Button.inline(abtntext, data="amode"),
         ],
         [
-            Button.inline("🤖 Bot Mode", data="bvcinfo"),
+            Button.inline("🤖 Bot Mode", data="bmodeinfo"),
             Button.inline(bbtntext, data="bmode"),
         ],
         [
-            Button.inline("🗑 Clean Mode", data="cvcinfo"),
+            Button.inline("🗑 Clean Mode", data="cmodeinfo"),
             Button.inline(cbtntext, data="cmode"),
         ],
         [
@@ -290,8 +296,8 @@ async def vc(event):
     await event.edit("** | Settings | **", buttons=buttons)
 
 
-@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)vcinfo"))
-@check_owner
+@catub.tgbot.on(CallbackQuery(pattern="(a|b|c)modeinfo$"))
+@check_owner(vc=True)
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
     if mode == "a":
