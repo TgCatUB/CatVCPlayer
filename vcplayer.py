@@ -442,11 +442,11 @@ async def skip_stream(event):
 async def vcplayer(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
-    if vc_player.BOTMODE:
-        with contextlib.suppress(Exception):
-            return await catub.tgbot.send_message(
-                event.chat_id, "** | VC PLAYER | **", buttons=buttons
-            )
+    #if vc_player.BOTMODE:
+        #with contextlib.suppress(Exception):
+          #  return await catub.tgbot.send_message(
+         #       event.chat_id, "** | VC PLAYER | **", buttons=buttons
+            #)
     reply_to_id = await reply_id(event)
     results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
