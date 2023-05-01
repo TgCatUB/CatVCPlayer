@@ -140,10 +140,9 @@ async def previousvc(event):
 async def resumevc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
-    pl = event.pattern_match.group(1)
     res = await vc_player.resume()
     await event.answer(res)
-    if pl and not vc_player.PAUSED:
+    if not vc_player.PAUSED:
         eve = await event.get_message()
         buttons = [
             [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
@@ -158,10 +157,9 @@ async def resumevc(event):
 async def pausevc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
-    pl = event.pattern_match.group(1)
     res = await vc_player.pause()
     await event.answer(res)
-    if pl and vc_player.PAUSED:
+    if vc_player.PAUSED:
         eve = await event.get_message()
         buttons = [
             [Button.inline(k.text, data=k.data[2:1]) for k in i] for i in eve.buttons
