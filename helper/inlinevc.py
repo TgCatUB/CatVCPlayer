@@ -10,7 +10,7 @@ from .function import vc_player
 
 vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
 
-# 📜
+
 buttons = [
     [
         Button.inline("👾 Join VC", data="joinvc"),
@@ -95,7 +95,7 @@ async def playervc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^menuvc$")))
 @check_owner(vc=True)
 async def playervc(event):
-    await event.edit(file=vcimg, caption="**| VC Menu |**", buttons=buttons)
+    await event.edit("**| VC MENU |**", file=vcimg, buttons=buttons)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc$")))
