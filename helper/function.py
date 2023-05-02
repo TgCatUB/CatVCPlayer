@@ -95,6 +95,7 @@ async def check_vcassis(event):
                 await event.edit(
                     "Failed to add VC assistant. Please provide add members right or invite manually."
                 )
+                return False
     return True
 
 
