@@ -278,6 +278,7 @@ async def play_video(event):
 async def play_audio(event):
     "To Play a media as audio on VC."
 
+
 @catub.cat_cmd(
     pattern="previous$",
     command=("previous", plugin_category),
