@@ -42,17 +42,6 @@ buttons = (
 )
 
 
-async def inline_edit(event, res, buttons=None):
-    if res:
-        if type(res) is list:
-            try:
-                await event.edit(file=res[0], text=res[1], buttons=buttons[1])
-            except:
-                await event.edit(file=erimg, text=res[1], buttons=buttons[1])
-        elif type(res) is str:
-            await event.edit(file=vcimg, text=res, buttons=buttons[1])
-
-
 # MAINMENU BUTTONS
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))
 @check_owner(vc=True)
@@ -132,7 +121,13 @@ async def previousvc(event):
         img=img,
     )
     if res:
-        await inline_edit(event, res, buttons=buttons[1])
+        if type(res) is list:
+            try:
+                await event.edit(file=res[0], text=res[1], buttons=buttons[1])
+            except:
+                await event.edit(file=erimg, text=res[1], buttons=buttons[1])
+        elif type(res) is str:
+            await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc$")))
@@ -176,7 +171,13 @@ async def skipvc(event):
         return await event.answer("Play any audio or video stream first...", alert=True)
     res = await vc_player.skip()
     if res:
-        await inline_edit(event, res, buttons=buttons[1])
+        if type(res) is list:
+            try:
+                await event.edit(file=res[0], text=res[1], buttons=buttons[1])
+            except:
+                await event.edit(file=erimg, text=res[1], buttons=buttons[1])
+        elif type(res) is str:
+            await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
