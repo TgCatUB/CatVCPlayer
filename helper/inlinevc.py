@@ -6,7 +6,7 @@ from telethon.tl.types import User
 from userbot import catub
 from userbot.core import check_owner
 
-from .function import vc_player, inline_edit
+from .function import inline_edit, vc_player
 
 vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcfileW.mp4"
 erimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/404.png"
@@ -164,7 +164,8 @@ async def skipvc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
     res = await vc_player.skip()
-    if res: await inline_edit(event, res, buttons=buttons[1])
+    if res:
+        await inline_edit(event, res, buttons=buttons[1])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
