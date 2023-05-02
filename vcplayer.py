@@ -332,28 +332,27 @@ async def play_audio(event):
 )
 async def previous(event):
     "To play previous a stream on Voice Chat."
-    if vc_player.PREVIOUS:
-        prev = vc_player.PREVIOUS[-1]
-        song_input = prev["path"]
-        stream = prev["stream"]
-        duration = prev["duration"]
-        url = prev["url"]
-        img = prev["img"]
-        res = await vc_player.play_song(
-            event,
-            song_input,
-            stream,
-            force=True,
-            prev=True,
-            duration=duration,
-            url=url,
-            img=img,
-        )
-        if res:
-            await sendmsg(event, res)
-    else:
-        await vc_reply(event, "**No previous track found.**")
-
+    if not vc_player.PREVIOUS:
+        return await vc_reply(event, "**No previous track found.**")
+    prev = vc_player.PREVIOUS[-1]
+    song_input = prev["path"]
+    stream = prev["stream"]
+    duration = prev["duration"]
+    url = prev["url"]
+    img = prev["img"]
+    res = await vc_player.play_song(
+        event,
+        song_input,
+        stream,
+        force=True,
+        prev=True,
+        duration=duration,
+        url=url,
+        img=img,
+    )
+    if res:
+        await sendmsg(event, res)
+        
 
 @catub.cat_cmd(
     pattern="pause$",

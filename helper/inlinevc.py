@@ -193,6 +193,8 @@ async def repeatvc(event):
     if res:
         if type(res) is list:
             await event.edit(file=res[0], text=res[1], buttons=buttons[1])
+        if type(res) is list:
+            await event.edit(text=res[0])
         elif type(res) is str:
             await event.edit(file=vcimg, text=res, buttons=buttons[1])
 

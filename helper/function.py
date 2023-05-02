@@ -30,13 +30,11 @@ async def handler(_, update):
         else:
             return
     resp = await vc_player.handle_next(update)
-    vcbot = catub.tgbot if vc_player.BOTMODE else catub
     print("In the end it doesnt even matter")
     buttons = [
         [
             Button.inline("⏮ Prev", data="previousvc"),
             Button.inline("⏸ Pause", data="pausevc"),
-            # Button.inline("▶️ Resume", data="resumevc"),
             Button.inline("⏭ Next", data="skipvc"),
         ],
         [
@@ -47,19 +45,23 @@ async def handler(_, update):
             Button.inline("🗑 close", data="vc_close0"),
         ],
     ]
-    if resp and type(resp) is list:
-        caption = resp[1].split(f"\n\n")[1] if f"\n\n" in resp[1] else resp[1]
-        event = await vcbot.send_file(
-            vc_player.CHAT_ID, file=resp[0], caption=caption, buttons=buttons
-        )
-    elif resp and type(resp) is str:
-        resp = resp.split(f"\n\n")[1] if f"\n\n" in resp else resp
-        event = await vcbot.send_message(vc_player.CHAT_ID, resp, buttons=buttons)
+    if vc_player.BOTMODE:
+        if resp and type(resp) is list:
+            caption = resp[1].split(f"\n\n")[1] if f"\n\n" in resp[1] else resp[1]
+            event = await catub.tgbot.send_file(
+                vc_player.CHAT_ID, file=resp[0], caption=caption, buttons=buttons
+            )
+        elif resp and type(resp) is str:
+            resp = resp.split(f"\n\n")[1] if f"\n\n" in resp else resp
+            event = await catub.tgbot.send_message(vc_player.CHAT_ID, resp, buttons=buttons)
+    else:
+        results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+        event = await results[0].click(event.chat_id, hide_via=True)
     if vc_player.CLEANMODE and event:
         vc_player.EVENTS.append(event)
 
 
-async def vc_reply(event, text, file=False, edit=False, **kwargs):
+async def vc_reply(event, text, file=False, edit=False, dlt=False, **kwargs):
     if vc_player.BOTMODE:
         try:
             if file:
@@ -78,7 +80,8 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
             )
             edit = False
     elif file:
-        catevent = await catub.send_file(event.chat_id, file=file, caption=text)
+        results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+        catevent = await results[0].click(event.chat_id, hide_via=True)
     elif vc_player.PUBLICMODE:
         catevent = (
             await catub.send_message(event.chat_id, text, **kwargs)
@@ -87,6 +90,9 @@ async def vc_reply(event, text, file=False, edit=False, **kwargs):
         )
     else:
         catevent = await edit_or_reply(event, text)
+    if dlt:
+        await asyncio.sleep(dlt)
+        return await catevent.delete()    
     if vc_player.CLEANMODE and not edit:
         vc_player.EVENTS.append(catevent)
     else:
@@ -112,6 +118,8 @@ async def sendmsg(event, res):
     if res and type(res) is list:
         await event.delete()
         event = await vc_reply(event, res[1], file=res[0], buttons=buttons)
+    elif res and type(res) is tuple:
+        event = await vc_reply(event, res[0], dlt=15)
     elif res and type(res) is str:
         event = await vc_reply(event, res, buttons=buttons)
 
