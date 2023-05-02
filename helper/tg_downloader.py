@@ -4,6 +4,7 @@ import os
 import pathlib
 import time
 from datetime import datetime
+from telegraph import upload_file
 
 from telethon.tl import types
 from telethon.utils import get_extension
@@ -86,6 +87,7 @@ async def tg_dl(event, reply, tgbot=False):
         )
         try:
             thumb = await reply.download_media(thumb=-1)
+            thumb = f"https://graph.org{(upload_file(thumb))[0]}"
         except TypeError:
             try:
                 nail_ = await event.client.get_profile_photos(catub.me.id)
