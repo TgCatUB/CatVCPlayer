@@ -250,7 +250,7 @@ async def play_video(event):
                 event, "Voice Chats are not available in Private Chats"
             )
         if Config.VC_SESSION:
-            check = await check_vcassis()
+            check = await check_vcassis(event)
             if not check:
                 return
         await vc_player.join_vc(vc_chat, False)
