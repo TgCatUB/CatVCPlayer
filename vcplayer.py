@@ -444,10 +444,10 @@ async def inlinevc(event):
         event.via_bot_id
         and event.via_bot_id == bot.id
         and event.media
-        and event.message == "| VC Menu |"
+        and event.message == "| VC Player |"
     ):
         if not (play := vc_player.PLAYING):
-            return event.edit(file=vcimg, buttons=buttons[0])
+            return event.edit(text="| VC Menu |", file=vcimg, buttons=buttons[0])
         title = play["title"]
         duration = play["duration"]
         url = play["url"]
