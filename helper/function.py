@@ -123,7 +123,9 @@ async def vc_reply(event, text, file=False, firstmsg=False, dlt=False, **kwargs)
             )
             catevent = await results[0].click(event.chat_id, hide_via=True)
         except Exception:
-            catevent = await catub.send_file(event.chat_id, file=file, caption=text, **kwargs)
+            catevent = await catub.send_file(
+                event.chat_id, file=file, caption=text, **kwargs
+            )
     elif vc_player.PUBLICMODE:
         catevent = (
             await catub.send_message(event.chat_id, text, **kwargs)
