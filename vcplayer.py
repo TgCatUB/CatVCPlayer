@@ -436,23 +436,3 @@ async def vcplayer(event):
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     await event.delete()
 
-
-@catub.on(events.NewMessage(outgoing=True))
-async def inlinevc(event):
-    bot = await catub.tgbot.get_me()
-    if (
-        event.via_bot_id
-        and event.via_bot_id == bot.id
-        and event.media
-        and event.message == "| VC Player |"
-    ):
-        if not (play := vc_player.PLAYING):
-            return event.edit(text="| VC Menu |", file=vcimg, buttons=buttons[0])
-        title = play["title"]
-        duration = play["duration"]
-        url = play["url"]
-        vcimg = play["img"]
-        msg = f"**🎧 Playing:** [{title}]({url})\n"
-        msg += f"**⏳ Duration:** `{duration}`\n"
-        msg += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
-        await event.edit(text=msg, file=vcimg, buttons=buttons[1])
