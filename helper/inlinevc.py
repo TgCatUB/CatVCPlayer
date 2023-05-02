@@ -189,7 +189,7 @@ async def repeatvc(event):
         vc_player.REPEAT = True
         btns = buttons[1].copy()
         btns[1].pop(0)
-        btns[1].insert(0, Button.inline("Repeat ✅", data="resumevc"))
+        btns[1].insert(0, Button.inline("Repeat ✅", data="repeatvc"))
         await event.edit(buttons=btns)
 
 
