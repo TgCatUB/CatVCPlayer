@@ -118,7 +118,9 @@ async def vc_reply(event, text, file=False, firstmsg=False, dlt=False, **kwargs)
             )
     elif file:
         try:
-            results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+            results = await event.client.inline_query(
+                Config.TG_BOT_USERNAME, "vcplayer"
+            )
             catevent = await results[0].click(event.chat_id, hide_via=True)
         except Exception:
             await catub.send_file(text, file=file, **kwargs)
