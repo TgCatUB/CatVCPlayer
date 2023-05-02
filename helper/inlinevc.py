@@ -120,14 +120,13 @@ async def previousvc(event):
         url=url,
         img=img,
     )
-    if res:
-        if type(res) is list:
-            try:
-                await event.edit(file=res[0], text=res[1], buttons=buttons[1])
-            except:
-                await event.edit(file=erimg, text=res[1], buttons=buttons[1])
-        elif type(res) is str:
-            await event.edit(file=vcimg, text=res, buttons=buttons[1])
+    if res and isinstance(res, list):
+        try:
+            await event.edit(file=res[0], text=res[1], buttons=buttons[1])
+        except Exception:
+            await event.edit(file=erimg, text=res[1], buttons=buttons[1])
+    elif res and isinstance(res, str):
+        await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^resumevc$")))
@@ -170,14 +169,15 @@ async def skipvc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
     res = await vc_player.skip()
-    if res:
-        if type(res) is list:
-            try:
-                await event.edit(file=res[0], text=res[1], buttons=buttons[1])
-            except:
-                await event.edit(file=erimg, text=res[1], buttons=buttons[1])
-        elif type(res) is str:
-            await event.edit(file=vcimg, text=res, buttons=buttons[1])
+    if res and isinstance(res, list):
+        try:
+            await event.edit(file=res[0], text=res[1], buttons=buttons[1])
+        except Exception:
+            await event.edit(file=erimg, text=res[1], buttons=buttons[1])
+    elif res and isinstance(res, str):
+        await event.edit(file=vcimg, text=res, buttons=buttons[1])
+
+
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
@@ -189,12 +189,12 @@ async def repeatvc(event):
         vc_player.REPEAT = False
         buttons[1][1].pop(0)
         buttons[1][1].insert(0, Button.inline("Repeat ❌", data="repeatvc"))
-        await event.edit(buttons=buttons[1])
     else:
         vc_player.REPEAT = True
         buttons[1][1].pop(0)
         buttons[1][1].insert(0, Button.inline("Repeat ✅", data="repeatvc"))
-        await event.edit(buttons=buttons[1])
+
+    await event.edit(buttons=buttons[1])
 
 
 # SETTINGS BUTTONS
