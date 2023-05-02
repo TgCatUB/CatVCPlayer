@@ -93,8 +93,6 @@ async def playervc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^menuvc$")))
 @check_owner(vc=True)
 async def playervc(event):
-    if play := vc_player.PLAYING:
-        vcimg = play["img"]
     await event.edit(file=vcimg, text="**| VC MENU |**", buttons=buttons[0])
 
 
@@ -184,7 +182,7 @@ async def repeatvc(event):
         return await event.answer("Play any audio or video stream first...", alert=True)
     if vc_player.REPEAT:
         vc_player.REPEAT = False
-        await event.edit(buttons=buttons)
+        await event.edit(buttons=buttons[1])
     else:
         vc_player.REPEAT = True
         btns = buttons[1].copy()
