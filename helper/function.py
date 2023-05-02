@@ -4,7 +4,10 @@ import logging
 from telethon import Button, TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRequest
-from telethon.tl.functions.messages import ExportChatInviteRequest, ImportChatInviteRequest
+from telethon.tl.functions.messages import (
+    ExportChatInviteRequest,
+    ImportChatInviteRequest,
+)
 from userbot import Config, catub
 from userbot.core.managers import edit_or_reply
 
@@ -95,7 +98,9 @@ async def check_vcassis(event):
             except Exception:
                 try:
                     invite_link = await catub(ExportChatInviteRequest(event.chat))
-                    await vc_player.client(ImportChatInviteRequest(invite_link.link.split("/", -1)[-1]))
+                    await vc_player.client(
+                        ImportChatInviteRequest(invite_link.link.split("/", -1)[-1])
+                    )
                 except:
                     await event.edit(
                         "Failed to add VC assistant. Please provide add members right or invite manually."
