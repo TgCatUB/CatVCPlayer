@@ -86,7 +86,7 @@ async def playervc(event):
     msg = f"**🎧 Playing:** [{title}]({url})\n"
     msg += f"**⏳ Duration:** `{duration}`\n"
     msg += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
-    await event.edit(msg, file=vcimg, buttons=buttons)
+    await event.edit(msg, file=vcimg, buttons=buttons[1])
 
 
 # PLAYER BUTTONS
@@ -172,9 +172,9 @@ async def skipvc(event):
     res = await vc_player.skip()
     if res:
         if type(res) is list:
-            await event.edit(file=res[0], text=res[1], buttons=buttons)
+            await event.edit(file=res[0], text=res[1], buttons=buttons[1])
         elif type(res) is str:
-            await event.edit(file=vcimg, text=res, buttons=buttons)
+            await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
