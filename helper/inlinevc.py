@@ -216,11 +216,12 @@ def fetch_button_layout(abtntext, bbtntext, cbtntext):
         ],
     ]
 
+
 def fetch_button_text():
     abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
     bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
     cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
-    return abtntext,bbtntext,cbtntext
+    return abtntext, bbtntext, cbtntext
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^settingvc$")))
