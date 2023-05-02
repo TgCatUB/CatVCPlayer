@@ -73,7 +73,7 @@ async def handler(_, update):
 
 async def check_vcassis(event):
     participants = catub.get_participants(event.chat)
-    assis = vcplayer.client.get_me()
+    assis = vc_player.client.get_me()
     get_id = assis.id
     ids = [int(users.id) for users in participants]
     if get_id not in ids:
@@ -89,7 +89,7 @@ async def check_vcassis(event):
                 return False
         else:
             try:
-                [await event.client(InviteToChannelRequest(event.chat_id, [get_id]))]
+                await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
 
             except Exception:
                 await event.edit(
