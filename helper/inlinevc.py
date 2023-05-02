@@ -99,7 +99,6 @@ async def playervc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc$")))
 @check_owner
 async def previousvc(event):
-    print(event)
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
     if not vc_player.PREVIOUS:
@@ -164,7 +163,6 @@ async def pausevc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^skipvc$")))
 @check_owner(vc=True)
 async def skipvc(event):
-    print(event)
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
     res = await vc_player.skip()

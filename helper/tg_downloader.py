@@ -17,10 +17,6 @@ NAME = "untitled"
 downloads = pathlib.Path(os.path.join(os.getcwd(), Config.TEMP_DIR))
 
 
-async def _get_file_name(path: pathlib.Path, full: bool = True) -> str:
-    return str(path.absolute()) if full else path.stem + path.suffix
-
-
 async def tg_dl(event, reply, tgbot=False):
     "To download the replied telegram file"
     mone = await edit_or_reply(event, "`Downloading....`")
@@ -28,7 +24,6 @@ async def tg_dl(event, reply, tgbot=False):
     path = None
     if not os.path.isdir(Config.TEMP_DIR):
         os.makedirs(Config.TEMP_DIR)
-    # reply = await event.get_reply_message()
     if reply:
         start = datetime.now()
         for attr in getattr(reply.document, "attributes", []):
@@ -95,7 +90,7 @@ async def tg_dl(event, reply, tgbot=False):
             try:
                 nail_ = await event.client.get_profile_photos(catub.me.id)
                 thumb = await event.client.download_media(nail_[0], file=downloads)
-            except:
+            except Exception:
                 thumb = "catvc/resources/404.png"
 
         return [os.path.relpath(file_name, os.getcwd()), thumb]
