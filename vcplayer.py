@@ -77,7 +77,13 @@ async def joinVoicechat(event):
             "Unable to use Join as in Private Chat. Joining as Yourself...",
         )
         joinas = False
+    if Config.VC_SESSION:
 
+            check = await check_vcassis(event)
+
+            if not check:
+
+                return
     out = await vc_player.join_vc(vc_chat, joinas)
     await vc_reply(event, out)
 
