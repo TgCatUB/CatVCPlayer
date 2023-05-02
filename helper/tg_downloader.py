@@ -4,8 +4,8 @@ import os
 import pathlib
 import time
 from datetime import datetime
-from telegraph import upload_file
 
+from telegraph import upload_file
 from telethon.tl import types
 from telethon.utils import get_extension
 from userbot import catub
