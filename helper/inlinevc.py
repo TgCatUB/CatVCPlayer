@@ -94,7 +94,7 @@ async def playervc(event):
 @check_owner(vc=True)
 async def playervc(event):
     if play := vc_player.PLAYING:
-        vcimg= play["img"]
+        vcimg = play["img"]
     await event.edit(file=vcimg, text="**| VC MENU |**", buttons=buttons[0])
 
 
