@@ -23,7 +23,7 @@ vc_player = CatVC(vc_client)
 
 
 @vc_player.on_closed_voice_chat()
-async def on_closed_vc():
+async def on_closed_vc(_, update):
     return vc_player.leave_vc()
 
 
