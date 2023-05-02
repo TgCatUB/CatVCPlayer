@@ -440,7 +440,12 @@ async def vcplayer(event):
 @catub.on(events.NewMessage(outgoing=True))
 async def inlinevc(event):
     bot = await catub.tgbot.get_me()
-    if event.via_bot_id and event.via_bot_id == bot.id and event.media and event.message == "| VC Menu |":
+    if (
+        event.via_bot_id
+        and event.via_bot_id == bot.id
+        and event.media
+        and event.message == "| VC Menu |"
+    ):
         if not (play := vc_player.PLAYING):
             return event.edit(file=vcimg, buttons=buttons[0])
         title = play["title"]
