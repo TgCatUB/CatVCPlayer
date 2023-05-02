@@ -41,6 +41,7 @@ buttons = (
     ],
 )
 
+
 async def inline_edit(event, res, buttons=None):
     if res:
         if type(res) is list:
@@ -50,6 +51,7 @@ async def inline_edit(event, res, buttons=None):
                 await event.edit(file=erimg, text=res[1], buttons=buttons[1])
         elif type(res) is str:
             await event.edit(file=vcimg, text=res, buttons=buttons[1])
+
 
 # MAINMENU BUTTONS
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^joinvc$")))
@@ -173,7 +175,8 @@ async def skipvc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
     res = await vc_player.skip()
-    if res: await inline_edit(event, res, buttons=buttons[1])
+    if res:
+        await inline_edit(event, res, buttons=buttons[1])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
