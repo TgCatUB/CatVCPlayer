@@ -53,7 +53,9 @@ async def handler(_, update):
             )
         elif resp and type(resp) is str:
             resp = resp.split(f"\n\n")[1] if f"\n\n" in resp else resp
-            event = await catub.tgbot.send_message(vc_player.CHAT_ID, resp, buttons=buttons)
+            event = await catub.tgbot.send_message(
+                vc_player.CHAT_ID, resp, buttons=buttons
+            )
     else:
         results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
         event = await results[0].click(event.chat_id, hide_via=True)
@@ -92,7 +94,7 @@ async def vc_reply(event, text, file=False, edit=False, dlt=False, **kwargs):
         catevent = await edit_or_reply(event, text)
     if dlt:
         await asyncio.sleep(dlt)
-        return await catevent.delete()    
+        return await catevent.delete()
     if vc_player.CLEANMODE and not edit:
         vc_player.EVENTS.append(catevent)
     else:

@@ -352,7 +352,7 @@ async def previous(event):
     )
     if res:
         await sendmsg(event, res)
-        
+
 
 @catub.cat_cmd(
     pattern="pause$",
