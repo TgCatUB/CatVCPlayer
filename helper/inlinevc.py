@@ -178,8 +178,6 @@ async def skipvc(event):
         await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
-
-
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^repeatvc$")))
 @check_owner(vc=True)
 async def repeatvc(event):
