@@ -117,8 +117,11 @@ async def vc_reply(event, text, file=False, firstmsg=False, dlt=False, **kwargs)
                 f"Please disable Bot Mode or Invite {Config.TG_BOT_USERNAME} to the chat"
             )
     elif file:
-        results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
-        catevent = await results[0].click(event.chat_id, hide_via=True)
+        try:
+            results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+            catevent = await results[0].click(event.chat_id, hide_via=True)
+        except Exception:
+            await catub.send_file(text, file=file, **kwargs)
     elif vc_player.PUBLICMODE:
         catevent = (
             await catub.send_message(event.chat_id, text, **kwargs)
