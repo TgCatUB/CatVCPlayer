@@ -8,7 +8,7 @@ from userbot.core import check_owner
 
 from .function import vc_player
 
-vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcimg.jpg"
+vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcfileW.mp4"
 
 buttons = (
     [
@@ -47,7 +47,7 @@ buttons = (
 async def joinvc(event):
     chat = event.chat_id
     if vc_player.app.active_calls:
-        return await event.answer(f"You have already Joined in {vc_player.CHAT_NAME}")
+        return await event.answer(f"You have already Joined in: {vc_player.CHAT_NAME}")
 
     try:
         vc_chat = await catub.get_entity(chat)
@@ -58,7 +58,7 @@ async def joinvc(event):
         return await event.answer("Voice Chats are not available in Private Chats")
 
     out = await vc_player.join_vc(vc_chat, False)
-    await event.answer(out, alert=True)
+    await event.answer(out)
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^leavevc$")))
@@ -196,13 +196,8 @@ async def repeatvc(event):
 
 
 # SETTINGS BUTTONS
-@catub.tgbot.on(CallbackQuery(data=re.compile(r"^settingvc$")))
-@check_owner
-async def settingvc(event):
-    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
-    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
-    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
-    buttons = [
+def fetch_button_layout(abtntext, bbtntext, cbtntext):
+    return [
         [
             Button.inline("🎩 Auth Mode", data="amodeinfo"),
             Button.inline(abtntext, data="amode"),
@@ -220,6 +215,19 @@ async def settingvc(event):
             Button.inline("🗑 close", data="vc_close"),
         ],
     ]
+
+def fetch_button_text():
+    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
+    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
+    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
+    return abtntext,bbtntext,cbtntext
+
+
+@catub.tgbot.on(CallbackQuery(data=re.compile(r"^settingvc$")))
+@check_owner
+async def settingvc(event):
+    abtntext, bbtntext, cbtntext = fetch_button_text()
+    buttons = fetch_button_layout(abtntext, bbtntext, cbtntext)
     await event.edit("** | Settings | **", buttons=buttons)
 
 
@@ -227,9 +235,7 @@ async def settingvc(event):
 @check_owner
 async def vc(event):
     mode = (event.pattern_match.group(1)).decode("UTF-8")
-    abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
-    bbtntext = "✅ Enabled" if vc_player.BOTMODE else "❌ Disabled"
-    cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
+    abtntext, bbtntext, cbtntext = fetch_button_text()
     if mode == "a":
         vc_player.PUBLICMODE = not vc_player.PUBLICMODE
         abtntext = "🏢 Public" if vc_player.PUBLICMODE else "🏠 Private"
@@ -240,25 +246,7 @@ async def vc(event):
         vc_player.CLEANMODE = not vc_player.CLEANMODE
         cbtntext = "✅ Enabled" if vc_player.CLEANMODE else "❌ Disabled"
 
-    buttons = [
-        [
-            Button.inline("🎩 Auth Mode", data="amodeinfo"),
-            Button.inline(abtntext, data="amode"),
-        ],
-        [
-            Button.inline("🤖 Bot Mode", data="bmodeinfo"),
-            Button.inline(bbtntext, data="bmode"),
-        ],
-        [
-            Button.inline("🗑 Clean Mode", data="cmodeinfo"),
-            Button.inline(cbtntext, data="cmode"),
-        ],
-        [
-            Button.inline("⬅️ Back", data="backvc"),
-            Button.inline("🗑 close", data="vc_close"),
-        ],
-    ]
-
+    buttons = fetch_button_layout(abtntext, bbtntext, cbtntext)
     await event.edit("** | Settings | **", buttons=buttons)
 
 
@@ -272,7 +260,7 @@ async def vc(event):
         text = "⁉️ What is This?\n\nWhen activated, Your assistant responds to the commands  with interactive buttons"
     elif mode == "c":
         text = "⁉️ What is This?\n\nWhen activated, Bot will delete its message after leaving vc to make your chat clean and clear."
-    await event.answer(text, cache_time=0, alert=True)
+    await event.answer(text, alert=True)
 
 
 # COMMON BUTTONS

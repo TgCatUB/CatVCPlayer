@@ -282,6 +282,7 @@ async def play_audio(event):
         input_str = input_str.replace("-f", "").strip()
         forced = True
     LOGS.info("Playing Audio..")
+    reply = await event.get_reply_message()
     event = await vc_reply(event, "`Searching...`", edit=True)
     if reply and reply.media and not reply.photo:
         inputstr = await tg_dl(

@@ -16,11 +16,13 @@ from pytgcalls.types.stream import StreamAudioEnded
 from telethon import functions
 from telethon.errors import ChatAdminRequiredError
 from userbot.helpers.functions import get_ytthumb, yt_search
+from userbot.core.logger import logging
 from userbot.helpers.utils import _catutils
 from yt_dlp import YoutubeDL
 
 from .stream_helper import Stream, check_url, video_dl, yt_regex
 
+LOGS = logging.getLogger(__name__)
 
 class CatVC:
     def __init__(self, client) -> None:
@@ -189,7 +191,7 @@ class CatVC:
         msg = f"**🎧 Playing:** [{title}]({url})\n"
         msg += f"**⏳ Duration:** `{duration}`\n"
         msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
-        print(playable)
+        LOGS.info(playable)
         if self.PLAYING and not force:
             self.PLAYLIST.append(
                 {
