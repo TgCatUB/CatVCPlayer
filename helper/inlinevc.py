@@ -8,7 +8,7 @@ from userbot.core import check_owner
 
 from .function import vc_player
 
-vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcfileUW.mp4"
+vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcfileW.mp4"
 
 buttons = (
     [
@@ -93,6 +93,8 @@ async def playervc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^menuvc$")))
 @check_owner(vc=True)
 async def playervc(event):
+    if play := vc_player.PLAYING:
+        vcimg= play["img"]
     await event.edit(file=vcimg, text="**| VC MENU |**", buttons=buttons[0])
 
 
