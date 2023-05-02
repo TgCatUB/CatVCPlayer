@@ -41,6 +41,7 @@ class CatVC:
         self.PUBLICMODE = False
         self.BOTMODE = False
         self.CLEANMODE = True
+        self.REPEAT = False
 
     def clear_vars(self):
         self.CHAT_ID = None
@@ -51,6 +52,7 @@ class CatVC:
         self.PLAYLIST = []
         self.PREVIOUS = []
         self.EVENTS = []
+        self.REPEAT = False
 
     async def start(self):
         await self.app.start()
@@ -271,6 +273,17 @@ class CatVC:
         msg += f"**⏳ Duration:** `{next_song['duration']}`\n"
         msg += f"**💭 Chat:** `{self.CHAT_NAME}`"
         return [next_song["img"], msg] if next_song["img"] else msg
+
+    async def repeat(self):
+        if next_song := self.PLAYING:
+            if next_song["stream"] == Stream.audio:
+                streamable = AudioPiped(next_song["path"])
+            else:
+                streamable = AudioVideoPiped(next_song["path"])
+            try:
+                await self.app.change_stream(self.CHAT_ID, streamable)
+            except Exception:
+                await self.skip()
 
     async def pause(self):
         if not self.PLAYING:

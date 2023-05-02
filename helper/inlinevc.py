@@ -21,7 +21,7 @@ buttons = (
             Button.inline("⚙️ Settings", data="settingvc"),
         ],
         [
-            Button.inline("🗑 close", data="vc_close"),
+            Button.inline("🗑 Close", data="vc_close"),
         ],
     ],
     [
@@ -31,11 +31,11 @@ buttons = (
             Button.inline("⏭ Next", data="skipvc"),
         ],
         [
-            Button.inline("🔁 repeat", data="repeatvc"),
+            Button.inline("🔁 Repeat ❌", data="repeatvc"),
             Button.inline("〣 Mainmenu", data="menuvc"),
         ],
         [
-            Button.inline("🗑 close", data="vc_close"),
+            Button.inline("🗑 Close", data="vc_close"),
         ],
     ],
 )
@@ -182,21 +182,30 @@ async def skipvc(event):
 async def repeatvc(event):
     if not vc_player.PLAYING:
         return await event.answer("Play any audio or video stream first...", alert=True)
-    song_input = vc_player.PLAYING["path"]
-    stream = vc_player.PLAYING["stream"]
-    duration = vc_player.PLAYING["duration"]
-    url = vc_player.PLAYING["url"]
-    img = vc_player.PLAYING["img"]
-    res = await vc_player.play_song(
-        event, song_input, stream, force=False, duration=duration, url=url, img=img
-    )
-    if res:
-        if type(res) is list:
-            await event.edit(file=res[0], text=res[1], buttons=buttons[1])
-        if type(res) is list:
-            await event.edit(text=res[0])
-        elif type(res) is str:
-            await event.edit(file=vcimg, text=res, buttons=buttons[1])
+    if vc_player.REPEAT:
+        vc_player.REPEAT = False
+        await event.edit(buttons=buttons)
+    else:
+        vc_player.REPEAT = True
+        buttons = buttons[1].copy()
+        buttons[1].pop(0)
+        buttons[1].insert(0, Button.inline(" ✅", data="resumevc"))
+        await event.edit(buttons=buttons[1])
+    # song_input = vc_player.PLAYING["path"]
+    # stream = vc_player.PLAYING["stream"]
+    # duration = vc_player.PLAYING["duration"]
+    # url = vc_player.PLAYING["url"]
+    # img = vc_player.PLAYING["img"]
+    # res = await vc_player.play_song(
+    #     event, song_input, stream, force=False, duration=duration, url=url, img=img
+    # )
+    # if res:
+    #     if type(res) is list:
+    #         await event.edit(file=res[0], text=res[1], buttons=buttons[1])
+    #     if type(res) is list:
+    #         await event.edit(text=res[0])
+    #     elif type(res) is str:
+    #         await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
 # SETTINGS BUTTONS

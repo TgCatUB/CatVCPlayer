@@ -24,6 +24,8 @@ vc_player = CatVC(vc_client)
 @vc_player.app.on_stream_end()
 async def handler(_, update):
     event = False
+    if vc_player.REPEAT:
+        return await vc_player.repeat()
     if not vc_player.PLAYLIST:
         if vc_player.CHAT_ID and not vc_player.SILENT:
             return await vc_player.leave_vc()
