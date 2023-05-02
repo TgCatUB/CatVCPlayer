@@ -78,12 +78,10 @@ async def joinVoicechat(event):
         )
         joinas = False
     if Config.VC_SESSION:
+        check = await check_vcassis(event)
 
-            check = await check_vcassis(event)
-
-            if not check:
-
-                return
+        if not check:
+            return
     out = await vc_player.join_vc(vc_chat, joinas)
     await vc_reply(event, out)
 
