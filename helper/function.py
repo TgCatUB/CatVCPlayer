@@ -146,7 +146,6 @@ async def sendmsg(event, res):
         [
             Button.inline("⏮ Prev", data="previousvc"),
             Button.inline("⏸ Pause", data="pausevc"),
-            # Button.inline("▶️ Resume", data="resumevc"),
             Button.inline("⏭ Next", data="skipvc"),
         ],
         [
@@ -164,17 +163,6 @@ async def sendmsg(event, res):
         event = await vc_reply(event, res[0], dlt=15)
     elif res and type(res) is str:
         event = await vc_reply(event, res, buttons=buttons)
-
-
-async def inline_edit(event, res, buttons=None):
-    if res:
-        if type(res) is list:
-            try:
-                await event.edit(file=res[0], text=res[1], buttons=buttons[1])
-            except:
-                await event.edit(file=erimg, text=res[1], buttons=buttons[1])
-        elif type(res) is str:
-            await event.edit(file=vcimg, text=res, buttons=buttons[1])
 
 
 asyncio.create_task(vc_player.start())
