@@ -182,13 +182,14 @@ async def repeatvc(event):
         return await event.answer("Play any audio or video stream first...", alert=True)
     if vc_player.REPEAT:
         vc_player.REPEAT = False
+        buttons[1][1].pop(0)
+        buttons[1][1].insert(0, Button.inline("Repeat ❌", data="repeatvc"))
         await event.edit(buttons=buttons[1])
     else:
         vc_player.REPEAT = True
-        btns = buttons[1].copy()
-        btns[1].pop(0)
-        btns[1].insert(0, Button.inline("Repeat ✅", data="repeatvc"))
-        await event.edit(buttons=btns)
+        buttons[1][1].pop(0)
+        buttons[1][1].insert(0, Button.inline("Repeat ✅", data="repeatvc"))
+        await event.edit(buttons=buttons)
 
 
 # SETTINGS BUTTONS
