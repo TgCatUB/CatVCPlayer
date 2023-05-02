@@ -1,7 +1,6 @@
 import contextlib
 import logging
 
-from telethon import events
 from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core.data import _sudousers_list
@@ -9,7 +8,7 @@ from userbot.core.logger import logging
 from userbot.helpers.utils import reply_id
 
 from .helper.function import check_vcassis, sendmsg, vc_player, vc_reply
-from .helper.inlinevc import buttons, vcimg
+from .helper.inlinevc import buttons
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
 
@@ -435,4 +434,3 @@ async def vcplayer(event):
     results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
     await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     await event.delete()
-
