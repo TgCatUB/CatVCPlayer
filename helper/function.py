@@ -21,6 +21,9 @@ else:
 vc_client.__class__.__module__ = "telethon.client.telegramclient"
 vc_player = CatVC(vc_client)
 
+@vc_player.on_closed_voice_chat()
+async def on_closed_vc():
+    return vc_player.leave_vc()
 
 @vc_player.app.on_stream_end()
 async def handler(_, update):
