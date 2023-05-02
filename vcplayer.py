@@ -220,10 +220,10 @@ async def play_video(event):
     reply = await event.get_reply_message()
     if av_check:
         av_options = ["Video", Stream.video]
-        reply_media = reply.video
+        reply_media = reply.video 
     else:
         av_options = ["Audio", Stream.audio]
-        reply_media = reply.media
+        reply_media = reply.media if reply else False
 
     if "-f" in input_str:
         input_str = input_str.replace("-f", "").strip()
