@@ -7,7 +7,7 @@ from userbot.core.data import _sudousers_list
 from userbot.core.logger import logging
 from userbot.helpers.utils import reply_id
 
-from .helper.function import sendmsg, vc_player, vc_reply, check_vcassis
+from .helper.function import check_vcassis, sendmsg, vc_player, vc_reply
 from .helper.inlinevc import buttons
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
@@ -16,7 +16,7 @@ plugin_category = "extra"
 
 LOGS = logging.getLogger(__name__)
 sudos = [Config.OWNER_ID] + _sudousers_list()
-        
+
 
 @catub.cat_cmd(
     pattern="joinvc ?(\S+)? ?(?:-as)? ?(\S+)?",
@@ -285,7 +285,6 @@ async def play_video(event):
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
-    pass
 
 
 @catub.cat_cmd(
