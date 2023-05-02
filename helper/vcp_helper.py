@@ -15,9 +15,10 @@ from pytgcalls.types import AudioPiped, AudioVideoPiped
 from pytgcalls.types.stream import StreamAudioEnded
 from telethon import functions
 from telethon.errors import ChatAdminRequiredError
+from userbot import catub
 from userbot.core.logger import logging
-from userbot.helpers.functions import get_ytthumb, yt_search
 from userbot.helpers.utils import _catutils
+from userbot.helpers.functions import get_ytthumb, yt_search
 from yt_dlp import YoutubeDL
 
 from .stream_helper import Stream, check_url, video_dl, yt_regex
@@ -87,7 +88,16 @@ class CatVC:
                 )
                 await self.join_vc(chat=chat, join_as=join_as)
             except ChatAdminRequiredError:
-                return "You need to become an admin to start VC, or ask admins to start"
+                try:
+                    await catub(
+                        functions.phone.CreateGroupCallRequest(
+                            peer=chat,
+                            title="Cat VC",
+                        )
+                    )
+                    await self.join_vc(chat=chat, join_as=join_as)
+                except ChatAdminRequiredError:
+                    return "You need to become an admin to start VC, or ask admins to start"
         except (NodeJSNotInstalled, TooOldNodeJSVersion):
             return "Latest version of NodeJs is not installed"
         except AlreadyJoinedError:

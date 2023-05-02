@@ -7,7 +7,7 @@ from userbot.core.data import _sudousers_list
 from userbot.core.logger import logging
 from userbot.helpers.utils import reply_id
 
-from .helper.function import sendmsg, vc_player, vc_reply
+from .helper.function import sendmsg, vc_player, vc_reply, check_vcassis
 from .helper.inlinevc import buttons
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
@@ -16,7 +16,7 @@ plugin_category = "extra"
 
 LOGS = logging.getLogger(__name__)
 sudos = [Config.OWNER_ID] + _sudousers_list()
-
+        
 
 @catub.cat_cmd(
     pattern="joinvc ?(\S+)? ?(?:-as)? ?(\S+)?",
@@ -50,7 +50,7 @@ async def joinVoicechat(event):
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
 
-    event = await vc_reply(event, "Joining VC ......", edit=True)
+    event = await vc_reply(event, "Joining VC ......", firstmsg=True)
 
     if chat and chat != "-as":
         if chat.strip("-").isnumeric():
@@ -75,7 +75,6 @@ async def joinVoicechat(event):
         await vc_reply(
             event,
             "Unable to use Join as in Private Chat. Joining as Yourself...",
-            edit=True,
         )
         joinas = False
 
@@ -103,7 +102,7 @@ async def leaveVoicechat(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
     if vc_player.CHAT_ID:
-        event = await vc_reply(event, "Leaving VC ......", edit=True)
+        event = await vc_reply(event, "Leaving VC ......", firstmsg=True)
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
 
@@ -141,7 +140,7 @@ async def get_playlist(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
     ppf = event.pattern_match.group(1)
-    event = await vc_reply(event, f"Fetching {ppf.title()}list ......", edit=True)
+    event = await vc_reply(event, f"Fetching {ppf.title()}list ......", firstmsg=True)
     if ppf == "play":
         if playl := vc_player.PLAYLIST:
             cat = "".join(
@@ -190,7 +189,7 @@ async def get_playlist(event):
 
 
 @catub.cat_cmd(
-    pattern="vplay(?:\s|$)([\s\S]*)",
+    pattern="(v)?play(?:\s|$)([\s\S]*)",
     command=("vplay", plugin_category),
     info={
         "header": "To Play a media as video on VC.",
@@ -216,14 +215,22 @@ async def play_video(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
     forced = False
-    input_str = event.pattern_match.group(1)
+    av_check = event.pattern_match.group(1)
+    input_str = event.pattern_match.group(2)
+    reply = await event.get_reply_message()
+    if av_check:
+        av_options = ["Video", Stream.video]
+        reply_media = reply.video
+    else:
+        av_options = ["Audio", Stream.audio]
+        reply_media = reply.media
+
     if "-f" in input_str:
         input_str = input_str.replace("-f", "").strip()
         forced = True
-    LOGS.info("Playing Video..")
-    reply = await event.get_reply_message()
-    event = await vc_reply(event, "`Searching...`", edit=True)
-    if reply and reply.video and not reply.photo:
+    LOGS.info(f"Playing {av_options[0]}..")
+    event = await vc_reply(event, "`Searching...`", firstmsg=True)
+    if reply and reply_media and not reply.photo:
         inputstr = await tg_dl(event, reply, vc_player.BOTMODE)
     elif reply and reply.message and not input_str:
         inputstr = reply.text
@@ -242,9 +249,13 @@ async def play_video(event):
             return await vc_reply(
                 event, "Voice Chats are not available in Private Chats"
             )
+        if Config.VC_SESSION:
+            check = await check_vcassis()
+            if not check:
+                return
         await vc_player.join_vc(vc_chat, False)
     resp = await vc_player.play_song(
-        event, inputstr, Stream.video, force=forced, reply=reply
+        event, inputstr, av_options[1], force=forced, reply=reply
     )
     if resp:
         await sendmsg(event, resp)
@@ -274,45 +285,7 @@ async def play_video(event):
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
-    forced = False
-    input_str = event.pattern_match.group(1)
-    if "-f" in input_str:
-        input_str = input_str.replace("-f", "").strip()
-        forced = True
-    LOGS.info("Playing Audio..")
-    reply = await event.get_reply_message()
-    event = await vc_reply(event, "`Searching...`", edit=True)
-    if reply and reply.media and not reply.photo:
-        inputstr = await tg_dl(
-            event,
-            reply,
-        )
-    elif reply and reply.message and not input_str:
-        inputstr = reply.text
-        reply = False
-    elif input_str:
-        inputstr = input_str
-        reply = False
-    else:
-        return await vc_reply(event, "Please Provide a media file to stream on VC")
-    if not vc_player.CHAT_ID:
-        try:
-            vc_chat = await catub.get_entity(event.chat_id)
-        except Exception as e:
-            return await vc_reply(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
-        if isinstance(vc_chat, User):
-            return await vc_reply(
-                event, "Voice Chats are not available in Private Chats"
-            )
-        await vc_player.join_vc(vc_chat, False)
-
-    resp = await vc_player.play_song(
-        event, inputstr, Stream.audio, force=forced, reply=reply
-    )
-    if resp:
-        await sendmsg(event, resp)
+    pass
 
 
 @catub.cat_cmd(
@@ -373,7 +346,7 @@ async def pause_stream(event):
     "To Pause a stream on Voice Chat."
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
-    event = await vc_reply(event, "Pausing VC ......", edit=True)
+    event = await vc_reply(event, "Pausing VC ......", firstmsg=True)
     res = await vc_player.pause()
     await vc_reply(event, res)
 
@@ -397,7 +370,7 @@ async def resume_stream(event):
     "To Resume a stream on Voice Chat."
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
-    event = await vc_reply(event, "Resuming VC ......", edit=True)
+    event = await vc_reply(event, "Resuming VC ......", firstmsg=True)
     res = await vc_player.resume()
     await vc_reply(event, res)
 
@@ -421,7 +394,7 @@ async def skip_stream(event):
     if not vc_player.PUBLICMODE and event.sender_id not in sudos:
         return
     "To Skip currently playing stream on Voice Chat."
-    event = await vc_reply(event, "Skiping Stream ......", edit=True)
+    event = await vc_reply(event, "Skiping Stream ......", firstmsg=True)
     res = await vc_player.skip()
     if res:
         await sendmsg(event, res)

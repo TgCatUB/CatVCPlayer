@@ -3,6 +3,8 @@ import logging
 
 from telethon import Button, TelegramClient
 from telethon.sessions import StringSession
+from telethon.tl.functions.channels import JoinChannelRequest
+from telethon.tl.functions.channels import InviteToChannelRequest
 from userbot import Config, catub
 from userbot.core.managers import edit_or_reply
 
@@ -19,6 +21,7 @@ else:
 
 vc_client.__class__.__module__ = "telethon.client.telegramclient"
 vc_player = CatVC(vc_client)
+
 
 
 @vc_player.app.on_stream_end()
@@ -64,8 +67,33 @@ async def handler(_, update):
     if vc_player.CLEANMODE and event:
         vc_player.EVENTS.append(event)
 
+async def check_vcassis(event, vcplayer, vc_chat):
+    participants = catub.get_participants(event.chat)
+    assis = vcplayer.client.get_me()
+    get_id = assis.id
+    ids = [int(users.id) for users in participants]
+    if get_id not in ids:
+        await event.edit("VC assistant will be joining shortly...")
+        if username := event.chat.username:
+            try:
+                await vc_player.client(JoinChannelRequest(username))
+                await event.edit(f"VC assistant Joined {event.chat.title} successfully.") 
+            except:
+                await event.edit("Failed to join this chat.")
+                return False
+        else:
+            try:
+                [await event.client(InviteToChannelRequest(
+                    event.chat_id,
+                    [get_id]
+                ))]
 
-async def vc_reply(event, text, file=False, edit=False, dlt=False, **kwargs):
+            except Exception:
+                await event.edit("Failed to add VC assistant. Please provide add members right or invite manually.") 
+    return True
+
+async def vc_reply(event, text, file=False, firstmsg=False, dlt=False, **kwargs):
+    me = await catub.get_me()
     if vc_player.BOTMODE:
         try:
             if file:
@@ -75,11 +103,11 @@ async def vc_reply(event, text, file=False, edit=False, dlt=False, **kwargs):
             else:
                 catevent = (
                     await catub.tgbot.send_message(event.chat_id, text, **kwargs)
-                    if edit
+                    if firstmsg
                     else await event.edit(text, **kwargs)
                 )
         except Exception:
-            await event.reply(
+            return await event.reply(
                 f"Please disable Bot Mode or Invite {Config.TG_BOT_USERNAME} to the chat"
             )
             edit = False
@@ -89,7 +117,7 @@ async def vc_reply(event, text, file=False, edit=False, dlt=False, **kwargs):
     elif vc_player.PUBLICMODE:
         catevent = (
             await catub.send_message(event.chat_id, text, **kwargs)
-            if edit
+            if firstmsg and event.sender_id != me.id
             else await event.edit(text, **kwargs)
         )
     else:
@@ -97,7 +125,7 @@ async def vc_reply(event, text, file=False, edit=False, dlt=False, **kwargs):
     if dlt:
         await asyncio.sleep(dlt)
         return await catevent.delete()
-    if vc_player.CLEANMODE and not edit:
+    if vc_player.CLEANMODE and not firstmsg:
         vc_player.EVENTS.append(catevent)
     else:
         return catevent
