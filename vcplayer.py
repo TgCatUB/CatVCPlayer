@@ -45,8 +45,6 @@ sudos = [Config.OWNER_ID] + _sudousers_list()
 )
 async def joinVoicechat(event):
     "To join a Voice Chat."
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
 
@@ -99,8 +97,6 @@ async def joinVoicechat(event):
 )
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
     if vc_player.CHAT_ID:
         event = await vc_reply(event, "Leaving VC ......", firstmsg=True)
         chat_name = vc_player.CHAT_NAME
@@ -137,8 +133,6 @@ async def leaveVoicechat(event):
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
     ppf = event.pattern_match.group(1)
     event = await vc_reply(event, f"Fetching {ppf.title()}list ......", firstmsg=True)
     if ppf == "play":
@@ -212,8 +206,6 @@ async def get_playlist(event):
 )
 async def play_video(event):
     "To Play a media as video on VC."
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
     forced = False
     av_check = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
@@ -286,7 +278,6 @@ async def play_video(event):
 async def play_audio(event):
     "To Play a media as audio on VC."
 
-
 @catub.cat_cmd(
     pattern="previous$",
     command=("previous", plugin_category),
@@ -304,8 +295,6 @@ async def play_audio(event):
 )
 async def previous(event):
     "To play previous a stream on Voice Chat."
-    if not vc_player.PREVIOUS:
-        return await vc_reply(event, "**No previous track found.**")
     prev = vc_player.PREVIOUS[-1]
     song_input = prev["path"]
     stream = prev["stream"]
@@ -343,8 +332,6 @@ async def previous(event):
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
     event = await vc_reply(event, "Pausing VC ......", firstmsg=True)
     res = await vc_player.pause()
     await vc_reply(event, res)
@@ -367,8 +354,6 @@ async def pause_stream(event):
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
     event = await vc_reply(event, "Resuming VC ......", firstmsg=True)
     res = await vc_player.resume()
     await vc_reply(event, res)
@@ -390,8 +375,6 @@ async def resume_stream(event):
     public=True,
 )
 async def skip_stream(event):
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
     "To Skip currently playing stream on Voice Chat."
     event = await vc_reply(event, "Skiping Stream ......", firstmsg=True)
     res = await vc_player.skip()
@@ -407,8 +390,6 @@ async def skip_stream(event):
     public=True,
 )
 async def vcplayer(event):
-    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
-        return
     if vc_player.BOTMODE:
         with contextlib.suppress(Exception):
             if play := vc_player.PLAYING:
