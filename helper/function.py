@@ -3,13 +3,8 @@ import logging
 
 from telethon import Button, TelegramClient
 from telethon.sessions import StringSession
+from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRequest
 from telethon.tl.functions.contacts import AddContactRequest
-from telethon.tl.functions.channels import (
-    GetFullChannelRequest,
-    InviteToChannelRequest,
-    JoinChannelRequest,
-)
-from telethon.tl.functions.messages import ImportChatInviteRequest
 from userbot import Config, catub
 from userbot.core.managers import edit_or_reply
 
@@ -99,20 +94,24 @@ async def check_vcassis(event):
             try:
                 await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
             except Exception:
-                await vc_player.client(AddContactRequest(
-                    id=cat_ub.id,
-                    first_name='CatUB',
-                    last_name='',
-                    phone="zarox",
-                ))
-                await catub(AddContactRequest(
-                    id=assis.id,
-                    first_name='CatUB',
-                    last_name='',
-                    phone="zarox",
-                ))
+                await vc_player.client(
+                    AddContactRequest(
+                        id=cat_ub.id,
+                        first_name="CatUB",
+                        last_name="",
+                        phone="zarox",
+                    )
+                )
+                await catub(
+                    AddContactRequest(
+                        id=assis.id,
+                        first_name="CatUB",
+                        last_name="",
+                        phone="zarox",
+                    )
+                )
                 await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
-                
+
                 await event.edit(
                     "Failed to add VC assistant. Please provide add members right or invite manually."
                 )
