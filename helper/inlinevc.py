@@ -282,20 +282,3 @@ async def vc(event):
             "**| VC Player Closed |**",
             buttons=[[Button.inline("Open again", data="backvc")]],
         )
-
-
-# Data to build inline query
-async def vcplayer_data():
-    text = "** | VC Menu | **"
-    description = ("Manange Vc Stream.",)
-    buttons = buttons[0]
-    if play := vc_player.PLAYING:
-        title = play["title"]
-        duration = play["duration"]
-        url = play["url"]
-        vcimg = play["img"]
-        text = f"**🎧 Playing:** [{title}]({url})\n"
-        text += f"**⏳ Duration:** `{duration}`\n"
-        text += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
-        buttons = buttons[1]
-    return "CatVc Player", text, description, vcimg, buttons
