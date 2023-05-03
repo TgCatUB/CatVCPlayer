@@ -87,7 +87,7 @@ async def check_vcassis(event):
                 await event.edit(
                     f"VC assistant Joined {event.chat.title} successfully."
                 )
-            except:
+            except Exception:
                 await event.edit("Failed to join this chat.")
                 return False
         else:
@@ -180,13 +180,14 @@ async def sendmsg(event, res):
             Button.inline("🗑 close", data="vc_close0"),
         ],
     ]
-    if res and type(res) is list:
-        await event.delete()
-        event = await vc_reply(event, res[1], file=res[0], buttons=buttons)
-    elif res and type(res) is tuple:
-        event = await vc_reply(event, res[0], dlt=15)
-    elif res and type(res) is str:
-        event = await vc_reply(event, res, buttons=buttons)
+    if res:
+        if isinstance(res, list):
+            await event.delete()
+            event = await vc_reply(event, res[1], file=res[0], buttons=buttons)
+        elif isinstance(res, tuple):
+            event = await vc_reply(event, res[0], dlt=15)
+        elif isinstance(res, str):
+            event = await vc_reply(event, res, buttons=buttons)
 
 
 asyncio.create_task(vc_player.start())
