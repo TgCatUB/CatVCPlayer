@@ -13,9 +13,9 @@ erimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/404.png"
 
 
 async def vcplayer_data():
-    text="** | VC Menu | **"
-    description="Manange Vc Stream.",
-    buttons=buttons[0]
+    text = "** | VC Menu | **"
+    description = ("Manange Vc Stream.",)
+    buttons = buttons[0]
     if play := vc_player.PLAYING:
         title = play["title"]
         duration = play["duration"]
@@ -24,8 +24,8 @@ async def vcplayer_data():
         text = f"**🎧 Playing:** [{title}]({url})\n"
         text += f"**⏳ Duration:** `{duration}`\n"
         text += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
-        buttons=buttons[1]
-    return "CatVc Player",text,description,vcimg, buttons
+        buttons = buttons[1]
+    return "CatVc Player", text, description, vcimg, buttons
 
 
 buttons = (
