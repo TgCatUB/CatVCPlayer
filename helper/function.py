@@ -98,8 +98,8 @@ async def check_vcassis(event):
                     await vc_player.client(
                         AddContactRequest(
                             id=cat_ub.id,
-                            first_name="CatUB",
-                            last_name="",
+                            first_name="VC",
+                            last_name="Assistant",
                             phone="zarox",
                         )
                     )
