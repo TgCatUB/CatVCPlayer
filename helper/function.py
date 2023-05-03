@@ -3,7 +3,11 @@ import logging
 
 from telethon import Button, TelegramClient
 from telethon.sessions import StringSession
-from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRequest, GetFullChannelRequest
+from telethon.tl.functions.channels import (
+    GetFullChannelRequest,
+    InviteToChannelRequest,
+    JoinChannelRequest,
+)
 from telethon.tl.functions.messages import ImportChatInviteRequest
 from userbot import Config, catub
 from userbot.core.managers import edit_or_reply
@@ -94,7 +98,9 @@ async def check_vcassis(event):
             except Exception as e:
                 print(e)
                 try:
-                    invite_link = (await event.client(GetFullChannelRequest(event.chat_id))).full_chat.exported_invite.link
+                    invite_link = (
+                        await event.client(GetFullChannelRequest(event.chat_id))
+                    ).full_chat.exported_invite.link
                     invite_hash = invite_link.split("/", -1)[-1]
                     await vc_player.client(ImportChatInviteRequest(hash=invite_hash))
                 except Exception as e:
