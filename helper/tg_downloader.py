@@ -86,7 +86,7 @@ async def tg_dl(event, reply, tgbot=False):
             f"**•  Downloaded in {ms} seconds.**\n**•  Downloaded to :- **  `{os.path.relpath(file_name,os.getcwd())}`\n"
         )
         try:
-            thumb = await reply.download_media(thumb=-1)
+            thumb = await reply.download_media(thumb=-1, file=downloads)
             thumb = f"https://graph.org{(upload_file(thumb))[0]}"
         except TypeError:
             try:
