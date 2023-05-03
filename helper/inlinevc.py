@@ -283,6 +283,7 @@ async def vc(event):
             buttons=[[Button.inline("Open again", data="backvc")]],
         )
 
+
 # Data to build inline query
 def vcplayer_data():
     text = "** | VC Menu | **"
