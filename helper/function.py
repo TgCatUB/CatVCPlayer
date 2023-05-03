@@ -3,11 +3,8 @@ import logging
 
 from telethon import Button, TelegramClient
 from telethon.sessions import StringSession
-from telethon.tl.functions.channels import JoinChannelRequest
-from telethon.tl.functions.messages import (
-    ExportChatInviteRequest,
-    ImportChatInviteRequest,
-)
+from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRequest, GetFullChannelRequest
+from telethon.tl.functions.messages import ImportChatInviteRequest
 from userbot import Config, catub
 from userbot.core.managers import edit_or_reply
 
@@ -92,27 +89,20 @@ async def check_vcassis(event):
                 await event.edit("Failed to join this chat.")
                 return False
         else:
-            invite_link = await catub(ExportChatInviteRequest(event.chat))
-            await vc_player.client(
-                ImportChatInviteRequest(invite_link.link.split("/", -1)[-1])
-            )
-        # else:
-        #     try:
-        #         await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
-
-        #     except Exception as e:
-        #         print(e)
-        #         try:
-        #             invite_link = await catub(ExportChatInviteRequest(event.chat))
-        #             await vc_player.client(
-        #                 ImportChatInviteRequest(invite_link.link.split("/", -1)[-1])
-        #             )
-        #         except Exception as e:
-        #             print(e)
-        #             await event.edit(
-        #                 "Failed to add VC assistant. Please provide add members right or invite manually."
-        #             )
-        #             return False
+            try:
+                await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
+            except Exception as e:
+                print(e)
+                try:
+                    invite_link = (await event.client(GetFullChannelRequest(event.chat_id))).full_chat.exported_invite.link
+                    invite_hash = invite_link.split("/", -1)[-1]
+                    await vc_player.client(ImportChatInviteRequest(hash=invite_hash))
+                except Exception as e:
+                    print(e)
+                    await event.edit(
+                        "Failed to add VC assistant. Please provide add members right or invite manually."
+                    )
+                    return False
     return True
 
 
