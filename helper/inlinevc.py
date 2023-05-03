@@ -1,7 +1,7 @@
 import re
 
-from telethon import Button, types
-from telethon.events import CallbackQuery, InlineQuery
+from telethon import Button
+from telethon.events import CallbackQuery
 from telethon.tl.types import User
 from userbot import catub
 from userbot.core import check_owner
@@ -281,8 +281,3 @@ async def vc(event):
             "**| VC Player Closed |**",
             buttons=[[Button.inline("Open again", data="backvc")]],
         )
-
-
-
-
-
