@@ -77,7 +77,8 @@ async def handler(_, update):
 
 
 async def check_vcassis(event):
-    participants = await catub.get_participants(event.chat)
+    chat = await catub.get_entity(event.chat_id)
+    participants = await catub.get_participants(chat)
     assis = await vc_player.client.get_me()
     get_id = assis.id
     ids = [int(users.id) for users in participants]
