@@ -282,13 +282,15 @@ async def vc(event):
             buttons=[[Button.inline("Open again", data="backvc")]],
         )
 
-#TEMPORARY AMENDMENT
+
+# TEMPORARY AMENDMENT
 def get_thumb(name=None, url=None):
     if url is None:
         url = f"https://github.com/TgCatUB/CatUserbot-Resources/blob/master/Resources/Inline/{name}?raw=true"
     return types.InputWebDocument(
         url=url, size=0, mime_type="image/jpeg", attributes=[]
     )
+
 
 @catub.tgbot.on(InlineQuery(pattern="^vcmenu$"))
 async def Inlineplayer(event):
@@ -299,7 +301,7 @@ async def Inlineplayer(event):
                 text="** | VC Menu | **",
                 file=get_thumb(url=vcimg),
                 buttons=buttons[0],
-                thumb=get_thumb("vcplayer.jpg")
+                thumb=get_thumb("vcplayer.jpg"),
             )
         ]
     )
