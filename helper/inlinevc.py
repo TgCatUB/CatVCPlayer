@@ -285,7 +285,7 @@ async def vc(event):
 
 
 # Data to build inline query
-def vcplayer_data():
+async def vcplayer_data():
     text = "** | VC Menu | **"
     description = ("Manange Vc Stream.",)
     buttons = buttons[0]
