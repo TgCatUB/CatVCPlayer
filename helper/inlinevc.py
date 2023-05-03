@@ -12,7 +12,7 @@ vcimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/vcfileW.mp4"
 erimg = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/404.png"
 
 
-async def vcplayer_data():
+def vcplayer_data():
     text = "** | VC Menu | **"
     description = ("Manange Vc Stream.",)
     buttons = buttons[0]
