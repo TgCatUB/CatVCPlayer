@@ -299,7 +299,8 @@ async def Inlineplayer(event):
             event.builder.article(
                 title=" | VC Menu | ",
                 text="** | VC Menu | **",
-                file=get_thumb(url=vcimg),
+                file=vcimg,
+                # content=get_thumb(url=vcimg),
                 buttons=buttons[0],
                 thumb=get_thumb("vcplayer.jpg"),
             )
