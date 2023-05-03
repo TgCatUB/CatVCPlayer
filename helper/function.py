@@ -95,13 +95,15 @@ async def check_vcassis(event):
             try:
                 await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
 
-            except Exception:
+            except Exception as e:
+                print(e)
                 try:
                     invite_link = await catub(ExportChatInviteRequest(event.chat))
                     await vc_player.client(
                         ImportChatInviteRequest(invite_link.link.split("/", -1)[-1])
                     )
-                except:
+                except Exception as e:
+                    print(e)
                     await event.edit(
                         "Failed to add VC assistant. Please provide add members right or invite manually."
                     )
