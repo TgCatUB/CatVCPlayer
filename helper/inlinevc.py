@@ -1,7 +1,7 @@
 import re
 
-from telethon import Button
-from telethon.events import CallbackQuery
+from telethon import Button, types
+from telethon.events import CallbackQuery, InlineQuery
 from telethon.tl.types import User
 from userbot import catub
 from userbot.core import check_owner
@@ -94,7 +94,7 @@ async def playervc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^menuvc$")))
 @check_owner(vc=True)
 async def playervc(event):
-    await event.edit(file=vcimg, text="**| VC MENU |**", buttons=buttons[0])
+    await event.edit(file=vcimg, text="**| VC Menu |**", buttons=buttons[0])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^previousvc$")))
@@ -268,7 +268,7 @@ async def vc(event):
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^backvc$")))
 @check_owner(vc=True)
 async def vc(event):
-    await event.edit("** | VC PLAYER | **", buttons=buttons[0])
+    await event.edit("** | VC Menu | **", buttons=buttons[0])
 
 
 @catub.tgbot.on(CallbackQuery(data=re.compile(r"^vc_close$")))
@@ -281,3 +281,25 @@ async def vc(event):
             "**| VC Player Closed |**",
             buttons=[[Button.inline("Open again", data="backvc")]],
         )
+
+#TEMPORARY AMENDMENT
+def get_thumb(name=None, url=None):
+    if url is None:
+        url = f"https://github.com/TgCatUB/CatUserbot-Resources/blob/master/Resources/Inline/{name}?raw=true"
+    return types.InputWebDocument(
+        url=url, size=0, mime_type="image/jpeg", attributes=[]
+    )
+
+@catub.tgbot.on(InlineQuery(pattern="^vcmenu$"))
+async def Inlineplayer(event):
+    await event.answer(
+        [
+            event.builder.article(
+                title=" | VC Menu | ",
+                text="** | VC Menu | **",
+                file=get_thumb(url=vcimg),
+                buttons=buttons[0],
+                thumb=get_thumb("vcplayer.jpg")
+            )
+        ]
+    )
