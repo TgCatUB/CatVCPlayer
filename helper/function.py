@@ -94,28 +94,25 @@ async def check_vcassis(event):
             try:
                 await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
             except Exception:
-                await vc_player.client(
-                    AddContactRequest(
+                try:
+                    await vc_player.client(AddContactRequest(
                         id=cat_ub.id,
-                        first_name="CatUB",
-                        last_name="",
+                        first_name='CatUB',
+                        last_name='',
                         phone="zarox",
-                    )
-                )
-                await catub(
-                    AddContactRequest(
+                    ))
+                    await catub(AddContactRequest(
                         id=assis.id,
-                        first_name="CatUB",
-                        last_name="",
+                        first_name='CatUB',
+                        last_name='',
                         phone="zarox",
+                    ))
+                    await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
+                except Exception:
+                    await event.edit(
+                        "Failed to add VC assistant. Please provide add members right or invite manually."
                     )
-                )
-                await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
-
-                await event.edit(
-                    "Failed to add VC assistant. Please provide add members right or invite manually."
-                )
-                return False
+                    return False
     return True
 
 
