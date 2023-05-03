@@ -300,7 +300,7 @@ async def Inlineplayer(event):
                 title=" | VC Menu | ",
                 text="** | VC Menu | **",
                 file=vcimg,
-                # content=get_thumb(url=vcimg),
+                content=get_thumb(url=vcimg),
                 buttons=buttons[0],
                 thumb=get_thumb("vcplayer.jpg"),
             )
