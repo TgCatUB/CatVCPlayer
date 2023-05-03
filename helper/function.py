@@ -95,18 +95,22 @@ async def check_vcassis(event):
                 await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
             except Exception:
                 try:
-                    await vc_player.client(AddContactRequest(
-                        id=cat_ub.id,
-                        first_name='CatUB',
-                        last_name='',
-                        phone="zarox",
-                    ))
-                    await catub(AddContactRequest(
-                        id=assis.id,
-                        first_name='CatUB',
-                        last_name='',
-                        phone="zarox",
-                    ))
+                    await vc_player.client(
+                        AddContactRequest(
+                            id=cat_ub.id,
+                            first_name="CatUB",
+                            last_name="",
+                            phone="zarox",
+                        )
+                    )
+                    await catub(
+                        AddContactRequest(
+                            id=assis.id,
+                            first_name="CatUB",
+                            last_name="",
+                            phone="zarox",
+                        )
+                    )
                     await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
                 except Exception:
                     await event.edit(
