@@ -3,7 +3,7 @@ import logging
 
 from telethon import Button, TelegramClient
 from telethon.sessions import StringSession
-from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRequest
+from telethon.tl.functions.channels import JoinChannelRequest
 from telethon.tl.functions.messages import (
     ExportChatInviteRequest,
     ImportChatInviteRequest,
