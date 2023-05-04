@@ -5,6 +5,7 @@ from telethon import Button, TelegramClient, types
 from telethon.sessions import StringSession
 from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRequest
 from telethon.tl.functions.contacts import AddContactRequest
+from telethon.tl.functions.messages import AddChatUserRequest
 from userbot import Config, catub
 from userbot.core.managers import edit_or_reply
 
