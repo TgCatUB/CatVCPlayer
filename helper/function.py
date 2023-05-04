@@ -94,7 +94,7 @@ async def check_vcassis(event):
                 return False
         else:
             try:
-                await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
+                await event.client(InviteToChannelRequest(chat.id, [get_id]))
             except Exception:
                 try:
                     await vc_player.client(
@@ -113,11 +113,9 @@ async def check_vcassis(event):
                             phone="zarox",
                         )
                     )
-                    await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
+                    await event.client(InviteToChannelRequest(chat.id, [get_id]))
                 except TypeError:
-                    await event.client(
-                        AddChatUserRequest(event.chat_id, get_id, fwd_limit=1)
-                    )
+                    await event.client(AddChatUserRequest(chat.id, get_id, fwd_limit=1))
                 except Exception:
                     await event.edit(
                         "Failed to add VC assistant. Please provide add members right or invite manually."
