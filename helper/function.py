@@ -5,11 +5,11 @@ from telethon import Button, TelegramClient, types
 from telethon.sessions import StringSession
 from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRequest
 from telethon.tl.functions.contacts import AddContactRequest
-from telethon.tl.functions.messages import AddChatUserRequest
 from userbot import Config, catub
 from userbot.core.managers import edit_or_reply
 
 from .vcp_helper import CatVC
+
 LOGS = logging.getLogger(__name__)
 logging.getLogger("pytgcalls").setLevel(logging.ERROR)
 
@@ -116,6 +116,7 @@ async def check_vcassis(event):
                 except BaseException as e:
                     LOGS.exception(e)
                     import traceback
+
                     print(str(traceback.format_exc()))
                     await event.edit(
                         "Failed to add VC assistant. Please provide add members right or invite manually."
