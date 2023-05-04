@@ -156,7 +156,7 @@ class CatVC:
             try:
                 res = requests.get(input, allow_redirects=True, stream=True)
                 ctype = res.headers.get("Content-Type")
-                if any(opt not in ctype for opt in ["video", "audio"]):
+                if not any(opt in ctype for opt in ["video", "audio"]):
                     return "**INVALID URL**"
                 if name := res.headers.get("Content-Disposition", None):
                     title = name.split('="')[0].split('"') or ""
