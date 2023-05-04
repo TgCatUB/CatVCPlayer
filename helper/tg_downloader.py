@@ -93,7 +93,7 @@ async def tg_dl(event, reply, tgbot=False):
                 nail_ = await event.client.get_profile_photos(catub.me.id)
                 thumb = await event.client.download_media(nail_[0], file=downloads)
             except Exception:
-                thumb = "catvc/resources/404.png"
+                thumb = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/404.png"
 
         return [os.path.relpath(file_name, os.getcwd()), thumb]
     else:

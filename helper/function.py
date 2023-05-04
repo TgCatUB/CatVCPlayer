@@ -81,11 +81,11 @@ async def check_vcassis(event):
     ids = [int(users.id) for users in participants]
     if get_id not in ids:
         await event.edit("VC assistant will be joining shortly...")
-        if username := event.chat.username:
+        if username := chat.username:
             try:
                 await vc_player.client(JoinChannelRequest(username))
                 await event.edit(
-                    f"VC assistant Joined {event.chat.title} successfully."
+                    f"VC assistant Joined {chat.title} successfully."
                 )
             except Exception:
                 await event.edit("Failed to join this chat.")

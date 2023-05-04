@@ -164,7 +164,7 @@ class CatVC:
                     title = input
                 playable = input
                 url = input
-                img = "catvc/resources/404.png"
+                img = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/404.png"
                 duration = "UNKNOWN"
             except Exception as e:
                 return f"**INVALID URL**\n\n{e}"
