@@ -84,9 +84,7 @@ async def check_vcassis(event):
         if username := chat.username:
             try:
                 await vc_player.client(JoinChannelRequest(username))
-                await event.edit(
-                    f"VC assistant Joined {chat.title} successfully."
-                )
+                await event.edit(f"VC assistant Joined {chat.title} successfully.")
             except Exception:
                 await event.edit("Failed to join this chat.")
                 return False
