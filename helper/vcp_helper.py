@@ -80,9 +80,10 @@ class CatVC:
             )
         except NoActiveGroupCall:
             try:
+                vcchat = await self.client.get_entity(chat.id)
                 await self.client(
                     functions.phone.CreateGroupCallRequest(
-                        peer=chat,
+                        peer=vcchat,
                         title="Cat VC",
                     )
                 )
