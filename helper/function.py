@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from telethon import Button, TelegramClient
+from telethon import types, Button, TelegramClient
 from telethon.sessions import StringSession
 from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRequest
 from telethon.tl.functions.contacts import AddContactRequest
@@ -81,6 +81,8 @@ async def check_vcassis(event):
     ids = [int(users.id) for users in participants]
     if get_id not in ids:
         await event.edit("VC assistant will be joining shortly...")
+        if isinstance(chat, types.Chat):
+            chat.username = None
         if username := chat.username:
             try:
                 await vc_player.client(JoinChannelRequest(username))
