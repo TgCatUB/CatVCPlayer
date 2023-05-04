@@ -115,7 +115,7 @@ async def check_vcassis(event):
                     )
                     await event.client(InviteToChannelRequest(event.chat_id, [get_id]))
                 except TypeError:
-                    await event.client(AddChatUserRequest(event.chat_id, get_id))
+                    await event.client(AddChatUserRequest(event.chat_id, get_id, fwd_limit=1))
                 except Exception:
                     await event.edit(
                         "Failed to add VC assistant. Please provide add members right or invite manually."
