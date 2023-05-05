@@ -5,7 +5,6 @@ from telethon.tl.types import User
 from userbot import Config, catub
 from userbot.core.data import _sudousers_list
 from userbot.core.logger import logging
-from userbot.helpers.functions import unsavegif
 from userbot.helpers.utils import reply_id
 
 from .helper.function import check_vcassis, sendmsg, vc_player, vc_reply
@@ -435,6 +434,5 @@ async def vcplayer(event):
             return
     reply_to_id = await reply_id(event)
     results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
-    cat = await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
-    await unsavegif(event, cat)
+    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
     await event.delete()
