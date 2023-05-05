@@ -17,8 +17,8 @@ from telethon import functions
 from telethon.errors import ChatAdminRequiredError
 from userbot import catub
 from userbot.core.logger import logging
-from userbot.helpers.functions import get_ytthumb, yt_search
 from userbot.helpers import _catutils, fileinfo
+from userbot.helpers.functions import get_ytthumb, yt_search
 from yt_dlp import YoutubeDL
 
 from .stream_helper import Stream, check_url, video_dl, yt_regex
@@ -168,7 +168,7 @@ class CatVC:
                 img = (
                     "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/404.png"
                 )
-                seconds = (await fileinfo(path))['duration']
+                seconds = (await fileinfo(path))["duration"]
                 duration = await self.duration(seconds)
             except Exception as e:
                 return f"**INVALID URL**\n\n{e}"
@@ -187,7 +187,7 @@ class CatVC:
                     img = kwargs["img"]
                 else:
                     img = "https://github.com/TgCatUB/CatVCPlayer/raw/beta/resources/404.png"
-                    seconds = (await fileinfo(path))['duration']
+                    seconds = (await fileinfo(path))["duration"]
                     duration = await self.duration(seconds)
                     url = ""
             else:
