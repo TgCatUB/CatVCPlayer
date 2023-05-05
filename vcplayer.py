@@ -6,6 +6,7 @@ from userbot import Config, catub
 from userbot.core.data import _sudousers_list
 from userbot.core.logger import logging
 from userbot.helpers.utils import reply_id
+from userbot.helpers.functions import unsavegif
 
 from .helper.function import check_vcassis, sendmsg, vc_player, vc_reply
 from .helper.inlinevc import buttons
@@ -109,10 +110,8 @@ async def leaveVoicechat(event):
         event = await vc_reply(event, "Leaving VC ......", firstmsg=True)
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
-
-        await vc_reply(event, f"Left VC of {chat_name}")
-    else:
-        await vc_reply(event, "Not yet joined any VC")
+        return await vc_reply(event, f"Left VC of {chat_name}")
+    await vc_reply(event, "Not yet joined any VC")
 
 
 @catub.cat_cmd(
@@ -436,5 +435,6 @@ async def vcplayer(event):
             return
     reply_to_id = await reply_id(event)
     results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
-    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+    cat = await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+    await unsavegif(event, cat)
     await event.delete()
