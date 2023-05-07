@@ -112,11 +112,13 @@ class CatVC:
     async def leave_vc(self):
         with contextlib.suppress(NotInGroupCallError, NoActiveGroupCall):
             await self.app.leave_group_call(self.CHAT_ID)
+        await _catutils.runcmd("rm -rf temp")
+        self.clear_vars()
+        if not self.CLEANMODE:
+            return 
         for event in self.EVENTS:
             with contextlib.suppress(Exception):
                 await event.delete()
-        await _catutils.runcmd("rm -rf temp")
-        self.clear_vars()
 
     async def duration(self, name):
         int_ = int(name)

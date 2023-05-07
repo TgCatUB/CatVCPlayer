@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import contextlib
 
 from telethon import Button, TelegramClient, types
 from telethon.sessions import StringSession
@@ -7,6 +8,7 @@ from telethon.tl.functions.channels import InviteToChannelRequest, JoinChannelRe
 from telethon.tl.functions.contacts import AddContactRequest
 from telethon.tl.functions.messages import AddChatUserRequest
 from userbot import Config, catub
+from userbot.helpers import _catutils
 from userbot.core.managers import edit_or_reply
 
 from .vcp_helper import CatVC
@@ -27,7 +29,13 @@ vc_player = CatVC(vc_client)
 
 @vc_player.app.on_closed_voice_chat()
 async def on_closed_vc(_, update):
-    return vc_player.leave_vc()
+    await _catutils.runcmd("rm -rf temp")
+    vc_player.clear_vars()
+    if not vc_player.CLEANMODE:
+        return
+    for event in vc_player.EVENTS:
+        with contextlib.suppress(Exception):
+            await event.delete()
 
 
 @vc_player.app.on_stream_end()
