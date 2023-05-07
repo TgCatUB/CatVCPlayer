@@ -1,43 +1,21 @@
-import asyncio
+import contextlib
 import logging
 
-from telethon import TelegramClient
-from telethon.sessions import StringSession
 from telethon.tl.types import User
 from userbot import Config, catub
-from userbot.core.managers import edit_delete, edit_or_reply
+from userbot.core.data import _sudousers_list
+from userbot.core.logger import logging
+from userbot.helpers.utils import reply_id
 
+from .helper.function import check_vcassis, sendmsg, vc_player, vc_reply
+from .helper.inlinevc import buttons
 from .helper.stream_helper import Stream
 from .helper.tg_downloader import tg_dl
-from .helper.vcp_helper import CatVC
 
 plugin_category = "extra"
 
-logging.getLogger("pytgcalls").setLevel(logging.ERROR)
-
-OWNER_ID = catub.uid
-
-vc_session = Config.VC_SESSION
-
-if vc_session:
-    vc_client = TelegramClient(
-        StringSession(vc_session), Config.APP_ID, Config.API_HASH
-    )
-else:
-    vc_client = catub
-
-vc_client.__class__.__module__ = "telethon.client.telegramclient"
-vc_player = CatVC(vc_client)
-
-asyncio.create_task(vc_player.start())
-
-
-@vc_player.app.on_stream_end()
-async def handler(_, update):
-    await vc_player.handle_next(update)
-
-
-ALLOWED_USERS = set()
+LOGS = logging.getLogger(__name__)
+sudos = [Config.OWNER_ID] + _sudousers_list()
 
 
 @catub.cat_cmd(
@@ -63,13 +41,16 @@ ALLOWED_USERS = set()
             "{tr}joinvc -1005895485 -as -1005895485",
         ],
     },
+    public=True,
 )
 async def joinVoicechat(event):
     "To join a Voice Chat."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
+        return
     chat = event.pattern_match.group(1)
     joinas = event.pattern_match.group(2)
 
-    await edit_or_reply(event, "Joining VC ......")
+    event = await vc_reply(event, "Joining VC ......", firstmsg=True)
 
     if chat and chat != "-as":
         if chat.strip("-").isnumeric():
@@ -78,32 +59,35 @@ async def joinVoicechat(event):
         chat = event.chat_id
 
     if vc_player.app.active_calls:
-        return await edit_delete(
+        return await vc_reply(
             event, f"You have already Joined in {vc_player.CHAT_NAME}"
         )
 
     try:
         vc_chat = await catub.get_entity(chat)
     except Exception as e:
-        return await edit_delete(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
+        return await vc_reply(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
 
     if isinstance(vc_chat, User):
-        return await edit_delete(
-            event, "Voice Chats are not available in Private Chats"
-        )
+        return await vc_reply(event, "Voice Chats are not available in Private Chats")
 
     if joinas and not vc_chat.username:
-        await edit_or_reply(
-            event, "Unable to use Join as in Private Chat. Joining as Yourself..."
+        await vc_reply(
+            event,
+            "Unable to use Join as in Private Chat. Joining as Yourself...",
         )
         joinas = False
+    if Config.VC_SESSION:
+        check = await check_vcassis(event)
 
+        if not check:
+            return
     out = await vc_player.join_vc(vc_chat, joinas)
-    await edit_delete(event, out)
+    await vc_reply(event, out)
 
 
 @catub.cat_cmd(
-    pattern="leavevc",
+    pattern="leavevc$",
     command=("leavevc", plugin_category),
     info={
         "header": "To leave a Voice Chat.",
@@ -115,50 +99,99 @@ async def joinVoicechat(event):
             "{tr}leavevc",
         ],
     },
+    public=True,
 )
 async def leaveVoicechat(event):
     "To leave a Voice Chat."
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
+        return
     if vc_player.CHAT_ID:
-        await edit_or_reply(event, "Leaving VC ......")
+        event = await vc_reply(event, "Leaving VC ......", firstmsg=True)
         chat_name = vc_player.CHAT_NAME
         await vc_player.leave_vc()
-        await edit_delete(event, f"Left VC of {chat_name}")
-    else:
-        await edit_delete(event, "Not yet joined any VC")
+        return await vc_reply(event, f"Left VC of {chat_name}")
+    await vc_reply(event, "Not yet joined any VC")
 
 
 @catub.cat_cmd(
-    pattern="playlist",
+    pattern="(play|prev|full)list$",
     command=("playlist", plugin_category),
     info={
         "header": "To Get all playlist.",
         "description": "To Get all playlist for Voice Chat.",
+        "flags": {
+            "play": "To get list of upcoming streams.",
+            "prev": "To get list of previous streams.",
+            "full": "To get list of all streams.",
+        },
         "usage": [
             "{tr}playlist",
+            "{tr}prevlist",
+            "{tr}fulllist",
         ],
         "examples": [
             "{tr}playlist",
+            "{tr}prevlist",
+            "{tr}fulllist",
         ],
     },
+    public=True,
 )
 async def get_playlist(event):
     "To Get all playlist for Voice Chat."
-    await edit_or_reply(event, "Fetching Playlist ......")
-    playl = vc_player.PLAYLIST
-    if not playl:
-        await edit_delete(event, "Playlist empty", time=10)
-    else:
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
+        return
+    ppf = event.pattern_match.group(1)
+    event = await vc_reply(event, f"Fetching {ppf.title()}list ......", firstmsg=True)
+    if ppf == "play":
+        if playl := vc_player.PLAYLIST:
+            cat = "".join(
+                f"{num}. 🔉  `{item['title']}`\n"
+                if item["stream"] == Stream.audio
+                else f"{num}. �  `{item['title']}`\n"
+                for num, item in enumerate(playl, 1)
+            )
+            await vc_reply(event, f"**Playlist:**\n\n{cat}\n**Enjoy the show**")
+        else:
+            await vc_reply(event, "Playlist empty")
+    elif ppf == "prev":
+        if playl := vc_player.PREVIOUS:
+            cat = "".join(
+                f"{num}. 🔉  `{item['title']}`\n"
+                if item["stream"] == Stream.audio
+                else f"{num}. �  `{item['title']}`\n"
+                for num, item in enumerate(playl, 1)
+            )
+            await vc_reply(event, f"**Previous list:**\n\n{cat}\n**Enjoy the show**")
+        else:
+            await vc_reply(event, "Previous list empty")
+    elif ppf == "full":
         cat = ""
-        for num, item in enumerate(playl, 1):
-            if item["stream"] == Stream.audio:
-                cat += f"{num}. 🔉  `{item['title']}`\n"
-            else:
-                cat += f"{num}. 📺  `{item['title']}`\n"
-        await edit_delete(event, f"**Playlist:**\n\n{cat}\n**Enjoy the show**")
+        if playl := vc_player.PREVIOUS:
+            cat = "".join(
+                f"{num}. 🔉  `{item['title']}`\n"
+                if item["stream"] == Stream.audio
+                else f"{num}. �  `{item['title']}`\n"
+                for num, item in enumerate(playl, 1)
+            )
+        if play2 := vc_player.PLAYING:
+            ic = "🔉" if play2["stream"] == Stream.audio else "�"
+            cat += f"**{len(vc_player.PREVIOUS) + 1}. {ic} {play2['title']}** 🎙\n"
+        if play3 := vc_player.PLAYLIST:
+            cat += "".join(
+                f"{num}. 🔉  `{item['title']}`\n"
+                if item["stream"] == Stream.audio
+                else f"{num}. �  `{item['title']}`\n"
+                for num, item in enumerate(play3, len(vc_player.PREVIOUS) + 2)
+            )
+        if cat != "":
+            await vc_reply(event, f"**Full list:**\n\n{cat}\n**Enjoy the show**")
+        else:
+            await vc_reply(event, "Playlist empty")
 
 
 @catub.cat_cmd(
-    pattern="vplay ?(-f)? ?([\S ]*)?",
+    pattern="(v)?play(?:\s|$)([\s\S]*)",
     command=("vplay", plugin_category),
     info={
         "header": "To Play a media as video on VC.",
@@ -167,42 +200,71 @@ async def get_playlist(event):
             "-f": "Force play the Video",
         },
         "usage": [
-            "{tr}vplay (reply to message)",
-            "{tr}vplay (yt link)",
-            "{tr}vplay -f (yt link)",
+            "{tr}vplay <reply to message/reply to yt link>",
+            "{tr}vplay <search song/yt link>",
+            "{tr}vplay -f <search song/yt link>",
         ],
         "examples": [
-            "{tr}vplay",
+            "{tr}vplay open my letter",
             "{tr}vplay https://www.youtube.com/watch?v=c05GBLT_Ds0",
             "{tr}vplay -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
         ],
     },
+    public=True,
 )
 async def play_video(event):
     "To Play a media as video on VC."
-    flag = event.pattern_match.group(1)
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
+        return
+    forced = False
+    av_check = event.pattern_match.group(1)
     input_str = event.pattern_match.group(2)
-    if input_str == "" and event.reply_to_msg_id:
-        input_str = await tg_dl(event)
-    if not input_str:
-        return await edit_delete(
-            event, "Please Provide a media file to stream on VC", time=20
-        )
-    if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, "Join a VC and use play command")
-    if not input_str:
-        return await edit_or_reply(event, "No Input to play in vc")
-    await edit_or_reply(event, "Playing in VC ......")
-    if flag:
-        resp = await vc_player.play_song(input_str, Stream.video, force=True)
+    reply = await event.get_reply_message()
+    if av_check:
+        av_options = ["Video", Stream.video]
+        reply_media = reply.video if reply else False
     else:
-        resp = await vc_player.play_song(input_str, Stream.video, force=False)
+        av_options = ["Audio", Stream.audio]
+        reply_media = reply.media if reply else False
+
+    if "-f" in input_str:
+        input_str = input_str.replace("-f", "").strip()
+        forced = True
+    LOGS.info(f"Playing {av_options[0]}..")
+    event = await vc_reply(event, "`Searching...`", firstmsg=True)
+    if reply and reply_media and not reply.photo:
+        inputstr = await tg_dl(event, reply, vc_player.BOTMODE)
+    elif reply and reply.message and not input_str:
+        inputstr = reply.text
+        reply = False
+    elif input_str:
+        inputstr = input_str
+        reply = False
+    else:
+        return await vc_reply(event, "Please Provide a media file to stream on VC")
+    if not vc_player.CHAT_ID:
+        try:
+            vc_chat = await catub.get_entity(event.chat_id)
+        except Exception as e:
+            return await vc_reply(event, f'ERROR : \n{e or "UNKNOWN CHAT"}')
+        if isinstance(vc_chat, User):
+            return await vc_reply(
+                event, "Voice Chats are not available in Private Chats"
+            )
+        if Config.VC_SESSION:
+            check = await check_vcassis(event)
+            if not check:
+                return
+        await vc_player.join_vc(vc_chat, False)
+    resp = await vc_player.play_song(
+        event, inputstr, av_options[1], force=forced, reply=reply
+    )
     if resp:
-        await edit_delete(event, resp, time=30)
+        await sendmsg(event, resp)
 
 
 @catub.cat_cmd(
-    pattern="play ?(-f)? ?([\S ]*)?",
+    pattern="play(?:\s|$)([\s\S]*)$",
     command=("play", plugin_category),
     info={
         "header": "To Play a media as audio on VC.",
@@ -211,42 +273,63 @@ async def play_video(event):
             "-f": "Force play the Audio",
         },
         "usage": [
-            "{tr}play (reply to message)",
-            "{tr}play (yt link)",
-            "{tr}play -f (yt link)",
+            "{tr}play <reply to message/reply to yt link>",
+            "{tr}play <search song/yt link>",
+            "{tr}play -f <search song/yt link>",
         ],
         "examples": [
-            "{tr}play",
+            "{tr}play open my letter",
             "{tr}play https://www.youtube.com/watch?v=c05GBLT_Ds0",
             "{tr}play -f https://www.youtube.com/watch?v=c05GBLT_Ds0",
         ],
     },
+    public=True,
 )
 async def play_audio(event):
     "To Play a media as audio on VC."
-    flag = event.pattern_match.group(1)
-    input_str = event.pattern_match.group(2)
-    if input_str == "" and event.reply_to_msg_id:
-        input_str = await tg_dl(event)
-    if not input_str:
-        return await edit_delete(
-            event, "Please Provide a media file to stream on VC", time=20
-        )
-    if not vc_player.CHAT_ID:
-        return await edit_or_reply(event, "Join a VC and use play command")
-    if not input_str:
-        return await edit_or_reply(event, "No Input to play in vc")
-    await edit_or_reply(event, "Playing in VC ......")
-    if flag:
-        resp = await vc_player.play_song(input_str, Stream.audio, force=True)
-    else:
-        resp = await vc_player.play_song(input_str, Stream.audio, force=False)
-    if resp:
-        await edit_delete(event, resp, time=30)
 
 
 @catub.cat_cmd(
-    pattern="pause",
+    pattern="previous$",
+    command=("previous", plugin_category),
+    info={
+        "header": "To play previous a stream on VC.",
+        "description": "To play previou audio or video stream on Voice Chat",
+        "usage": [
+            "{tr}previous",
+        ],
+        "examples": [
+            "{tr}previous",
+        ],
+    },
+    public=True,
+)
+async def previous(event):
+    "To play previous a stream on Voice Chat."
+    if not vc_player.PREVIOUS:
+        return await vc_reply(event, "**No previous track found.**")
+    prev = vc_player.PREVIOUS[-1]
+    song_input = prev["path"]
+    stream = prev["stream"]
+    duration = prev["duration"]
+    url = prev["url"]
+    img = prev["img"]
+    res = await vc_player.play_song(
+        event,
+        song_input,
+        stream,
+        force=True,
+        prev=True,
+        duration=duration,
+        url=url,
+        img=img,
+    )
+    if res:
+        await sendmsg(event, res)
+
+
+@catub.cat_cmd(
+    pattern="pause$",
     command=("pause", plugin_category),
     info={
         "header": "To Pause a stream on Voice Chat.",
@@ -258,16 +341,19 @@ async def play_audio(event):
             "{tr}pause",
         ],
     },
+    public=True,
 )
 async def pause_stream(event):
     "To Pause a stream on Voice Chat."
-    await edit_or_reply(event, "Pausing VC ......")
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
+        return
+    event = await vc_reply(event, "Pausing VC ......", firstmsg=True)
     res = await vc_player.pause()
-    await edit_delete(event, res, time=30)
+    await vc_reply(event, res)
 
 
 @catub.cat_cmd(
-    pattern="resume",
+    pattern="resume$",
     command=("resume", plugin_category),
     info={
         "header": "To Resume a stream on Voice Chat.",
@@ -279,16 +365,19 @@ async def pause_stream(event):
             "{tr}resume",
         ],
     },
+    public=True,
 )
 async def resume_stream(event):
     "To Resume a stream on Voice Chat."
-    await edit_or_reply(event, "Resuming VC ......")
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
+        return
+    event = await vc_reply(event, "Resuming VC ......", firstmsg=True)
     res = await vc_player.resume()
-    await edit_delete(event, res, time=30)
+    await vc_reply(event, res)
 
 
 @catub.cat_cmd(
-    pattern="skip",
+    pattern="skip$",
     command=("skip", plugin_category),
     info={
         "header": "To Skip currently playing stream on Voice Chat.",
@@ -300,122 +389,50 @@ async def resume_stream(event):
             "{tr}skip",
         ],
     },
+    public=True,
 )
 async def skip_stream(event):
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
+        return
     "To Skip currently playing stream on Voice Chat."
-    await edit_or_reply(event, "Skiping Stream ......")
+    event = await vc_reply(event, "Skiping Stream ......", firstmsg=True)
     res = await vc_player.skip()
-    await edit_delete(event, res, time=30)
+    if res:
+        await sendmsg(event, res)
 
 
-"""
-@catub.cat_cmd(
-    pattern="a(?:llow)?vc ?([\d ]*)?",
-    command=("allowvc", plugin_category),
-    info={
-        "header": "To allow a user to control VC.",
-        "description": "To allow a user to controll VC.",
-        "usage": [
-            "{tr}allowvc",
-            "{tr}allowvc (user id)",
-        ],
-    },
-)
-async def allowvc(event):
-    "To allow a user to controll VC."
-    user_id = event.pattern_match.group(1)
-    if user_id:
-        user_id = user_id.split(" ")
-    if not user_id and event.reply_to_msg_id:
-        reply = await event.get_reply_message()
-        user_id = [reply.from_id]
-    if not user_id:
-        return await edit_delete(event, "Whom should i Add")
-    ALLOWED_USERS.update(user_id)
-    return await edit_delete(event, "Added User to Allowed List")
+# =======================INLINE==============================
 
 
 @catub.cat_cmd(
-    pattern="d(?:isallow)?vc ?([\d ]*)?",
-    command=("disallowvc", plugin_category),
-    info={
-        "header": "To disallowvc a user to control VC.",
-        "description": "To disallowvc a user to controll VC.",
-        "usage": [
-            "{tr}disallowvc",
-            "{tr}disallowvc (user id)",
-        ],
-    },
+    pattern="vcplayer$",
+    public=True,
 )
-async def disallowvc(event):
-    "To allow a user to controll VC."
-    user_id = event.pattern_match.group(1)
-    if user_id:
-        user_id = user_id.split(" ")
-    if not user_id and event.reply_to_msg_id:
-        reply = await event.get_reply_message()
-        user_id = [reply.from_id]
-    if not user_id:
-        return await edit_delete(event, "Whom should i remove")
-    ALLOWED_USERS.difference_update(user_id)
-    return await edit_delete(event, "Removed User to Allowed List")
-
-
-@catub.on(
-    events.NewMessage(outgoing=True, pattern=f"{tr}(speak|sp)(h|j)?(?:\s|$)([\s\S]*)")
-)  #only for catub client
-async def speak(event):
-    "Speak in vc"
-    r = event.pattern_match.group(2)
-    input_str = event.pattern_match.group(3)
-    re = await event.get_reply_message()
-    if ";" in input_str:
-        lan, text = input_str.split(";")
-    else:
-        if input_str:
-            text = input_str
-        elif re and re.text and not input_str:
-            text = re.message
-        else:
-            return await event.delete()
-        if r == "h":
-            lan = "hi"
-        elif r == "j":
-            lan = "ja"
-        else:
-            lan = "en"
-    text = deEmojify(text.strip())
-    lan = lan.strip()
-    if not os.path.isdir("./temp/"):
-        os.makedirs("./temp/")
-    file = "./temp/" + "voice.ogg"
-    try:
-        tts = gTTS(text, lang=lan)
-        tts.save(file)
-        cmd = [
-            "ffmpeg",
-            "-i",
-            file,
-            "-map",
-            "0:a",
-            "-codec:a",
-            "libopus",
-            "-b:a",
-            "100k",
-            "-vbr",
-            "on",
-            file + ".opus",
-        ]
-        try:
-            t_response = subprocess.check_output(cmd, stderr=subprocess.STDOUT)
-        except (subprocess.CalledProcessError, NameError, FileNotFoundError) as exc:
-            await edit_or_reply(event, str(exc))
-        else:
-            os.remove(file)
-            file = file + ".opus"
-        await vc_player.play_song(file, Stream.audio, force=False)
-        await event.delete()
-        os.remove(file)
-    except Exception as e:
-         await edit_or_reply(event, f"**Error:**\n`{e}`")
-"""
+async def vcplayer(event):
+    if not vc_player.PUBLICMODE and event.sender_id not in sudos:
+        return
+    if vc_player.BOTMODE:
+        with contextlib.suppress(Exception):
+            if play := vc_player.PLAYING:
+                title = play["title"]
+                duration = play["duration"]
+                url = play["url"]
+                vcimg = play["img"]
+                msg = f"**🎧 Playing:** [{title}]({url})\n"
+                msg += f"**⏳ Duration:** `{duration}`\n"
+                msg += f"**💭 Chat:** `{vc_player.CHAT_NAME}`"
+                await catub.tgbot.send_file(
+                    event.chat_id, vcimg, caption=msg, buttons=buttons[1]
+                )
+            else:
+                await catub.tgbot.send_file(
+                    event.chat_id,
+                    vcimg,
+                    caption="** | VC MENU | **",
+                    buttons=buttons[0],
+                )
+            return
+    reply_to_id = await reply_id(event)
+    results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+    await results[0].click(event.chat_id, reply_to=reply_to_id, hide_via=True)
+    await event.delete()

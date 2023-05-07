@@ -1,9 +1,15 @@
+import contextlib
+from datetime import datetime
+
 from telethon import functions
 from telethon.errors import ChatAdminRequiredError, UserAlreadyInvitedError
 from telethon.tl.types import Channel, Chat, User
+from telethon.utils import get_display_name
 from userbot import catub
+from userbot.core.data import _sudousers_list, _vcusers_list
 from userbot.core.managers import edit_delete, edit_or_reply
 from userbot.helpers.utils import mentionuser
+from userbot.sql_helper import global_collectionjson as sql
 
 plugin_category = "extra"
 
@@ -219,9 +225,7 @@ async def mute_vc(event):
     for user in user_list:
         await catub(
             functions.phone.EditGroupCallParticipantRequest(
-                call=gc_call,
-                participant=user,
-                muted=bool(not cmd),
+                call=gc_call, participant=user, muted=not cmd
             )
         )
     await edit_delete(event, f"{check}d users in Group Call")
@@ -243,3 +247,80 @@ async def mute_vc(event):
 )
 async def unmute_vc(event):
     "To unmute users in vc."
+
+
+@catub.cat_cmd(
+    pattern="(del|get|add)vcuser(?:\s|$)([\s\S]*)",
+    command=("vcuser", plugin_category),
+    info={
+        "header": "To add user as for vc .",
+        "usage": [
+            "{tr}addvcuser <username/reply/mention>",
+            "{tr}getvcuser",
+            "{tr}delvcuser <username/reply/mention>",
+        ],
+    },
+)
+async def add_sudo_user(event):
+    "To add user to sudo."
+    vcusers = {}
+    vc_chats = _vcusers_list()
+    cmd = event.pattern_match.group(1)
+
+    with contextlib.suppress(AttributeError):
+        vcusers = sql.get_collection("vcusers_list").json
+
+    if cmd == "get":
+        if not vc_chats:
+            return await edit_delete(
+                event, "__There are no vc auth users for your Catuserbot.__"
+            )
+        result = "**The list of vc auth users for your Catuserbot are :**\n\n"
+        for chat in [*vcusers]:
+            result += f"☞ **Name:** {mentionuser(vcusers[str(chat)]['chat_name'],vcusers[str(chat)]['chat_id'])}\n"
+            result += f"**User Id :** `{chat}`\n"
+            username = f"@{vcusers[str(chat)]['chat_username']}" or "__None__"
+            result += f"**Username :** {username}\n"
+            result += f"Added on {vcusers[str(chat)]['date']}\n\n"
+        await edit_or_reply(event, result)
+
+    elif cmd in ["add", "del"]:
+        replied_user = event.pattern_match.group(2)
+        reply = await event.get_reply_message()
+        if not replied_user and reply:
+            replied_user = reply.from_id
+        if replied_user is None:
+            return
+        replied_user = await catub.get_entity(replied_user)
+        if not isinstance(replied_user, User):
+            return await edit_delete(event, "`Can't fetch the user...`")
+        date = str(datetime.now().strftime("%B %d, %Y"))
+        userdata = {
+            "chat_id": replied_user.id,
+            "chat_name": get_display_name(replied_user),
+            "chat_username": replied_user.username,
+            "date": date,
+        }
+        if cmd == "add":
+            if replied_user.id == event.client.uid:
+                return await edit_delete(event, "__You already have the access.__.")
+            elif replied_user.id in (vc_chats + _sudousers_list()):
+                return await edit_delete(
+                    event,
+                    f"{mentionuser(get_display_name(replied_user),replied_user.id)} __already have access .__",
+                )
+            vcusers[str(replied_user.id)] = userdata
+        elif cmd == "del":
+            if str(replied_user.id) not in vcusers:
+                return await edit_delete(
+                    event,
+                    f"{mentionuser(get_display_name(replied_user),replied_user.id)} __is not in your vc auth list__.",
+                )
+            del vcusers[str(replied_user.id)]
+
+        sql.del_collection("vcusers_list")
+        sql.add_collection("vcusers_list", vcusers, {})
+        output = f"{mentionuser(userdata['chat_name'],userdata['chat_id'])} __is {'Added to' if cmd =='add' else 'Deleted from'} your vc auth users.__\n"
+        output += "**Bot is reloading to apply the changes. Please wait for a minute**"
+        msg = await edit_or_reply(event, output)
+        await event.client.reload(msg)
