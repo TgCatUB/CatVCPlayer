@@ -115,7 +115,7 @@ class CatVC:
         await _catutils.runcmd("rm -rf temp")
         self.clear_vars()
         if not self.CLEANMODE:
-            return 
+            return
         for event in self.EVENTS:
             with contextlib.suppress(Exception):
                 await event.delete()
