@@ -38,7 +38,7 @@ class CatVC:
         self.PLAYLIST = []
         self.PREVIOUS = []
         self.EVENTS = []
-        self.SILENT = True
+        self.SILENT = False
         self.PUBLICMODE = False
         self.BOTMODE = False
         self.CLEANMODE = True
