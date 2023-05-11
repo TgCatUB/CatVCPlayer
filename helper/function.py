@@ -57,11 +57,11 @@ async def handler(_, update):
             Button.inline("⏭ Next", data="skipvc"),
         ],
         [
-            Button.inline("🔁 repeat", data="repeatvc"),
-            Button.inline("≡ Mainmenu", data="menuvc"),
+            Button.inline("Repeat ❌", data="repeatvc"),
+            Button.inline("〣 Mainmenu", data="menuvc"),
         ],
         [
-            Button.inline("🗑 close", data="vc_close0"),
+            Button.inline("🗑 Close", data="vc_close"),
         ],
     ]
     if vc_player.BOTMODE:
@@ -76,8 +76,20 @@ async def handler(_, update):
                 vc_player.CHAT_ID, resp, buttons=buttons
             )
     else:
-        results = await event.client.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
-        event = await results[0].click(event.chat_id, hide_via=True)
+        try:
+            results = await catub.inline_query(Config.TG_BOT_USERNAME, "vcplayer")
+            event = await results[0].click(vc_player.CHAT_ID, hide_via=True)
+        except Exception:
+            if resp and type(resp) is list:
+                caption = resp[1].split(f"\n\n")[1] if f"\n\n" in resp[1] else resp[1]
+                event = await catub.send_file(
+                    vc_player.CHAT_ID, file=resp[0], caption=caption, buttons=buttons
+                )
+            elif resp and type(resp) is str:
+                resp = resp.split(f"\n\n")[1] if f"\n\n" in resp else resp
+                event = await catub.send_message(
+                    vc_player.CHAT_ID, resp, buttons=buttons
+                )
     if vc_player.CLEANMODE and event:
         vc_player.EVENTS.append(event)
 
