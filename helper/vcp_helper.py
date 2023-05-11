@@ -224,7 +224,10 @@ class CatVC:
                     "url": url,
                 }
             )
-            return f"**🎧 Added to playlist:** [{title}]({url})\n\n👾 Position: {len(self.PLAYLIST)+1}"
+            return (
+                f"**🎧 Added to playlist:** [{title}]({url})\n\n👾 Position: {len(self.PLAYLIST)+1}",
+                0,
+            )
         if not self.PLAYING:
             self.PLAYLIST.append(
                 {
